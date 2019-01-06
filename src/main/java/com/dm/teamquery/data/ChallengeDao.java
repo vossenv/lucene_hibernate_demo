@@ -25,12 +25,9 @@ public class ChallengeDao {
         return challengeRepository.findChallengeByAnswerContains(ans);
     }
 
-    public List<Challenge> findAll(){
+    public List<Challenge> findAll() {
         List<Challenge> l = new ArrayList<>();
         challengeRepository.findAll().forEach(l::add);
         return l;
     }
-
-
-
 }
