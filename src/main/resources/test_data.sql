@@ -1,0 +1,1 @@
+insert into challenges (answer, question) values ("What is the question?", "What is the answer?");

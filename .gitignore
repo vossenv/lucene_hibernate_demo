@@ -1,5 +1,8 @@
-/target/
-!.mvn/wrapper/maven-wrapper.jar
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+api/target/surefire-reports/
+
 
 ### STS ###
 .apt_generated
@@ -15,6 +18,10 @@
 *.iws
 *.iml
 *.ipr
+/out/
+*.class
+*/out/*
+*/build/*
 
 ### NetBeans ###
 /nbproject/private/
@@ -23,3 +30,9 @@
 /dist/
 /nbdist/
 /.nb-gradle/
+
+### Don Dev Env ###
+api/.vagrant
+api/deploy.sh
+api/Vagrantfile
+staging/*
