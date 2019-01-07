@@ -65,6 +65,7 @@ public class DataGenerator {
 
     @PostConstruct
     void insertData(){
+        generateChallenges();
     }
 
 
