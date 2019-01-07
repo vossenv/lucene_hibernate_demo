@@ -1,1 +1,1 @@
-insert into challenges (answer, question) values ("What is the question?", "What is the answer?");
+insert into challenges (challengeid, answer, question) values ('0-1-5-f-a', 'What is the question?', 'What is the answer?');

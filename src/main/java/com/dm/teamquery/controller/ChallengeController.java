@@ -1,21 +1,19 @@
 package com.dm.teamquery.controller;
 
-import com.dm.teamquery.data.ChallengeDao;
+import com.dm.teamquery.data.ChallengeService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 
 @Controller
 public class ChallengeController {
 
-    private final ChallengeDao challengeDao;
+    private final ChallengeService challengeService;
 
     @Inject
-    public ChallengeController(ChallengeDao challengeDao) {
-        this.challengeDao = challengeDao;
+    public ChallengeController(ChallengeService challengeService) {
+        this.challengeService = challengeService;
     }
 
     @RequestMapping(value = {"","/"}, method = RequestMethod.GET)
@@ -26,6 +24,27 @@ public class ChallengeController {
     @ResponseBody
     @RequestMapping(value = {"/challenges"}, method = RequestMethod.GET)
     public Object getAllChallenges()  {
-        return challengeDao.findAll();
+        return challengeService.findAll();
     }
+
+    @ResponseBody
+    @RequestMapping(value = {"/challenges/{id}"}, method = RequestMethod.GET)
+    public Object getChallenge(@PathVariable("id") String id)  {
+        return challengeService.findChallengeByChallengeId(id);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = {"/challenges/update"}, method = RequestMethod.POST)
+    public Object addUpdateChallenge()  {
+        return challengeService.findAll();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = {"/challenges/{id}/delete"}, method = RequestMethod.GET)
+    public void deleteChallenge(@PathVariable("id") String id)  {
+         challengeService.deleteChallengeById(id);
+    }
+
+
+
 }

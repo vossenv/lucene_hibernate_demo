@@ -1,16 +1,27 @@
 package com.dm.teamquery.model;
 
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "challenges")
 public class Challenge {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Type(type="uuid-char")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
     @Column(name = "challengeid")
-    private int challengeId;
+    private UUID challengeId;
 
     @Column(name = "question")
     private String question;
@@ -22,13 +33,44 @@ public class Challenge {
     private String author;
 
     @Column(name = "datelastmodified")
-    private String dateLastModified;
+    private LocalDateTime dateLastModified;
 
-    public int getChallengeId() {
+    @Column(name = "datecreated")
+    private LocalDateTime dateCreated;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Challenge challenge = (Challenge) o;
+
+        if (challengeId != null ? !challengeId.equals(challenge.challengeId) : challenge.challengeId != null)
+            return false;
+        if (question != null ? !question.equals(challenge.question) : challenge.question != null) return false;
+        if (answer != null ? !answer.equals(challenge.answer) : challenge.answer != null) return false;
+        if (author != null ? !author.equals(challenge.author) : challenge.author != null) return false;
+        if (dateLastModified != null ? !dateLastModified.equals(challenge.dateLastModified) : challenge.dateLastModified != null)
+            return false;
+        return dateCreated != null ? dateCreated.equals(challenge.dateCreated) : challenge.dateCreated == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = challengeId != null ? challengeId.hashCode() : 0;
+        result = 31 * result + (question != null ? question.hashCode() : 0);
+        result = 31 * result + (answer != null ? answer.hashCode() : 0);
+        result = 31 * result + (author != null ? author.hashCode() : 0);
+        result = 31 * result + (dateLastModified != null ? dateLastModified.hashCode() : 0);
+        result = 31 * result + (dateCreated != null ? dateCreated.hashCode() : 0);
+        return result;
+    }
+
+    public UUID getChallengeId() {
         return challengeId;
     }
 
-    public void setChallengeId(int challengeId) {
+    public void setChallengeId(UUID challengeId) {
         this.challengeId = challengeId;
     }
 
@@ -56,35 +98,27 @@ public class Challenge {
         this.author = author;
     }
 
-    public String getDateLastModified() {
+    public LocalDateTime getDateLastModified() {
         return dateLastModified;
     }
 
-    public void setDateLastModified(String dateLastModified) {
+    public void setDateLastModified(LocalDateTime dateLastModified) {
         this.dateLastModified = dateLastModified;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Challenge challenge = (Challenge) o;
-
-        if (challengeId != challenge.challengeId) return false;
-        if (question != null ? !question.equals(challenge.question) : challenge.question != null) return false;
-        if (answer != null ? !answer.equals(challenge.answer) : challenge.answer != null) return false;
-        if (author != null ? !author.equals(challenge.author) : challenge.author != null) return false;
-        return dateLastModified != null ? dateLastModified.equals(challenge.dateLastModified) : challenge.dateLastModified == null;
+    public void setDateLastModified(LocalDate dateLastModified) {
+        this.dateLastModified = dateLastModified.atStartOfDay();
     }
 
-    @Override
-    public int hashCode() {
-        int result = challengeId;
-        result = 31 * result + (question != null ? question.hashCode() : 0);
-        result = 31 * result + (answer != null ? answer.hashCode() : 0);
-        result = 31 * result + (author != null ? author.hashCode() : 0);
-        result = 31 * result + (dateLastModified != null ? dateLastModified.hashCode() : 0);
-        return result;
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public void setDateCreated(LocalDate dateCreated) {
+        this.dateCreated = dateCreated.atStartOfDay();
     }
 }

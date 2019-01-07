@@ -6,23 +6,36 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
-public class ChallengeDao {
+public class ChallengeService {
 
     private final ChallengeRepository challengeRepository;
 
     @Inject
-    public ChallengeDao(ChallengeRepository challengeRepository) {
+    public ChallengeService(ChallengeRepository challengeRepository) {
         this.challengeRepository = challengeRepository;
     }
 
-    public Challenge findChallengeByChallengeId(int id) {
-        return challengeRepository.findChallengeByChallengeId(id);
+    public Challenge findChallengeByChallengeId(String id) {
+        return challengeRepository.findChallengeByChallengeId(UUID.fromString(id));
     }
 
     public Challenge findChallengeByAnswerContains(String ans) {
         return challengeRepository.findChallengeByAnswerContains(ans);
+    }
+
+    public Challenge updateChallenge(Challenge c) {
+        return challengeRepository.save(c);
+    }
+
+    public void deleteChallengeById(String id){
+        challengeRepository.deleteById(UUID.fromString(id));
+    }
+
+    public void deleteChallenge(Challenge c){
+        challengeRepository.delete(c);
     }
 
     public List<Challenge> findAll() {
@@ -30,4 +43,5 @@ public class ChallengeDao {
         challengeRepository.findAll().forEach(l::add);
         return l;
     }
+
 }
