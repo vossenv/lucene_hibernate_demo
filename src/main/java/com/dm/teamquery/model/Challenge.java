@@ -1,11 +1,14 @@
 package com.dm.teamquery.model;
 
 
+import com.dm.teamquery.config.LocalDateDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -23,20 +26,27 @@ public class Challenge {
     @Column(name = "challengeid")
     private UUID challengeId;
 
-    @Column(name = "question")
+    @Column(name = "question", columnDefinition = "VARCHAR(3000)")
     private String question;
 
-    @Column(name = "answer")
+    @Column(name = "answer", columnDefinition = "VARCHAR(3000)")
     private String answer;
 
     @Column(name = "author")
     private String author;
 
-    @Column(name = "datelastmodified")
-    private LocalDateTime dateLastModified;
-
+    @JsonSerialize(using = ToStringSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @Column(name = "datecreated")
     private LocalDateTime dateCreated;
+
+    @Column(name = "lastauthor")
+    private String lastAuthor;
+
+    @JsonSerialize(using = ToStringSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @Column(name = "datelastmodified")
+    private LocalDateTime dateLastModified;
 
     @Override
     public boolean equals(Object o) {
@@ -50,9 +60,10 @@ public class Challenge {
         if (question != null ? !question.equals(challenge.question) : challenge.question != null) return false;
         if (answer != null ? !answer.equals(challenge.answer) : challenge.answer != null) return false;
         if (author != null ? !author.equals(challenge.author) : challenge.author != null) return false;
-        if (dateLastModified != null ? !dateLastModified.equals(challenge.dateLastModified) : challenge.dateLastModified != null)
+        if (dateCreated != null ? !dateCreated.equals(challenge.dateCreated) : challenge.dateCreated != null)
             return false;
-        return dateCreated != null ? dateCreated.equals(challenge.dateCreated) : challenge.dateCreated == null;
+        if (lastAuthor != null ? !lastAuthor.equals(challenge.lastAuthor) : challenge.lastAuthor != null) return false;
+        return dateLastModified != null ? dateLastModified.equals(challenge.dateLastModified) : challenge.dateLastModified == null;
     }
 
     @Override
@@ -61,8 +72,9 @@ public class Challenge {
         result = 31 * result + (question != null ? question.hashCode() : 0);
         result = 31 * result + (answer != null ? answer.hashCode() : 0);
         result = 31 * result + (author != null ? author.hashCode() : 0);
-        result = 31 * result + (dateLastModified != null ? dateLastModified.hashCode() : 0);
         result = 31 * result + (dateCreated != null ? dateCreated.hashCode() : 0);
+        result = 31 * result + (lastAuthor != null ? lastAuthor.hashCode() : 0);
+        result = 31 * result + (dateLastModified != null ? dateLastModified.hashCode() : 0);
         return result;
     }
 
@@ -98,18 +110,6 @@ public class Challenge {
         this.author = author;
     }
 
-    public LocalDateTime getDateLastModified() {
-        return dateLastModified;
-    }
-
-    public void setDateLastModified(LocalDateTime dateLastModified) {
-        this.dateLastModified = dateLastModified;
-    }
-
-    public void setDateLastModified(LocalDate dateLastModified) {
-        this.dateLastModified = dateLastModified.atStartOfDay();
-    }
-
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
@@ -118,7 +118,29 @@ public class Challenge {
         this.dateCreated = dateCreated;
     }
 
-    public void setDateCreated(LocalDate dateCreated) {
-        this.dateCreated = dateCreated.atStartOfDay();
+    public String getLastAuthor() {
+        return lastAuthor;
     }
+
+
+    public void setLastAuthor(String lastAuthor) {
+        this.lastAuthor = lastAuthor;
+    }
+
+    public LocalDateTime getDateLastModified() {
+        return dateLastModified;
+    }
+
+    public void setDateLastModified(LocalDateTime dateLastModified) {
+        this.dateLastModified = dateLastModified;
+    }
+
+//    public void setDateLastModified(LocalDate dateLastModified) {
+//        this.dateLastModified = dateLastModified.atStartOfDay();
+//    }
+//    public void setDateCreated(LocalDate dateCreated) {
+//        this.dateCreated = dateCreated.atStartOfDay();
+//    }
+
+
 }

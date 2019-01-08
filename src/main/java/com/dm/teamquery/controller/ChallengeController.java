@@ -1,6 +1,7 @@
 package com.dm.teamquery.controller;
 
 import com.dm.teamquery.data.ChallengeService;
+import com.dm.teamquery.model.Challenge;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,8 +36,8 @@ public class ChallengeController {
 
     @ResponseBody
     @RequestMapping(value = {"/challenges/update"}, method = RequestMethod.POST)
-    public Object addUpdateChallenge()  {
-        return challengeService.findAll();
+    public Object addUpdateChallenge(@RequestBody Challenge challenge)  {
+        return challengeService.updateChallenge(challenge);
     }
 
     @ResponseBody

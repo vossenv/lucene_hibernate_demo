@@ -1,7 +1,6 @@
 package com.dm.teamquery;
 
 
-import com.dm.teamquery.config.DataGenerator;
 import com.dm.teamquery.data.ChallengeRepository;
 import com.dm.teamquery.data.ChallengeService;
 import com.dm.teamquery.model.Challenge;
@@ -26,19 +25,17 @@ public class TestChallenges {
 
     @Inject ChallengeService challengeService;
     @Inject ChallengeRepository challengeRepository;
-    @Inject DataGenerator dataGenerator;
     private List<Challenge> origninalList;
 
     @PostConstruct
     void setInitialData(){
-        dataGenerator.generateChallenges();
         this.origninalList = challengeService.findAll();
     }
 
     @Test
     public void TestGet() {
 
-        Challenge c = origninalList.get(15);
+        Challenge c = origninalList.get(5);
         Challenge d = challengeRepository.findChallengeByChallengeId(c.getChallengeId());
         Challenge e = challengeService.findChallengeByChallengeId(c.getChallengeId().toString());
         assertEquals(c, d);
@@ -49,7 +46,7 @@ public class TestChallenges {
     @Test
     public void TestDelete() {
 
-        Challenge c = origninalList.get(15);
+        Challenge c = origninalList.get(2);
         challengeService.deleteChallengeById(c.getChallengeId().toString());
         assertNull(challengeService.findChallengeByChallengeId(c.getChallengeId().toString()));
 
@@ -58,7 +55,7 @@ public class TestChallenges {
     @Test
     public void TestUpdate() {
 
-        Challenge c = origninalList.get(35);
+        Challenge c = origninalList.get(3);
         c.setAnswer("There is no answer...");
         Challenge d = challengeService.updateChallenge(c);
         assertEquals(d, challengeService.findChallengeByChallengeId(c.getChallengeId().toString()));
