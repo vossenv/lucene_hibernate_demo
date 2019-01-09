@@ -18,11 +18,6 @@ public class Challenge {
 
     @Id
     @Type(type="uuid-char")
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
     @Column(name = "challengeid")
     private UUID challengeId;
 

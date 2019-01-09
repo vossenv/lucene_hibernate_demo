@@ -27,15 +27,12 @@ public class ChallengeService {
     }
 
     public Challenge updateChallenge(Challenge c) {
+        if (null == c.getChallengeId()) c.setChallengeId(UUID.randomUUID());
         return challengeRepository.save(c);
     }
 
     public void deleteChallengeById(String id){
         challengeRepository.deleteById(UUID.fromString(id));
-    }
-
-    public void deleteChallenge(Challenge c){
-        challengeRepository.delete(c);
     }
 
     public List<Challenge> findAll() {
