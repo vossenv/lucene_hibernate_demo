@@ -10,12 +10,8 @@ import javax.inject.Inject;
 @Controller
 public class ChallengeController {
 
-    private final ChallengeService challengeService;
-
     @Inject
-    public ChallengeController(ChallengeService challengeService) {
-        this.challengeService = challengeService;
-    }
+    private ChallengeService challengeService;
 
     @RequestMapping(value = {"","/"}, method = RequestMethod.GET)
     public Object indexPage()  {
@@ -29,12 +25,6 @@ public class ChallengeController {
     }
 
     @ResponseBody
-    @RequestMapping(value = {"/challenges/{id}"}, method = RequestMethod.GET)
-    public Object getChallenge(@PathVariable("id") String id)  {
-        return challengeService.findChallengeByChallengeId(id);
-    }
-
-    @ResponseBody
     @RequestMapping(value = {"/challenges/update"}, method = RequestMethod.POST)
     public Object addUpdateChallenge(@RequestBody Challenge challenge)  {
         return challengeService.updateChallenge(challenge);
@@ -45,7 +35,5 @@ public class ChallengeController {
     public void deleteChallenge(@PathVariable("id") String id)  {
          challengeService.deleteChallengeById(id);
     }
-
-
 
 }

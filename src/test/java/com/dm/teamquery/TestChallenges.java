@@ -32,45 +32,45 @@ public class TestChallenges {
         this.origninalList = challengeService.findAll();
     }
 
-    @Test
-    public void TestGet() {
+//    @Test
+//    public void TestGet() {
+//
+//        Challenge c = origninalList.get(5);
+//        Challenge d = challengeRepository.findChallengeByChallengeId(c.getChallengeId());
+//        Challenge e = challengeService.findChallengeByChallengeId(c.getChallengeId().toString());
+//        assertEquals(c, d);
+//        assertEquals(d, e);
+//
+//    }
+//
+//    @Test
+//    public void TestDelete() {
+//
+//        Challenge c = origninalList.get(2);
+//        challengeService.deleteChallengeById(c.getChallengeId().toString());
+//        assertNull(challengeService.findChallengeByChallengeId(c.getChallengeId().toString()));
+//
+//    }
+//
+//    @Test
+//    public void TestUpdate() {
+//
+//        Challenge c = origninalList.get(3);
+//        c.setAnswer("There is no answer...");
+//        Challenge d = challengeService.updateChallenge(c);
+//        assertEquals(d, challengeService.findChallengeByChallengeId(c.getChallengeId().toString()));
+//
+//        Challenge e = new Challenge();
+//        e.setAnswer("This is the final answer!");
+//        e.setQuestion("Was there a question");
+//        e.setAuthor("Vossen");
+//        e.setDateLastModified(LocalDateTime.now());
+//        e.setDateCreated(LocalDateTime.now());
+//
+//        e = challengeService.updateChallenge(e);
+//        assertEquals(e, challengeService.findChallengeByChallengeId(e.getChallengeId().toString()));
 
-        Challenge c = origninalList.get(5);
-        Challenge d = challengeRepository.findChallengeByChallengeId(c.getChallengeId());
-        Challenge e = challengeService.findChallengeByChallengeId(c.getChallengeId().toString());
-        assertEquals(c, d);
-        assertEquals(d, e);
-
-    }
-
-    @Test
-    public void TestDelete() {
-
-        Challenge c = origninalList.get(2);
-        challengeService.deleteChallengeById(c.getChallengeId().toString());
-        assertNull(challengeService.findChallengeByChallengeId(c.getChallengeId().toString()));
-
-    }
-
-    @Test
-    public void TestUpdate() {
-
-        Challenge c = origninalList.get(3);
-        c.setAnswer("There is no answer...");
-        Challenge d = challengeService.updateChallenge(c);
-        assertEquals(d, challengeService.findChallengeByChallengeId(c.getChallengeId().toString()));
-
-        Challenge e = new Challenge();
-        e.setAnswer("This is the final answer!");
-        e.setQuestion("Was there a question");
-        e.setAuthor("Vossen");
-        e.setDateLastModified(LocalDateTime.now());
-        e.setDateCreated(LocalDateTime.now());
-
-        e = challengeService.updateChallenge(e);
-        assertEquals(e, challengeService.findChallengeByChallengeId(e.getChallengeId().toString()));
-
-    }
+//    }
 
 
 }

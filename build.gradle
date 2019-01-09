@@ -31,6 +31,7 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
 	implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
     implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.6')
+	implementation('org.projectlombok:lombok:1.18.4')
 
 	runtimeOnly('com.h2database:h2')
 	runtimeOnly('mysql:mysql-connector-java')

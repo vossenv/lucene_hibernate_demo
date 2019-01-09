@@ -11,20 +11,8 @@ import java.util.UUID;
 @Service
 public class ChallengeService {
 
-    private final ChallengeRepository challengeRepository;
-
     @Inject
-    public ChallengeService(ChallengeRepository challengeRepository) {
-        this.challengeRepository = challengeRepository;
-    }
-
-    public Challenge findChallengeByChallengeId(String id) {
-        return challengeRepository.findChallengeByChallengeId(UUID.fromString(id));
-    }
-
-    public Challenge findChallengeByAnswerContains(String ans) {
-        return challengeRepository.findChallengeByAnswerContains(ans);
-    }
+    private ChallengeRepository challengeRepository;
 
     public Challenge updateChallenge(Challenge c) {
         if (null == c.getChallengeId()) c.setChallengeId(UUID.randomUUID());
