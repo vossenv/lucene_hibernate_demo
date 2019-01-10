@@ -3,15 +3,19 @@ package com.dm.teamquery;
 
 import com.dm.teamquery.data.ChallengeRepository;
 import com.dm.teamquery.data.ChallengeService;
+import com.dm.teamquery.data.SearchEngine;
 import com.dm.teamquery.model.Challenge;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,12 +29,23 @@ public class TestChallenges {
 
     @Inject ChallengeService challengeService;
     @Inject ChallengeRepository challengeRepository;
-    private List<Challenge> origninalList;
+    @Inject SearchEngine searchEngine;
 
-    @PostConstruct
-    void setInitialData(){
-        this.origninalList = challengeService.findAll();
+    @Test
+    public void TestSearchEngine() {
+
+        String terms = "wer\"e there \"15 or so different\" kinds";
+
+        Pageable p = PageRequest.of(0, 10);
+
+        List<Challenge> results = searchEngine.searchChallenges(terms, p);
+
+
+        System.out.println();
+
+
     }
+
 
 //    @Test
 //    public void TestGet() {
