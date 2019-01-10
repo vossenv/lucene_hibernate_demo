@@ -34,7 +34,7 @@ public class TestChallenges {
     @Test
     public void TestSearchEngine() {
 
-        String terms = "wer\"e there \"15 or so different\" kinds";
+        String terms = "author= eee there author=\"15 or so different\" kinds";
 
         Pageable p = PageRequest.of(0, 10);
 

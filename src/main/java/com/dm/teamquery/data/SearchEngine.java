@@ -16,7 +16,8 @@ public class SearchEngine {
     @Inject
     ChallengeRepository challengeRepository;
 
-    private final static String quotedSearchPattern = "(?<=\").*?(?=\")";
+    private final static String quotedSearchPattern = "((?<=author)((=|\\s=|=\\s|\\s=\\s|)\").*?(\"))|((?<=author)((=|\\s=|=\\s|\\s=\\s|)\\s).*?(\\s))";
+//    private final static String quotedSearchPattern = "(?<=\").*?(?=\")";
 
     public List<Challenge> searchChallenges(String terms, Pageable pageable){
         return executeSearch(extractSearchTerms(terms), pageable);
@@ -26,13 +27,26 @@ public class SearchEngine {
 
         Set<String> termList = new HashSet<>();
         Matcher m = Pattern.compile(quotedSearchPattern).matcher(terms);
-        while (m.find()) termList.add(m.group().trim());
+        while (m.find()) termList.add(m.group().replaceAll("\"","").replaceAll("=","").trim());
+       // while (m.find()) termList.add(m.group().trim());
 
         termList.addAll(Arrays.asList(terms
                 .replaceAll(quotedSearchPattern,"")
                 .replace("\"","")
                 .split("\\s")));
-
+//
+//        author= " someone new" "or" e'se
+//        author="x"
+//
+//        author = som " kind o
+//
+//
+//
+//
+//
+//        ((?<=author)((=|\s=|=\s|\s=\s|)\").*(\"))|((?<=author)((=|\s=|=\s|\s=\s|)\s).*?(\s))
+//
+//        ((?<=author)(=|\s=|=\s|\s=\s|)(\"))?(?(1)((?<=\").*?(?=\"))|(?<=(=\s)).*?(?=\s))
 
 
         return termList;
