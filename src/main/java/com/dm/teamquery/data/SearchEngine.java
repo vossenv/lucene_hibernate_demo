@@ -22,11 +22,16 @@ public class SearchEngine {
     ChallengeRepository challengeRepository;
 
     private List<String> keyWords = new ArrayList<>();
-    private final static String OR_OPERATOR = "OR";
-    private final static String AND_OPERATOR = "\\+";
     private final static String quotedSearchPattern = "\".*?\"";
     private final static String keyTermQuoted = "(field\\s?=\\s?\").*?\"";
-    private final static String keyTermUnQuoted = "(field\\s?=\\s?.).*?(?=\\s)";
+    private final static String keyTermUnQuoted = "(field\\s?=\\s?.).*?(?=(\\s|$))";
+
+    private final static String OR_OPERATOR = "OR";
+    private final static String AND_OPERATOR = "\\+";
+    private final static String queryKey = "query";
+    private final static String termKey = "terms";
+    private final static String processKey = "toProcess";
+    private final static String andKey = "and";
 
     @PostConstruct
     private void buildSearchKeywordList() {
@@ -41,51 +46,73 @@ public class SearchEngine {
 
     }
 
-    private Map<String, List<String>> constructSearchMap(String query){
+    public Map<String, List<String>> constructSearchMap(String query) {
 
         Map<String, List<String>> searchPatterns = new HashMap<>();
-        searchPatterns.put("and", new ArrayList<>());
-        searchPatterns.put("or", new ArrayList<>());
-        searchPatterns.put("toProcess", new ArrayList<>());
-        searchPatterns.put("query", new ArrayList<>(asList(query)));
-        
-        extractKeywordValues(searchPatterns, keyTermQuoted);
-        extractKeywordValues(searchPatterns, keyTermUnQuoted);
+        searchPatterns.put(andKey, new LinkedList<>());
+        searchPatterns.put(termKey, new LinkedList<>());
+        searchPatterns.put(processKey, new LinkedList<>());
+        searchPatterns.put(queryKey, new LinkedList<>(asList(query)));
+        keyWords.forEach(k -> searchPatterns.put(k, new LinkedList<>()));
 
-        booleanFilter(query, searchPatterns);
+        keywordFilter(searchPatterns);
+        booleanFilter(searchPatterns);
         standardFilter(searchPatterns);
+        
+        searchPatterns.get(termKey).addAll(searchPatterns.get(andKey));
+        searchPatterns.remove(andKey);
+        searchPatterns.remove(processKey);
+        searchPatterns.remove(queryKey);
 
-        return  searchPatterns;
+        return searchPatterns;
 
     }
 
-    private void standardFilter(Map<String, List<String>> searchPatterns){
+    private void keywordFilter(Map<String, List<String>> searchPatterns) {
 
-        match(quotedSearchPattern,searchPatterns.get("toProcess").get(0)).forEach(m -> {
+        extractKeywordValues(searchPatterns, keyTermQuoted);
+        extractKeywordValues(searchPatterns, keyTermUnQuoted);
+    }
 
-            searchPatterns.get("or").add(m.replaceAll("\"",""));
-            searchPatterns.get("toProcess").add( 0, searchPatterns.get("toProcess").get(0).replace(m,""));
+    private void standardFilter(Map<String, List<String>> searchPatterns) {
 
+        if (searchPatterns.get(processKey).isEmpty()) return;
+
+        match(quotedSearchPattern, searchPatterns.get(processKey).get(0)).forEach(m -> {
+            searchPatterns.get(termKey).add(m.replaceAll("\"", ""));
+            searchPatterns.get(processKey).add(0, searchPatterns.get(processKey).get(0).replace(m, ""));
         });
 
-        searchPatterns.get("or").addAll(stream( searchPatterns.get("toProcess")
+        searchPatterns.get(termKey).addAll(stream(searchPatterns.get(processKey)
                 .get(0).split("\\s"))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList()));
-
-        System.out.println();
-
     }
 
-    private void booleanFilter(String query, Map<String, List<String>> searchPatterns) {
-        asList(query.split(OR_OPERATOR)).forEach(p -> {
+    private void booleanFilter(Map<String, List<String>> searchPatterns) {
+        asList(searchPatterns.get(queryKey).get(0).split(OR_OPERATOR)).forEach(p -> {
             String[] adds = (p.trim()).split(AND_OPERATOR);
             if (adds.length > 1)
-                searchPatterns.get("and").add(stream(adds).map(String::trim).collect(Collectors.joining("+"))); else
-                searchPatterns.get("toProcess").add(p);
+                searchPatterns.get(andKey).add(stream(adds).map(String::trim).collect(Collectors.joining("+")));
+            else
+                searchPatterns.get(processKey).add(p);
+        });
+
+        List<String> newAndList = new LinkedList<>();
+        searchPatterns.get(andKey).forEach(val -> {
+
+            if (val.matches(".*\\s+.*")){
+                List<String> quoted = match(quotedSearchPattern, val);
+                newAndList.addAll(quoted.stream().map(s -> s.replace("\"","")).collect(Collectors.toList()) );
+                newAndList.addAll(asList(quoted.stream().reduce(val, (str, toRem) -> str.replaceAll(toRem, "")).split("\\s")));
+
+            } else {
+                newAndList.add(val);
+            }
 
         });
+        searchPatterns.put(andKey, newAndList.stream().filter(v -> !v.isEmpty()).collect(Collectors.toList()));
     }
 
     private List<String> match(String pattern, String text) {
@@ -95,48 +122,12 @@ public class SearchEngine {
         return new LinkedList<>(termList);
     }
 
-
-
-    //    private final static String partialQuote = "\\S*?\".*?\"";
-//    private final static String keyTermQuoted = "(field\\s?=\\s?\").*?\"";
-//    private final static String keyTermUnQuoted = "(field\\s?=\\s?.).*?(?=\\s)";
-//    private final static String quotedSearchPattern = "(?<=\").*?(?=\")";
-
-//    private List<Challenge> executeSearch(Set<String> terms, Pageable pageable) {
-//        Set<Challenge> results = new LinkedHashSet<>();
-//        terms.forEach((t) -> results.addAll(challengeRepository.search("%" + t.toLowerCase() + "%", pageable).getContent()));
-//        return new LinkedList<>(results);
-//    }
-
-    //    private Map<String, List<String>> BuildSearchMap(String query) {
-//
-//        Map<String, List<String>> searchPatterns = new HashMap<>();
-//        searchPatterns.put("query", new ArrayList<>(asList(query)));
-//
-//        extractKeywordValues(searchPatterns, keyTermQuoted);
-//        extractKeywordValues(searchPatterns, keyTermUnQuoted);
-//        return searchPatterns;
-//    }
-//
     private void extractKeywordValues(Map<String, List<String>> searchPatterns, String pattern) {
-
-        String query = searchPatterns.get("query").get(0);
+        String query = searchPatterns.get(queryKey).get(0);
         keyWords.forEach(k -> match(pattern.replace("field", k), query).forEach(m -> {
             String val = m.replaceAll("(" + k + "\\s*=)", "").replaceAll("\"", "").trim();
-            if (!searchPatterns.containsKey(k)) searchPatterns.put(k, new ArrayList<>());
             searchPatterns.get(k).add(val);
-            searchPatterns.get("query").add(0, searchPatterns.get("query").get(0).replace(m, ""));
+            searchPatterns.get(queryKey).add(0, searchPatterns.get(queryKey).get(0).replace(m, ""));
         }));
     }
-
-
-//    private String stripMatches(List<String> toRemove, String text){
-//        return toRemove.stream().reduce(text, (s, m) -> s.replace(m, ""));
-//    }
-
-    //        termList.addAll(Arrays.asList(terms
-//                .replaceAll(quotedSearchPattern,"")
-//                .replace("\"","")
-//                .split("\\s")));
-
 }

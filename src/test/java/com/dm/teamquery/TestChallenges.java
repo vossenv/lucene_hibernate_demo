@@ -5,6 +5,8 @@ import com.dm.teamquery.data.ChallengeRepository;
 import com.dm.teamquery.data.ChallengeService;
 import com.dm.teamquery.data.SearchEngine;
 import com.dm.teamquery.model.Challenge;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,8 +19,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static java.util.Arrays.asList;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -30,21 +37,6 @@ public class TestChallenges {
     @Inject ChallengeService challengeService;
     @Inject ChallengeRepository challengeRepository;
     @Inject SearchEngine searchEngine;
-
-    @Test
-    public void TestSearchEngine() {
-
-        String terms = "author=1234 abc + de f OR efg + hij OR \"ab ce\" ad";
-
-        Pageable p = PageRequest.of(0, 10);
-
-        List<Challenge> results = searchEngine.searchChallenges(terms, p);
-
-
-        System.out.println();
-
-
-    }
 
 
 //    @Test
