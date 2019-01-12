@@ -27,7 +27,7 @@ public class SearchEngine {
     private final static String keyTermUnQuoted = "(field\\s?=\\s?.).*?(?=(\\s|$))";
 
     private final static String OR_OPERATOR = "OR";
-    private final static String AND_OPERATOR = "\\+";
+    private final static String AND_OPERATOR = "AND";
     private final static String queryKey = "query";
     private final static String termKey = "terms";
     private final static String processKey = "toProcess";
@@ -94,7 +94,7 @@ public class SearchEngine {
         asList(searchPatterns.get(queryKey).get(0).split(OR_OPERATOR)).forEach(p -> {
             String[] adds = (p.trim()).split(AND_OPERATOR);
             if (adds.length > 1)
-                searchPatterns.get(andKey).add(stream(adds).map(String::trim).collect(Collectors.joining("+")));
+                searchPatterns.get(andKey).add(stream(adds).map(String::trim).collect(Collectors.joining(AND_OPERATOR)));
             else
                 searchPatterns.get(processKey).add(p);
         });

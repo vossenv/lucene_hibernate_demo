@@ -43,15 +43,15 @@ public class TestSearch {
     @Test
     public void  TestBooleanAdd() {
 
-        result = searchEngine.constructSearchMap("\"x y\" z OR a + b c + d + e author=someone");
+        result = searchEngine.constructSearchMap("\"x y\" z OR a AND b c AND d AND e author=someone");
         expected = getEmptyMap();
-        expected.get("terms").addAll(asList("x y", "z", "a+b", "c+d+e"));
+        expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDdANDe"));
         expected.get("author").add("someone");
         assertEquals(expected, result);
 
-        result = searchEngine.constructSearchMap("\"x y\" z a + b c + d + e author=someone");
+        result = searchEngine.constructSearchMap("\"x y\" z a AND b c AND d AND e author=someone");
         expected = getEmptyMap();
-        expected.get("terms").addAll(asList("x y", "z", "a+b", "c+d+e"));
+        expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDdANDe"));
         expected.get("author").add("someone");
         assertEquals(expected, result);
     }
@@ -59,21 +59,21 @@ public class TestSearch {
     @Test
     public void TestBooleanOr() {
 
-        result = searchEngine.constructSearchMap("a + b OR c + d author=someone");
+        result = searchEngine.constructSearchMap("a AND b OR c AND d author=someone");
         expected = getEmptyMap();
-        expected.get("terms").addAll(asList("a+b", "c+d"));
+        expected.get("terms").addAll(asList("aANDb", "cANDd"));
         expected.get("author").add("someone");
         assertEquals(expected, result);
 
-        result = searchEngine.constructSearchMap("x y z OR a + b OR c + d author=someone");
+        result = searchEngine.constructSearchMap("x y z OR a AND b OR c AND d author=someone");
         expected = getEmptyMap();
-        expected.get("terms").addAll(asList("x", "y", "z", "a+b", "c+d"));
+        expected.get("terms").addAll(asList("x", "y", "z", "aANDb", "cANDd"));
         expected.get("author").add("someone");
         assertEquals(expected, result);
 
-        result = searchEngine.constructSearchMap("\"x y\" z OR a + b OR c + d author=someone");
+        result = searchEngine.constructSearchMap("\"x y\" z OR a AND b OR c AND d author=someone");
         expected = getEmptyMap();
-        expected.get("terms").addAll(asList("x y", "z", "a+b", "c+d"));
+        expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDd"));
         expected.get("author").add("someone");
         assertEquals(expected, result);
     }
