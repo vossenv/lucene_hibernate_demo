@@ -34,7 +34,7 @@ public class TestChallenges {
     @Test
     public void TestSearchEngine() {
 
-        String terms = "question=5 author= \"hello  \"b aaa\" xyz answer=\"who is =the author?\"";
+        String terms = "author=1234 abc + de f OR efg + hij OR \"ab ce\" ad";
 
         Pageable p = PageRequest.of(0, 10);
 
