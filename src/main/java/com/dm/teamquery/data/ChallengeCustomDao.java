@@ -40,9 +40,15 @@ public class ChallengeCustomDao {
         return query.toString();
     }
 
-    private String processKeyTerms(String query){
+    private String processKeyTerms(Map<String, List<String>> searchMap){
 
-        return null;
+        StringBuilder keyTerm = new StringBuilder();
+        keyWords.forEach(key -> {
+            searchMap.get(key).forEach(val -> {
+                keyTerm.append(key).append(" like ").append(surround(val)).append(" and ");
+            });
+        });
+        return keyTerm.toString().replaceAll("(and)\\s*$","").trim();
     }
 
     public String generateQuery(Map<String, List<String>> searchMap) {
@@ -61,13 +67,17 @@ public class ChallengeCustomDao {
             } else {
                 newQuery += colQuery.replace("?", surround(t)) + (tIt.hasNext() ? " or " : "");
             }
-
             searchMap.get(SQLKey).add(0,newQuery);
         }
 
+        String finalQuery = searchMap.get(SQLKey).get(0);
+        String keyTerms = processKeyTerms(searchMap);
 
+        finalQuery = searchMap.get(SearchEngine.termKey).size() > 0 && !keyTerms.isEmpty() ? finalQuery
+                .replace("from Challenge where ","from Challenge where (") + ") and " + keyTerms : finalQuery + keyTerms;
 
-        return searchMap.get(SQLKey).get(0);
+        return finalQuery;
+
     }
 
     public List<Challenge> searchChallenges(Map<String, List<String>> searchMap) {
