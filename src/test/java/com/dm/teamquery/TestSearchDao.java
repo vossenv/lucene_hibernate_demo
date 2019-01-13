@@ -27,16 +27,15 @@ public class TestSearchDao {
     @Inject ChallengeCustomDao dao;
 
 
-// from Challenge where challengeid like '%a%' or question like '%a%' or answer like '%a%' or author like '%a%' or lastauthor like '%a%' or datecreated like '%a%' or datelastmodified like '%a%'challengeid like '%c%' or question like '%c%' or answer like '%c%' or author like '%c%' or lastauthor like '%c%' or datecreated like '%c%' or datelastmodified like '%c%'
     @Test
     public void TestBasicDao() {
 
-        Map<String, List<String>> searchMap = searchEngine.constructSearchMap("roll help federated");
+        Map<String, List<String>> searchMap = searchEngine.constructSearchMap("roll AND help");
 
         String SQLquery = dao.generateQuery(searchMap);
 
 
-        String SQLquery2 = "from Challenge where challengeId like '%a%' or question like '%c' or challengeId like '%b%'";
+        String SQLquery2 = "from Challenge where question like '%student%' or (question like '%client%' and question like '%orso%')";
 
         List<Challenge> l = dao.executeSearch(SQLquery);
 
