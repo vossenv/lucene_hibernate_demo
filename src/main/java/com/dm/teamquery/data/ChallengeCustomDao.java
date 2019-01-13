@@ -32,8 +32,9 @@ public class ChallengeCustomDao {
         while (kIt.hasNext()){
             String t = kIt.next();
             StringBuilder newQuery = new StringBuilder("(");
+
             for (int i = 0; i < size; i++) {
-                newQuery.append(t).append(" like ").append(surround(terms[i])).append(i == size - 2 ? " and " : ")");
+                newQuery.append(t).append(" like ").append(surround(terms[i])).append(i < size - 1 ? " and " : ")");
             }
             query.append(newQuery).append(kIt.hasNext() ? " or " : "");
         }
@@ -48,7 +49,7 @@ public class ChallengeCustomDao {
                 keyTerm.append(key).append(" like ").append(surround(val)).append(" and ");
             });
         });
-        return keyTerm.toString().replaceAll("(and)\\s*$","").trim();
+        return keyTerm.toString().replaceAll("(and)\\s*$","").replaceAll("(or)\\s*$","").trim();
     }
 
     public String generateQuery(Map<String, List<String>> searchMap) {
@@ -71,7 +72,7 @@ public class ChallengeCustomDao {
         }
 
         String finalQuery = searchMap.get(SQLKey).get(0);
-        String keyTerms = processKeyTerms(searchMap);
+        String keyTerms = ""; //processKeyTerms(searchMap);
 
         return searchMap.get(SearchEngine.termKey).size() > 0 && !keyTerms.isEmpty() ? finalQuery
                 .replace("from Challenge where ","from Challenge where (") + ") and " + keyTerms : finalQuery + keyTerms;
