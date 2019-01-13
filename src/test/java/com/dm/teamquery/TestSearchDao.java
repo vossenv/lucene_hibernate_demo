@@ -30,12 +30,12 @@ public class TestSearchDao {
     @Test
     public void TestBasicDao() {
 
-        Map<String, List<String>> searchMap = searchEngine.constructSearchMap("author = danimae AND hello AND \"b c\" d e");
+        Map<String, List<String>> searchMap = searchEngine.constructSearchMap("hello AND \"b c\" d e");
 
         String SQLquery = dao.generateQuery(searchMap);
 
 
-        String SQLquery2 = "from Challenge where question like '%student%' or (question like '%client%' and question like '%orso%')";
+       // String SQLquery2 = "from Challenge where question like '%student%' or (question like '%client%' and question like '%orso%')";
 
         List<Challenge> l = dao.executeSearch(SQLquery);
 

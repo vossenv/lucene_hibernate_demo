@@ -37,7 +37,7 @@ public class ChallengeCustomDao {
             }
             query.append(newQuery).append(kIt.hasNext() ? " or " : "");
         }
-        return query.toString();
+        return query.append(" or ").toString();
     }
 
     private String processKeyTerms(Map<String, List<String>> searchMap){
