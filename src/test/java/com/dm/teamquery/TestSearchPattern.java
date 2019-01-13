@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test.properties")
-public class TestSearch {
+public class TestSearchPattern {
 
     @Inject ChallengeService challengeService;
     @Inject ChallengeRepository challengeRepository;
@@ -93,11 +93,9 @@ public class TestSearch {
         expected.get("author").add("someone");
         expected.get("question").add("anyone else");
         assertEquals(expected, result);
-
     }
 
     private Map<String, List<String>> getEmptyMap(){
-
         Map<String, List<String>> searchPatterns = new HashMap<>();
         keyWords.forEach(k -> searchPatterns.put(k, new ArrayList<>()));
         return searchPatterns;

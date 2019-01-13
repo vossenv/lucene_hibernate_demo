@@ -19,7 +19,7 @@ public class SearchEngine {
 
 
     @Inject
-    ChallengeRepository challengeRepository;
+    ChallengeCustomDao dao;
 
     private List<String> keyWords = new ArrayList<>();
     private final static String quotedSearchPattern = "\".*?\"";
@@ -41,9 +41,7 @@ public class SearchEngine {
     public List<Challenge> searchChallenges(String query, Pageable pageable) {
 
         Map<String, List<String>> searchPatterns = constructSearchMap(query);
-
-        return null;
-
+        return dao.searchChallenges(searchPatterns);
     }
 
     public Map<String, List<String>> constructSearchMap(String query) {
@@ -69,7 +67,6 @@ public class SearchEngine {
     }
 
     private void keywordFilter(Map<String, List<String>> searchPatterns) {
-
         extractKeywordValues(searchPatterns, keyTermQuoted);
         extractKeywordValues(searchPatterns, keyTermUnQuoted);
     }
@@ -112,6 +109,7 @@ public class SearchEngine {
             }
 
         });
+
         searchPatterns.put(andKey, newAndList.stream().filter(v -> !v.isEmpty()).collect(Collectors.toList()));
     }
 
