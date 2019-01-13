@@ -91,11 +91,23 @@ public class SearchEngine {
 
         List<String> newAndList = new LinkedList<>();
         searchPatterns.get(andKey).forEach(val -> {
-
             if (val.matches(".*\\s+.*")){
+
                 List<String> quoted = match(quotedSearchPattern, val);
-                newAndList.addAll(quoted.stream().map(s -> s.replace("\"","")).collect(Collectors.toList()) );
-                newAndList.addAll(asList(quoted.stream().reduce(val, (str, toRem) -> str.replaceAll(toRem, "")).split("\\s")));
+
+             //   newAndList.addAll(quoted.stream().map(s -> s.replaceAll("\\s+","__").replace("\"","")).collect(Collectors.toList()) );
+
+                for (String q : quoted){
+
+                    val = val.replaceAll(q, q.replaceAll("\\s+","__").replace("\"",""));
+                }
+
+                ;
+
+                newAndList.addAll(Arrays.stream(val.split("\\s")).map(s -> s.replaceAll("__"," ")).collect(Collectors.toList()));
+              //  newAndList.addAll(asList(quoted.stream().reduce(val, (str, toRem) -> str.replaceAll(toRem, "")).split("\\s")));
+
+                System.out.println();
             } else {
                 newAndList.add(val);
             }
@@ -116,7 +128,7 @@ public class SearchEngine {
         keyWords.forEach(k -> match(pattern.replace("field", k), query).forEach(m -> {
             String val = m.replaceAll("(" + k + "\\s*=)", "").replaceAll("\"", "").trim();
             searchPatterns.get(k).add(val);
-            searchPatterns.get(queryKey).add(0, searchPatterns.get(queryKey).get(0).replace(m, ""));
+            searchPatterns.get(queryKey).add(0, searchPatterns.get(queryKey).get(0).replace(m, "\"" + m + "\""));
         }));
     }
 }

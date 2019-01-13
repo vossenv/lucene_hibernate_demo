@@ -73,11 +73,8 @@ public class ChallengeCustomDao {
         String finalQuery = searchMap.get(SQLKey).get(0);
         String keyTerms = processKeyTerms(searchMap);
 
-        finalQuery = searchMap.get(SearchEngine.termKey).size() > 0 && !keyTerms.isEmpty() ? finalQuery
+        return searchMap.get(SearchEngine.termKey).size() > 0 && !keyTerms.isEmpty() ? finalQuery
                 .replace("from Challenge where ","from Challenge where (") + ") and " + keyTerms : finalQuery + keyTerms;
-
-        return finalQuery;
-
     }
 
     public List<Challenge> searchChallenges(Map<String, List<String>> searchMap) {
