@@ -31,17 +31,17 @@ public class TestSearchDao {
     @Test
     public void TestBasicDao() {
 
-        Map<String, List<String>> searchMap = searchEngine.constructSearchMap("a c");
+        Map<String, List<String>> searchMap = searchEngine.constructSearchMap("roll help federated");
 
         String SQLquery = dao.generateQuery(searchMap);
 
 
         String SQLquery2 = "from Challenge where challengeId like '%a%' or question like '%c' or challengeId like '%b%'";
 
-        List<Challenge> l = dao.executeSearch(SQLquery2);
+        List<Challenge> l = dao.executeSearch(SQLquery);
 
 
-        System.out.println();
+       System.out.println();
     }
 
 }

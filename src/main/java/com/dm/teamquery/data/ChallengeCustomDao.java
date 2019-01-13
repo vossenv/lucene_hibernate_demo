@@ -42,10 +42,12 @@ public class ChallengeCustomDao {
 
         while (tIt.hasNext()) {
             String newQuery = searchMap.get(SQLKey).get(0) + colQuery.replace("?",
-                    surround(tIt.next()) + (tIt.hasNext() ? " or " : ""));
+                    surround(tIt.next())) + (tIt.hasNext() ? " or " : "");
 
             searchMap.get(SQLKey).add(0,newQuery);
         }
+
+
 
         return searchMap.get(SQLKey).get(0);
     }
