@@ -30,7 +30,7 @@ public class TestSearchDao {
     @Test
     public void TestBasicDao() {
 
-        Map<String, List<String>> searchMap = searchEngine.constructSearchMap("roll AND help");
+        Map<String, List<String>> searchMap = searchEngine.constructSearchMap("students AND emails");
 
         String SQLquery = dao.generateQuery(searchMap);
 

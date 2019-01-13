@@ -4,8 +4,8 @@ import com.dm.teamquery.model.Challenge;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,26 +17,20 @@ import static java.util.Arrays.stream;
 @Service
 public class SearchEngine {
 
-
     @Inject
     ChallengeCustomDao dao;
 
-    private List<String> keyWords = new ArrayList<>();
     private final static String quotedSearchPattern = "\".*?\"";
     private final static String keyTermQuoted = "(field\\s?=\\s?\").*?\"";
     private final static String keyTermUnQuoted = "(field\\s?=\\s?.).*?(?=(\\s|$))";
+    public final static  List<String> keyWords = Arrays.stream(Challenge.class.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
 
-    private final static String OR_OPERATOR = "OR";
-    private final static String AND_OPERATOR = "AND";
+    public final static String termKey = "terms";
+    public final static String OR_OPERATOR = "OR";
+    public final static String AND_OPERATOR = "AND";
     private final static String queryKey = "query";
-    private final static String termKey = "terms";
     private final static String processKey = "toProcess";
     private final static String andKey = "and";
-
-    @PostConstruct
-    private void buildSearchKeywordList() {
-        asList(Challenge.class.getDeclaredFields()).forEach(f -> keyWords.add(f.getName().toLowerCase()));
-    }
 
     public List<Challenge> searchChallenges(String query, Pageable pageable) {
 
@@ -63,7 +57,6 @@ public class SearchEngine {
         searchPatterns.remove(queryKey);
 
         return searchPatterns;
-
     }
 
     private void keywordFilter(Map<String, List<String>> searchPatterns) {
@@ -103,11 +96,9 @@ public class SearchEngine {
                 List<String> quoted = match(quotedSearchPattern, val);
                 newAndList.addAll(quoted.stream().map(s -> s.replace("\"","")).collect(Collectors.toList()) );
                 newAndList.addAll(asList(quoted.stream().reduce(val, (str, toRem) -> str.replaceAll(toRem, "")).split("\\s")));
-
             } else {
                 newAndList.add(val);
             }
-
         });
 
         searchPatterns.put(andKey, newAndList.stream().filter(v -> !v.isEmpty()).collect(Collectors.toList()));
