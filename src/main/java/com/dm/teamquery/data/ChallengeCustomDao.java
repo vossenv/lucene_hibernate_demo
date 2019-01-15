@@ -23,28 +23,21 @@ public class ChallengeCustomDao {
 
     private String generateAndQuery(String term){
 
-        String [] terms = term.split(SearchEngine.AND_OPERATOR);
-
-        int size = terms.length;
-
         StringBuilder query = new StringBuilder();
-        Iterator<String> keyWords = ChallengeCustomDao.keyWords.iterator();
 
-        while (keyWords.hasNext()){
+        ChallengeCustomDao.keyWords.forEach(kw -> {
 
             StringBuilder newQuery = new StringBuilder("(");
 
-            for (int i = 0; i < size; i++) {
-
-                String [] keys = isKeyTerm(terms[i]) ? terms[i].split("=") : new String[] {keyWords.next(), terms[i]};
+            for (String t : term.split(SearchEngine.AND_OPERATOR)) {
+                String[] keys = isKeyTerm(t) ? t.split("=") : new String[]{kw, t};
                 newQuery.append(keys[0]).append(" like ").append(surround(keys[1])).append(" and ");
-
             }
 
             query.append(trimAndOr(newQuery.toString())).append(") or ");
-        }
+        });
 
-        return query.append(" or ").toString();
+        return query.toString();
     }
 
     public String generateQuery(Map<String, List<String>> searchMap) {
