@@ -24,26 +24,26 @@ public class ChallengeCustomDao {
     private String generateAndQuery(String term){
 
         String [] terms = term.split(SearchEngine.AND_OPERATOR);
+
         int size = terms.length;
 
         StringBuilder query = new StringBuilder();
-        Iterator<String> kIt = keyWords.iterator();
+        Iterator<String> keyWords = ChallengeCustomDao.keyWords.iterator();
 
-        while (kIt.hasNext()){
-            String t = kIt.next();
+        while (keyWords.hasNext()){
+
             StringBuilder newQuery = new StringBuilder("(");
 
             for (int i = 0; i < size; i++) {
-                String [] keys = terms[i].split("=");
 
-                if (keys.length > 1 ){
-                    newQuery.append(keys[0]).append(" like ").append(surround(keys[1])).append(i < size - 1 ? " and " : ")");
-                } else if (!isKeyTerm(keys[0].trim())) {
-                    newQuery.append(t).append(" like ").append(surround(terms[i])).append(i < size - 1 ? " and " : ")");
-                }
+                String [] keys = isKeyTerm(terms[i]) ? terms[i].split("=") : new String[] {keyWords.next(), terms[i]};
+                newQuery.append(keys[0]).append(" like ").append(surround(keys[1])).append(" and ");
+
             }
-            query.append(newQuery).append(kIt.hasNext() ? " or " : "");
+
+            query.append(trimAndOr(newQuery.toString())).append(") or ");
         }
+
         return query.append(" or ").toString();
     }
 
@@ -71,7 +71,8 @@ public class ChallengeCustomDao {
             }
             searchMap.get(SQLKey).add(0,newQuery);
         }
-        return searchMap.get(SQLKey).get(0).replaceAll("(and)\\s*$","").replaceAll("(or)\\s*$","");
+
+        return trimAndOr(searchMap.get(SQLKey).get(0));
 
 
     }
@@ -86,6 +87,10 @@ public class ChallengeCustomDao {
 
     private static String surround(String s) {
         return "\'%" + s.toLowerCase() + "%\'";
+    }
+
+    private String trimAndOr(String text){
+        return text.replaceAll("(and)\\s*$","").replaceAll("(or)\\s*$","");
     }
 
     private boolean isKeyTerm(String term) {
