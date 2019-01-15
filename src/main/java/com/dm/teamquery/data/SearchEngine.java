@@ -73,11 +73,18 @@ public class SearchEngine {
             searchPatterns.get(processKey).add(0, searchPatterns.get(processKey).get(0).replace(m, ""));
         });
 
-        searchPatterns.get(termKey).addAll(stream(searchPatterns.get(processKey)
-                .get(0).split("\\s"))
+        searchPatterns.get(termKey).addAll(searchPatterns.get(processKey).stream()
+                .map(s -> s.split("\\s"))
+                .flatMap(Arrays::stream)
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList()));
+
+//        searchPatterns.get(termKey).addAll(stream(searchPatterns.get(processKey)
+//                .get(0).split("\\s"))
+//                .map(String::trim)
+//                .filter(s -> !s.isEmpty())
+//                .collect(Collectors.toList()));
     }
 
     private String strip (String string, String term){
@@ -95,7 +102,7 @@ public class SearchEngine {
             if (adds.length > 1)
                 searchPatterns.get(andKey).add(stream(adds).map(String::trim).collect(Collectors.joining(AND_OPERATOR)));
             else
-                searchPatterns.get(processKey).add(p);
+                searchPatterns.get(processKey).add(p.trim());
         });
 
         List<String> newAndList = new LinkedList<>();

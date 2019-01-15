@@ -26,17 +26,15 @@ public class ChallengeCustomDao {
         StringBuilder query = new StringBuilder();
 
         ChallengeCustomDao.keyWords.forEach(kw -> {
-
-            StringBuilder newQuery = new StringBuilder("(");
+            String newTerm="(";
 
             for (String t : term.split(SearchEngine.AND_OPERATOR)) {
-                String[] keys = isKeyTerm(t) ? t.split("=") : new String[]{kw, t};
-                newQuery.append(keys[0]).append(" like ").append(surround(keys[1])).append(" and ");
+                String[] keys = isKeyTerm(t) ? t.split("=") : new String[] {kw, t};
+                newTerm += keys[0] + " like " + surround(keys[1]) + " and ";
             }
 
-            query.append(trimAndOr(newQuery.toString())).append(") or ");
+            query.append(trimAndOr(newTerm)).append(") or ");
         });
-
         return query.toString();
     }
 
@@ -83,7 +81,7 @@ public class ChallengeCustomDao {
     }
 
     private String trimAndOr(String text){
-        return text.replaceAll("(and)\\s*$","").replaceAll("(or)\\s*$","");
+        return text.replaceAll("\\s*(and)\\s*$","").replaceAll("\\s*(or)\\s*$","");
     }
 
     private boolean isKeyTerm(String term) {
