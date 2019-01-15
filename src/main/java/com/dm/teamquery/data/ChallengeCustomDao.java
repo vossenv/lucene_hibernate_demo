@@ -36,8 +36,8 @@ public class ChallengeCustomDao {
             for (int i = 0; i < size; i++) {
                 String [] keys = terms[i].split("=");
 
-                if (keys.length > 1 && keys[0].trim().equals(t)){
-                    newQuery.append(t).append(" like ").append(surround(keys[1].trim())).append(i < size - 1 ? " and " : ")");
+                if (keys.length > 1 ){
+                    newQuery.append(keys[0]).append(" like ").append(surround(keys[1])).append(i < size - 1 ? " and " : ")");
                 } else if (!isKeyTerm(keys[0].trim())) {
                     newQuery.append(t).append(" like ").append(surround(terms[i])).append(i < size - 1 ? " and " : ")");
                 }
