@@ -23,28 +23,25 @@ public class SearchBuilder {
     public final static  List<String> keyWords = Arrays.stream(Challenge.class.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
 
     public final static String termKey = "terms";
-    public final static String OR_OPERATOR = "OR";
-    public final static String AND_OPERATOR = "AND";
+    public final static String OR_OPERATOR = "\\sOR\\s";
+    public final static String AND_OPERATOR = "\\sAND\\s";
     private final static String queryKey = "query";
     private final static String processKey = "toProcess";
     private final static String andKey = "and";
 
-    public void searchChallenges(String query, Pageable page) {
-        processSearchQuery( new Search(query, page));
-    }
-    public void searchChallenges(String query) {
-        processSearchQuery( new Search(query));
-    }
+//    public void searchChallenges(String query, Pageable page) {
+//        processSearchQuery( new Search(query, page));
+//    }
+//    public void searchChallenges(String query) {
+//        processSearchQuery( new Search(query));
+//    }
     private void processSearchQuery(Search search){
         applyBooleanFilter(search);
     }
 
     private void applyBooleanFilter(Search search){
-
-        search.getCurrentQuery().split(OR_OPERATOR);
-
+        search.getToProcess().addAll(asList(search.getCurrentQuery().split(OR_OPERATOR)));
     }
-
 
     private void booleanFilter(Map<String, List<String>> searchPatterns) {
 

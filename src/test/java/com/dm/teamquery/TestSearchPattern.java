@@ -1,8 +1,8 @@
 package com.dm.teamquery;
 
 
-import com.dm.teamquery.data.ChallengeRepository;
-import com.dm.teamquery.data.ChallengeService;
+import com.dm.teamquery.model.Challenge;
+import com.dm.teamquery.search.Search;
 import com.dm.teamquery.search.SearchBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +11,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
-import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -19,14 +18,18 @@ import java.util.List;
 public class TestSearchPattern {
 
     @Inject SearchBuilder searchBuilder;
-    List<String> keyWords = SearchBuilder.keyWords;
+
 
     @Test
     public void  TestBoolean() {
 
-        searchBuilder.searchChallenges("\"x y\" z OR a AND b c AND d t u e");
+        Search s = new Search(Challenge.class, "\"x y\" z OR a AND b c AND d t u e");
 
+
+        System.out.println();
     }
+
+
 
 //    @Test
 //    public void  TestBooleanAdd() {
@@ -88,7 +91,7 @@ public class TestSearchPattern {
 //
 //    private Map<String, List<String>> getEmptyMap(){
 //        Map<String, List<String>> searchPatterns = new HashMap<>();
-//        keyWords.forEach(k -> searchPatterns.put(k, new ArrayList<>()));
+//        fieldNames.forEach(k -> searchPatterns.put(k, new ArrayList<>()));
 //        return searchPatterns;
 //    }
 }
