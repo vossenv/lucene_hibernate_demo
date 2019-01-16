@@ -36,6 +36,10 @@ public class Challenge {
     @Column(name = "lastauthor")
     private String lastAuthor;
 
+    @Column(name = "enabled")
+    private Boolean enabled;
+
+
     @JsonSerialize(using = ToStringSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @Column(name = "datecreated")

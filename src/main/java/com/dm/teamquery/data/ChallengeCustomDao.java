@@ -23,32 +23,19 @@ public class ChallengeCustomDao {
 
     private String generateAndQuery(String term){
 
-        String [] terms = term.split(SearchEngine.AND_OPERATOR);
-        int size = terms.length;
-
         StringBuilder query = new StringBuilder();
-        Iterator<String> kIt = keyWords.iterator();
 
-        while (kIt.hasNext()){
-            String t = kIt.next();
-            StringBuilder newQuery = new StringBuilder("(");
-            for (int i = 0; i < size; i++) {
-                newQuery.append(t).append(" like ").append(surround(terms[i])).append(i == size - 2 ? " and " : ")");
+        ChallengeCustomDao.keyWords.forEach(kw -> {
+            String newTerm="(";
+
+            for (String t : term.split(SearchEngine.AND_OPERATOR)) {
+                String[] keys = isKeyTerm(t) ? t.split("=") : new String[] {kw, t};
+                newTerm += keys[0] + " like " + surround(keys[1]) + " and ";
             }
-            query.append(newQuery).append(kIt.hasNext() ? " or " : "");
-        }
-        return query.toString();
-    }
 
-    private String processKeyTerms(Map<String, List<String>> searchMap){
-
-        StringBuilder keyTerm = new StringBuilder();
-        keyWords.forEach(key -> {
-            searchMap.get(key).forEach(val -> {
-                keyTerm.append(key).append(" like ").append(surround(val)).append(" and ");
-            });
+            query.append(trimAndOr(newTerm)).append(") or ");
         });
-        return keyTerm.toString().replaceAll("(and)\\s*$","").trim();
+        return query.toString();
     }
 
     public String generateQuery(Map<String, List<String>> searchMap) {
@@ -65,18 +52,19 @@ public class ChallengeCustomDao {
             if (t.contains(SearchEngine.AND_OPERATOR)) {
                 newQuery += generateAndQuery(t);
             } else {
-                newQuery += colQuery.replace("?", surround(t)) + (tIt.hasNext() ? " or " : "");
+
+                if (isKeyTerm(t)){
+                    String [] parts = t.split("=");
+                    newQuery += parts[0] + " like " + surround(parts[1].trim()) + (tIt.hasNext() ? " or " : "");
+                } else {
+                    newQuery += colQuery.replace("?", surround(t)) + (tIt.hasNext() ? " or " : "");
+                }
             }
             searchMap.get(SQLKey).add(0,newQuery);
         }
 
-        String finalQuery = searchMap.get(SQLKey).get(0);
-        String keyTerms = processKeyTerms(searchMap);
+        return trimAndOr(searchMap.get(SQLKey).get(0));
 
-        finalQuery = searchMap.get(SearchEngine.termKey).size() > 0 && !keyTerms.isEmpty() ? finalQuery
-                .replace("from Challenge where ","from Challenge where (") + ") and " + keyTerms : finalQuery + keyTerms;
-
-        return finalQuery;
 
     }
 
@@ -90,6 +78,15 @@ public class ChallengeCustomDao {
 
     private static String surround(String s) {
         return "\'%" + s.toLowerCase() + "%\'";
+    }
+
+    private String trimAndOr(String text){
+        return text.replaceAll("\\s*(and)\\s*$","").replaceAll("\\s*(or)\\s*$","");
+    }
+
+    private boolean isKeyTerm(String term) {
+        String [] parts = term.split("=");
+        return parts.length > 0 && keyWords.contains(parts[0].trim());
     }
 
 }
