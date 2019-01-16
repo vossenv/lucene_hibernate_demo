@@ -1,4 +1,4 @@
-package com.dm.teamquery.data;
+package com.dm.teamquery.search;
 
 import com.dm.teamquery.model.Challenge;
 import org.springframework.stereotype.Service;
@@ -13,22 +13,22 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 
 @Service
-public class ChallengeCustomDao {
+public class QueryGenerator {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     private final static String SQLKey = "SQLQuery";
-    private final static  List<String> keyWords = SearchEngine.keyWords;
+    private final static  List<String> keyWords = SearchBuilder.keyWords;
 
     private String generateAndQuery(String term){
 
         StringBuilder query = new StringBuilder();
 
-        ChallengeCustomDao.keyWords.forEach(kw -> {
+        QueryGenerator.keyWords.forEach(kw -> {
             String newTerm="(";
 
-            for (String t : term.split(SearchEngine.AND_OPERATOR)) {
+            for (String t : term.split(SearchBuilder.AND_OPERATOR)) {
                 String[] keys = isKeyTerm(t) ? t.split("=") : new String[] {kw, t};
                 newTerm += keys[0] + " like " + surround(keys[1]) + " and ";
             }
@@ -42,14 +42,14 @@ public class ChallengeCustomDao {
 
         String colQuery = String.join(" like ? or ", keyWords) + " like ?";
         searchMap.put(SQLKey, new ArrayList<>(asList("from Challenge where ")));
-        Iterator<String> tIt = searchMap.get(SearchEngine.termKey).iterator();
+        Iterator<String> tIt = searchMap.get(SearchBuilder.termKey).iterator();
 
         while (tIt.hasNext()) {
 
             String t = tIt.next();
             String newQuery = searchMap.get(SQLKey).get(0);
 
-            if (t.contains(SearchEngine.AND_OPERATOR)) {
+            if (t.contains(SearchBuilder.AND_OPERATOR)) {
                 newQuery += generateAndQuery(t);
             } else {
 

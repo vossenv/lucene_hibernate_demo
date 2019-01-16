@@ -1,4 +1,4 @@
-package com.dm.teamquery.data;
+package com.dm.teamquery.search;
 
 import com.dm.teamquery.model.Challenge;
 import org.springframework.data.domain.Pageable;
@@ -15,10 +15,10 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 
 @Service
-public class SearchEngine {
+public class SearchBuilder {
 
     @Inject
-    ChallengeCustomDao dao;
+    QueryGenerator dao;
 
     private final static String quotedSearchPattern = "\".*?\"";
     private final static String keyTermQuoted = "(\\S*\\s*=\\s?\").*?\"";
@@ -121,6 +121,8 @@ public class SearchEngine {
 
         searchPatterns.put(andKey, newAndList.stream().filter(v -> !v.isEmpty()).collect(Collectors.toList()));
     }
+
+
 
     private List<String> match(String pattern, String text) {
         Set<String> termList = new HashSet<>();

@@ -1,11 +1,10 @@
 package com.dm.teamquery;
 
 
-import com.dm.teamquery.data.ChallengeCustomDao;
+import com.dm.teamquery.search.QueryGenerator;
 import com.dm.teamquery.data.ChallengeRepository;
 import com.dm.teamquery.data.ChallengeService;
-import com.dm.teamquery.data.SearchEngine;
-import com.dm.teamquery.model.Challenge;
+import com.dm.teamquery.search.SearchBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,8 +12,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,8 +22,10 @@ public class TestSearchDao {
 
     @Inject ChallengeService challengeService;
     @Inject ChallengeRepository challengeRepository;
-    @Inject SearchEngine searchEngine;
-    @Inject ChallengeCustomDao dao;
+    @Inject
+    SearchBuilder searchBuilder;
+    @Inject
+    QueryGenerator dao;
 
 
     @Test
@@ -70,7 +69,7 @@ public class TestSearchDao {
     }
 
     private  String extractQuery (String query){
-        return dao.generateQuery(searchEngine.constructSearchMap(query));
+        return dao.generateQuery(searchBuilder.constructSearchMap(query));
     }
 
 }

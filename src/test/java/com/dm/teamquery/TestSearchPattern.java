@@ -3,7 +3,7 @@ package com.dm.teamquery;
 
 import com.dm.teamquery.data.ChallengeRepository;
 import com.dm.teamquery.data.ChallengeService;
-import com.dm.teamquery.data.SearchEngine;
+import com.dm.teamquery.search.SearchBuilder;
 import com.dm.teamquery.model.Challenge;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +28,8 @@ public class TestSearchPattern {
 
     @Inject ChallengeService challengeService;
     @Inject ChallengeRepository challengeRepository;
-    @Inject SearchEngine searchEngine;
+    @Inject
+    SearchBuilder searchBuilder;
 
     private List<String> keyWords = new ArrayList<>();
     private Map<String, List<String>> expected;
@@ -43,13 +44,13 @@ public class TestSearchPattern {
     @Test
     public void  TestBooleanAdd() {
 
-        result = searchEngine.constructSearchMap("\"x y\" z OR a AND b c AND d AND e author=someone");
+        result = searchBuilder.constructSearchMap("\"x y\" z OR a AND b c AND d AND e author=someone");
         expected = getEmptyMap();
         expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDdANDe"));
         expected.get("author").add("someone");
         assertEquals(expected, result);
 
-        result = searchEngine.constructSearchMap("\"x y\" z a AND b c AND d AND e author=someone");
+        result = searchBuilder.constructSearchMap("\"x y\" z a AND b c AND d AND e author=someone");
         expected = getEmptyMap();
         expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDdANDe"));
         expected.get("author").add("someone");
@@ -59,19 +60,19 @@ public class TestSearchPattern {
     @Test
     public void TestBooleanOr() {
 
-        result = searchEngine.constructSearchMap("a AND b OR c AND d author=someone");
+        result = searchBuilder.constructSearchMap("a AND b OR c AND d author=someone");
         expected = getEmptyMap();
         expected.get("terms").addAll(asList("aANDb", "cANDd"));
         expected.get("author").add("someone");
         assertEquals(expected, result);
 
-        result = searchEngine.constructSearchMap("x y z OR a AND b OR c AND d author=someone");
+        result = searchBuilder.constructSearchMap("x y z OR a AND b OR c AND d author=someone");
         expected = getEmptyMap();
         expected.get("terms").addAll(asList("x", "y", "z", "aANDb", "cANDd"));
         expected.get("author").add("someone");
         assertEquals(expected, result);
 
-        result = searchEngine.constructSearchMap("\"x y\" z OR a AND b OR c AND d author=someone");
+        result = searchBuilder.constructSearchMap("\"x y\" z OR a AND b OR c AND d author=someone");
         expected = getEmptyMap();
         expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDd"));
         expected.get("author").add("someone");
@@ -81,13 +82,13 @@ public class TestSearchPattern {
     @Test
     public void TestStandardFilter() {
 
-        result = searchEngine.constructSearchMap("hello there author=someone");
+        result = searchBuilder.constructSearchMap("hello there author=someone");
         expected = getEmptyMap();
         expected.get("terms").addAll(asList("hello", "there"));
         expected.get("author").add("someone");
         assertEquals(expected, result);
 
-        result = searchEngine.constructSearchMap("question=\"anyone else\" hello there \"new face\" author=someone");
+        result = searchBuilder.constructSearchMap("question=\"anyone else\" hello there \"new face\" author=someone");
         expected = getEmptyMap();
         expected.get("terms").addAll(asList("new face", "hello", "there"));
         expected.get("author").add("someone");

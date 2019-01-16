@@ -3,28 +3,14 @@ package com.dm.teamquery;
 
 import com.dm.teamquery.data.ChallengeRepository;
 import com.dm.teamquery.data.ChallengeService;
-import com.dm.teamquery.data.SearchEngine;
-import com.dm.teamquery.model.Challenge;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import com.dm.teamquery.search.SearchBuilder;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Arrays.asList;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -36,7 +22,8 @@ public class TestChallenges {
 
     @Inject ChallengeService challengeService;
     @Inject ChallengeRepository challengeRepository;
-    @Inject SearchEngine searchEngine;
+    @Inject
+    SearchBuilder searchBuilder;
 
 
 //    @Test
