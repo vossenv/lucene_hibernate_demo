@@ -28,6 +28,9 @@ public class Search {
     public final static String AND_OPERATOR = "\\sAND\\s";
     private final static String quotedSearchPattern = "\".*?\"";
     private final static String keyTermQuoted = "(\\S*\\s*=\\s?\").*?\"";
+    private final static String keyTermUnQuoted = "\\S*\\s*=\\s*.*?(?=\\s)";
+    private final static String keyTerm = "(\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
+    private final static String spaceTerms = "(\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
 
     private Pageable page;
     private Class entityType;
@@ -47,6 +50,7 @@ public class Search {
     public Search(Class entityType, String query, Pageable page) {
         this.page = page;
         initializeType(entityType);
+        initializeQuery(query);
     }
 
     public Search(Class type, String query) {
@@ -63,7 +67,6 @@ public class Search {
     private void initializeType(Class entityType){
         this.entityType = entityType;
         this.fieldNames = Arrays.stream(entityType.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
-        initializeQuery(this.query);
     }
 
     public void setQuery(String query) {
@@ -82,6 +85,9 @@ public class Search {
     }
 
     private void booleanFilter(){
+
+        // replace significant spaces with __ to allow space splitting
+        match(spaceTerms, query).forEach(t -> query = query.replace(t, t.replaceAll("\\s","__").replaceAll("\"","")));
 
 
         System.out.println();
@@ -113,6 +119,30 @@ public class Search {
         });
 
         searchPatterns.put(andKey, newAndList.stream().filter(v -> !v.isEmpty()).collect(Collectors.toList()));
+    }
+
+    private void standardFilter(Map<String, List<String>> searchPatterns) {
+
+        if (searchPatterns.get(processKey).isEmpty()) return;
+
+        List<String> keyQuoted = match(keyTermQuoted, searchPatterns.get(processKey).get(0));
+
+        keyQuoted.forEach(kq -> {
+            searchPatterns.get(termKey).add(kq.replaceAll("\"", ""));
+            searchPatterns.get(processKey).add(0, searchPatterns.get(processKey).get(0).replace(kq, ""));
+        });
+
+        match(quotedSearchPattern, searchPatterns.get(processKey).get(0)).forEach(m -> {
+            searchPatterns.get(termKey).add(m.replaceAll("\"", ""));
+            searchPatterns.get(processKey).add(0, searchPatterns.get(processKey).get(0).replace(m, ""));
+        });
+
+        searchPatterns.get(termKey).addAll(searchPatterns.get(processKey).stream()
+                .map(s -> s.split("\\s"))
+                .flatMap(Arrays::stream)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList()));
     }
 
 

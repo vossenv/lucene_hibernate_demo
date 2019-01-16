@@ -23,7 +23,7 @@ public class TestSearchPattern {
     @Test
     public void  TestBoolean() {
 
-        Search s = new Search(Challenge.class, "\"x y\" z OR a AND b c AND d t u e");
+        Search s = new Search(Challenge.class, "\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a wonder\" t u e");
 
 
         System.out.println();
