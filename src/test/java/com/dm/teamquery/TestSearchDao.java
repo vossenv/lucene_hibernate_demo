@@ -1,10 +1,9 @@
 package com.dm.teamquery;
 
 
-import com.dm.teamquery.search.QueryGenerator;
 import com.dm.teamquery.data.ChallengeRepository;
 import com.dm.teamquery.data.ChallengeService;
-import com.dm.teamquery.search.SearchBuilder;
+import com.dm.teamquery.search.QueryGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,8 +21,8 @@ public class TestSearchDao {
 
     @Inject ChallengeService challengeService;
     @Inject ChallengeRepository challengeRepository;
-    @Inject
-    SearchBuilder searchBuilder;
+
+
     @Inject
     QueryGenerator dao;
 
@@ -69,7 +68,7 @@ public class TestSearchDao {
     }
 
     private  String extractQuery (String query){
-        return dao.generateQuery(searchBuilder.constructSearchMap(query));
+        return null;
     }
 
 }

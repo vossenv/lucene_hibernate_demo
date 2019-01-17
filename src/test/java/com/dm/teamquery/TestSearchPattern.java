@@ -3,27 +3,23 @@ package com.dm.teamquery;
 
 import com.dm.teamquery.model.Challenge;
 import com.dm.teamquery.search.Search;
-import com.dm.teamquery.search.SearchBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.inject.Inject;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test.properties")
 public class TestSearchPattern {
 
-    @Inject SearchBuilder searchBuilder;
 
 
     @Test
     public void  TestBoolean() {
 
-        Search s = new Search(Challenge.class, "\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a wonder\" t u e");
+        Search s = new Search(Challenge.class, "\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a    wonder\" t u e");
 
 
         System.out.println();

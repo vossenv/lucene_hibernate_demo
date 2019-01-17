@@ -19,16 +19,16 @@ public class QueryGenerator {
     private EntityManager entityManager;
 
     private final static String SQLKey = "SQLQuery";
-    private final static  List<String> keyWords = SearchBuilder.keyWords;
+    private final static  List<String> fieldNames = null;
 
     private String generateAndQuery(String term){
 
         StringBuilder query = new StringBuilder();
 
-        QueryGenerator.keyWords.forEach(kw -> {
+        QueryGenerator.fieldNames.forEach(kw -> {
             String newTerm="(";
 
-            for (String t : term.split(SearchBuilder.AND_OPERATOR)) {
+            for (String t : term.split(Search.AND_OPERATOR)) {
                 String[] keys = isKeyTerm(t) ? t.split("=") : new String[] {kw, t};
                 newTerm += keys[0] + " like " + surround(keys[1]) + " and ";
             }
@@ -40,16 +40,16 @@ public class QueryGenerator {
 
     public String generateQuery(Map<String, List<String>> searchMap) {
 
-        String colQuery = String.join(" like ? or ", keyWords) + " like ?";
+        String colQuery = String.join(" like ? or ", fieldNames) + " like ?";
         searchMap.put(SQLKey, new ArrayList<>(asList("from Challenge where ")));
-        Iterator<String> tIt = searchMap.get(SearchBuilder.termKey).iterator();
+        Iterator<String> tIt = null; //searchMap.get(Search.termKey).iterator();
 
         while (tIt.hasNext()) {
 
             String t = tIt.next();
             String newQuery = searchMap.get(SQLKey).get(0);
 
-            if (t.contains(SearchBuilder.AND_OPERATOR)) {
+            if (t.contains(Search.AND_OPERATOR)) {
                 newQuery += generateAndQuery(t);
             } else {
 
@@ -86,7 +86,7 @@ public class QueryGenerator {
 
     private boolean isKeyTerm(String term) {
         String [] parts = term.split("=");
-        return parts.length > 0 && keyWords.contains(parts[0].trim());
+        return parts.length > 0 && fieldNames.contains(parts[0].trim());
     }
 
 }
