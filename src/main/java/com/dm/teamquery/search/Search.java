@@ -56,17 +56,19 @@ public class Search {
 
 
     private void indexTerms() {
-        booleanFilter();
-    }
-    private void booleanFilter() {
         orTerms = decode(encode(query));
-        orTerms = orTerms.stream()
+        orTerms = refine(orTerms);
+
+        System.out.println();
+    }
+
+    private Set<String> refine (Set<String> initial) {
+        return initial.stream()
                 .map(t -> t = stream(t.split("="))
                         .map(String::trim)
                         .collect(Collectors.joining("=")))
                 .filter(t -> !t.isEmpty())
                 .collect(Collectors.toSet());
-        System.out.println();
     }
 
     private String encode(String qstring) {
