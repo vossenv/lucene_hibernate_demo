@@ -1,25 +1,44 @@
 package com.dm.teamquery.search;
 
-import com.dm.teamquery.model.Challenge;
-import org.springframework.stereotype.Service;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 
-@Service
+@EqualsAndHashCode
+@NoArgsConstructor
+@Getter @Setter
 public class QueryGenerator {
 
-    @PersistenceContext
-    private EntityManager entityManager;
 
-    private final static String SQLKey = "SQLQuery";
-    private final static  List<String> fieldNames = null;
+    private Set<String> fieldNames;
+    private Class entityType;
+
+    public QueryGenerator(Class entityType){
+        this.entityType = entityType;
+
+        this.fieldNames = Arrays
+                .stream(entityType.getDeclaredFields())
+                .map(Field::getName)
+                .collect(Collectors.toSet());
+    }
+
+    public String generateQuery(Set<String> searchTerms){
+
+
+
+
+        return "";
+    }
+
+
+
 
 //    private String generateAndQuery(String term){
 //
@@ -37,7 +56,7 @@ public class QueryGenerator {
 //        });
 //        return query.toString();
 //    }
-//
+////
 //    public String generateQuery(Map<String, List<String>> searchMap) {
 //
 //        String colQuery = String.join(" like ? or ", fieldNames) + " like ?";
@@ -67,26 +86,18 @@ public class QueryGenerator {
 //
 //
 //    }
-//
-//    public List<Challenge> searchChallenges(Map<String, List<String>> searchMap) {
-//        return executeSearch(generateQuery(searchMap));
-//    }
-//
-//    public List<Challenge> executeSearch(String query) {
-//        return (List<Challenge>) entityManager.createQuery(query).getResultList();
-//    }
-//
-//    private static String surround(String s) {
-//        return "\'%" + s.toLowerCase() + "%\'";
-//    }
-//
-//    private String trimAndOr(String text){
-//        return text.replaceAll("\\s*(and)\\s*$","").replaceAll("\\s*(or)\\s*$","");
-//    }
-//
-//    private boolean isKeyTerm(String term) {
-//        String [] parts = term.split("=");
-//        return parts.length > 0 && fieldNames.contains(parts[0].trim());
-//    }
+
+    private static String surround(String s) {
+        return "\'%" + s.toLowerCase() + "%\'";
+    }
+
+    private String trimAndOr(String text){
+        return text.replaceAll("\\s*(and)\\s*$","").replaceAll("\\s*(or)\\s*$","");
+    }
+
+    private boolean isKeyTerm(String term) {
+        String [] parts = term.split("=");
+        return parts.length > 0 && fieldNames.contains(parts[0].trim());
+    }
 
 }

@@ -40,6 +40,7 @@ public class Search {
     private String query;
     private Pageable page;
     private Class entityType;
+    private QueryGenerator queryGenerator;
     private SearchEntity searchEntity;
     private Set<String> searchTerms = new HashSet<>();
 
@@ -52,6 +53,7 @@ public class Search {
         this.page = page;
         this.entityType = entityType;
         this.searchEntity = new SearchEntity(query);
+        this.queryGenerator = new QueryGenerator(entityType);
         this.fieldNames = stream(entityType.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
         indexTerms();
     }
@@ -70,6 +72,7 @@ public class Search {
                 .map(t -> t = stream(t.split("="))
                         .map(String::trim)
                         .collect(Collectors.joining("=")))
+                .map(String::trim)
                 .filter(t -> !t.isEmpty())
                 .collect(Collectors.toSet());
     }
@@ -94,6 +97,10 @@ public class Search {
                         .replaceAll(TAB_HOLDER, "\\t")
                         .replaceAll(SPACE_HOLDER, " "))
                 .collect(Collectors.toSet());
+    }
+
+    public String getDatabaseQuery(){
+        return this.queryGenerator.generateQuery(searchTerms);
     }
 
     private List<String> match(String pattern, String text) {
