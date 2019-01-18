@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
+
 
 @EqualsAndHashCode
 @NoArgsConstructor
@@ -31,13 +33,33 @@ public class QueryGenerator {
 
     public String generateQuery(Set<String> searchTerms){
 
+        StringBuilder query = new StringBuilder("from " + entityType.getSimpleName() + " where ");
+        searchTerms.forEach(t -> {
 
 
+            query.append(getFieldString(t)).append(" or ");
 
+        });
+
+        String f = trimAndOr(query.toString());
         return "";
     }
 
 
+
+    private String getFieldString(String s) {
+
+        asList(s.split("%%")).forEach(t -> {
+
+            
+
+        });
+
+        String colQuery = String.join(" like ? or ", fieldNames) + " like ?";
+
+
+        return "(" + colQuery.replace("?", surround(s)) + ")";
+    }
 
 
 //    private String generateAndQuery(String term){
