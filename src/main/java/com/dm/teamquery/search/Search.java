@@ -20,31 +20,33 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.stream;
 import static org.hibernate.validator.internal.util.CollectionHelper.asSet;
 
-@Getter
-@Setter
 @EqualsAndHashCode
 @NoArgsConstructor
+@Getter @Setter
 public class Search {
 
-    public Set<String> fieldNames;
-    public final static String OR_OPERATOR = "OR";
-    public final static String AND_OPERATOR = "AND";
-    public final static String SPACE_HOLDER = "__";
-    public final static String TAB_HOLDER = "@@@";
-    public final static String TERM_SEPARATOR = "###";
-    private final static String andSearchPattern = "(?<=\\S)\\s*" + AND_OPERATOR + "\\s*(?=\\S)";
-    private final static String spaceTerms = "(\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
+
+    private Set<String> fieldNames;
+    private String OR_OPERATOR = "OR";
+    private String AND_OPERATOR = "AND";
+    private String AND_HOLDER = "%%";
+
+    private String SPACE_HOLDER = "__";
+    private String TAB_HOLDER = "@@@";
+    private String TERM_SEPARATOR = "###";
+    private final String andSearchPattern = "(?<=\\S)\\s+" + AND_OPERATOR + "\\s+(?=\\S)";
+    private final String spaceTerms = "(\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
 
     private String query;
     private Pageable page;
     private Class entityType;
     private SearchEntity searchEntity;
-    private Set<String> orTerms = new HashSet<>();
+    private Set<String> searchTerms = new HashSet<>();
 
-    public Search(Class type, String query) {
-        this(type, query, PageRequest.of(0, 100));
+    public Search(Class entityType){this(entityType,"");}
+    public Search(Class entityType, String query) {
+        this(entityType, query, PageRequest.of(0, 100));
     }
-
     public Search(Class entityType, String query, Pageable page) {
         this.query = query;
         this.page = page;
@@ -54,10 +56,11 @@ public class Search {
         indexTerms();
     }
 
-
     private void indexTerms() {
-        orTerms = decode(encode(query));
-        orTerms = refine(orTerms);
+
+
+        searchTerms = decode(encode(query));
+        searchTerms = refine(searchTerms);
 
         System.out.println();
     }
@@ -79,7 +82,7 @@ public class Search {
                     .replaceAll("\"", ""));
         }
         return qstring
-                .replaceAll(andSearchPattern, AND_OPERATOR)
+                .replaceAll(andSearchPattern, AND_HOLDER)
                 .replaceAll(OR_OPERATOR, " ")
                 .replaceAll("\\s+", TERM_SEPARATOR);
     }
@@ -100,10 +103,10 @@ public class Search {
         return new LinkedList<>(termList);
     }
 
-    public void setQuery(String query) {
+    public Set<String> setQuery(String query) {
         this.query = query;
         indexTerms();
+        return this.searchTerms;
     }
-
 
 }

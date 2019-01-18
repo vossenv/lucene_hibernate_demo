@@ -9,85 +9,54 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test.properties")
 public class TestSearchPattern {
 
 
+    @Test
+    public void TestSimple() {
+
+        Search s = new Search(Challenge.class);
+       // String a = s.setQuery("f a AND c OR d AND p").toString();
+
+        chkSet(s.setQuery("a"), "[a]");
+        chkSet(s.setQuery("a b"), "[a, b]");
+        chkSet(s.setQuery("\"a b\""), "[a b]");
+        chkSet(s.setQuery("\"a b\" c d"), "[a b, c, d]");
+
+        chkSet(s.setQuery("a OR    b"), "[a, b]");
+        chkSet(s.setQuery("a OR c   b"), "[a, b, c]");
+
+    }
 
     @Test
-    public void  TestBoolean() {
+    public void TestAnd() {
 
-        Search s = new Search(Challenge.class, "\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a    wonder\" t u e");
+        Search s = new Search(Challenge.class);
+        String and = s.getAND_HOLDER();
 
+        chkSet(s.setQuery("a AND b"), "[a" + and + "b]");
+        chkSet(s.setQuery("aANDa b AND c "), "[b" + and + "c, aANDa]");
+        chkSet(s.setQuery("\"a b\" AND e c"), "[c, a b" + and + "e]");
+        chkSet(s.setQuery("a AND b AND e OR c AND d"), "[a" + and + "b" + and + "e, c" + and + "d]");
+        chkSet(s.setQuery("\"a AND b\""), "[a AND b]");
+        chkSet(s.setQuery("\"a b\" AND c d AND p"), "[d" + and + "p, a b" + and + "c]");
+        chkSet(s.setQuery("f a AND c OR d AND p"), "[d" + and + "p, f, a" + and + "c]");
 
-        System.out.println();
+        chkSet(s.setQuery("\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a    wonder\" t u e"),
+                "[x y, t, u, e, hello=someone, z, goodbye=a    wonder, c" + and + "d, a" + and + "b]");
     }
 
 
+    private void chkSet(Set<String> results, String expected) {
+        assertEquals(results.toString(), expected);
+    }
 
-//    @Test
-//    public void  TestBooleanAdd() {
-//
-//        searchBuilder.searchChallenges("\"x y\" z OR a AND b c AND d t u e");
-//
-//
-//        result = searchBuilder.constructSearchMap("\"x y\" z OR a AND b c AND d AND e author=someone");
-//        expected = getEmptyMap();
-//        expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDdANDe"));
-//        expected.get("author").add("someone");
-//        assertEquals(expected, result);
-//
-//        result = searchBuilder.constructSearchMap("\"x y\" z a AND b c AND d AND e author=someone");
-//        expected = getEmptyMap();
-//        expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDdANDe"));
-//        expected.get("author").add("someone");
-//        assertEquals(expected, result);
-//    }
-//
-//    @Test
-//    public void TestBooleanOr() {
-//
-//        result = searchBuilder.constructSearchMap("a AND b OR c AND d author=someone");
-//        expected = getEmptyMap();
-//        expected.get("terms").addAll(asList("aANDb", "cANDd"));
-//        expected.get("author").add("someone");
-//        assertEquals(expected, result);
-//
-//        result = searchBuilder.constructSearchMap("x y z OR a AND b OR c AND d author=someone");
-//        expected = getEmptyMap();
-//        expected.get("terms").addAll(asList("x", "y", "z", "aANDb", "cANDd"));
-//        expected.get("author").add("someone");
-//        assertEquals(expected, result);
-//
-//        result = searchBuilder.constructSearchMap("\"x y\" z OR a AND b OR c AND d author=someone");
-//        expected = getEmptyMap();
-//        expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDd"));
-//        expected.get("author").add("someone");
-//        assertEquals(expected, result);
-//    }
-//
-//    @Test
-//    public void TestStandardFilter() {
-//
-//        result = searchBuilder.constructSearchMap("hello there author=someone");
-//        expected = getEmptyMap();
-//        expected.get("terms").addAll(asList("hello", "there"));
-//        expected.get("author").add("someone");
-//        assertEquals(expected, result);
-//
-//        result = searchBuilder.constructSearchMap("question=\"anyone else\" hello there \"new face\" author=someone");
-//        expected = getEmptyMap();
-//        expected.get("terms").addAll(asList("new face", "hello", "there"));
-//        expected.get("author").add("someone");
-//        expected.get("question").add("anyone else");
-//        assertEquals(expected, result);
-//    }
-//
-//    private Map<String, List<String>> getEmptyMap(){
-//        Map<String, List<String>> searchPatterns = new HashMap<>();
-//        fieldNames.forEach(k -> searchPatterns.put(k, new ArrayList<>()));
-//        return searchPatterns;
-//    }
+
 }
