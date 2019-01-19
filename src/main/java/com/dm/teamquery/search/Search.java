@@ -9,10 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -51,7 +48,8 @@ public class Search {
         this.entityType = entityType;
         this.searchEntity = new SearchEntity(query);
         this.queryGenerator = new QueryGenerator(entityType);
-        this.fieldNames = stream(entityType.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
+        this.fieldNames = stream(entityType.getDeclaredFields())
+                .map(Field::getName).collect(Collectors.toCollection(LinkedHashSet::new));
         this.queryGenerator.setAND_HOLDER(AND_HOLDER);
         indexTerms();
     }
@@ -73,7 +71,7 @@ public class Search {
                                 .map(String::trim).collect(Collectors.joining("=")) : t)
                 .map(String::trim)
                 .filter(t -> !t.isEmpty() )
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private String encode(String qstring) {
@@ -95,7 +93,7 @@ public class Search {
                 .map(t -> t = t
                         .replaceAll(TAB_HOLDER, "\\t")
                         .replaceAll(SPACE_HOLDER, " "))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public String getDatabaseQuery(){

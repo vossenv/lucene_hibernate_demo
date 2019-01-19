@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.lang.reflect.Field;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,32 +17,63 @@ import static org.hibernate.validator.internal.util.CollectionHelper.asSet;
 
 @EqualsAndHashCode
 @NoArgsConstructor
+@Getter @Setter
 public class QueryGenerator {
 
-    @Getter @Setter private Set<String> fieldNames;
-    @Getter @Setter private Class entityType;
-    @Getter @Setter private String colQuery;
-
-    @Getter @Setter private String AND_HOLDER = "%%";
-    @Getter @Setter private String OR_OPERATOR = "OR";
-    @Getter @Setter private String AND_OPERATOR = "AND";
+    private Set<String> fieldNames;
+    private Class entityType;
+    private String colQuery;
+    private String AND_HOLDER = "%%";
+    private String OR_OPERATOR = "OR";
+    private String AND_OPERATOR = "AND";
 
     public QueryGenerator(Class entityType) {
         this.entityType = entityType;
-        this.fieldNames = stream(entityType.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
+        this.fieldNames = stream(entityType.getDeclaredFields())
+                .map(Field::getName).collect(Collectors.toCollection(LinkedHashSet::new));
         this.colQuery = String.join(" like ? or ", this.fieldNames) + " like ?";
     }
 
     public String generateQuery(Set<String> searchTerms){
 
-        String result = "from " + entityType.getSimpleName();
         searchTerms = validateSearchTerms(searchTerms);
+        return trimConjunctions( "from "
+                + entityType.getSimpleName() + " where "
+                + searchTerms.stream()
+                .map(this::getFieldString)
+                .collect(Collectors.joining(" or ")));
+    }
 
-        if (!searchTerms.isEmpty()) {
-            result += " where " + searchTerms.stream().map(this::getFieldString).collect(Collectors.joining(" or "));
+    private String getFieldString(String s){
+
+        Set<String> terms = asSet(s.split(AND_HOLDER));
+        StringBuilder query = new StringBuilder();
+
+        if (terms.size() == 1){
+            String [] keys = s.split("=");
+            return (isKeyTerm(s) && keys.length > 1) ? keys[0] + " like " + surround(keys[1]) : colQuery.replace("?", surround(s));
         }
 
-        return trimAndOr(result);
+        final Set<String> keyTerms = terms.stream().filter(this::isKeyTerm).collect(Collectors.toCollection(LinkedHashSet::new));
+        final Set<String> normalTerms = terms.stream().filter(t -> !isKeyTerm(t)).collect(Collectors.toCollection(LinkedHashSet::new));
+
+        String keysQuery =
+                "(" + keyTerms.stream()
+                .map(k -> k.split("=")[0] + " like " + surround(k.split("=")[1]))
+                .collect(Collectors.joining(" and ")) + ")";
+
+        fieldNames.forEach(f -> {
+            query.append("(");
+            Iterator<String> nI = normalTerms.iterator();
+            while (nI.hasNext()) {
+                query.append(f).append(" like ")
+                        .append(surround(nI.next()))
+                        .append(nI.hasNext() ? " and " : ") or ");
+            }
+        });
+
+        String result = trimConjunctions(query.toString());
+        return (keyTerms.isEmpty()) ? result : keysQuery + " and (" + result + ") ";
     }
 
     private Set<String> validateSearchTerms(Set<String> searchTerms) {
@@ -50,52 +83,15 @@ public class QueryGenerator {
                         .replaceAll(AND_OPERATOR, "")
                         .replaceAll(OR_OPERATOR, "")
                         .trim().isEmpty()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
-
-    private String getFieldString(String s){
-
-        StringBuilder query = new StringBuilder();
-        Set<String> terms = asSet(s.split(AND_HOLDER));
-
-        if (terms.size() == 1){
-            String [] keys = s.split("=");
-            return (isKeyTerm(s) && keys.length > 1) ? keys[0] + " like " + surround(keys[1]) : colQuery.replace("?", surround(s));
-        }
-
-        final Set<String> keyTerms = terms.stream().filter(this::isKeyTerm).collect(Collectors.toSet());
-        final Set<String> normalTerms = terms.stream().filter(t -> !isKeyTerm(t)).collect(Collectors.toSet());
-
-        String keysQuery = "(" + keyTerms
-                .stream()
-                .map(kw -> kw.split("=")[0] + " like " + surround(kw.split("=")[1]))
-                .collect(Collectors.joining(" and ")) + ")";
-
-        fieldNames.forEach(f -> {
-
-            String normalAnd = "(";
-
-            for (String t : normalTerms) {
-                normalAnd += f + " like " + surround(t) + " and ";
-            }
-
-            query.append(trimAndOr(normalAnd)).append(") or ");
-
-        });
-
-        String result = trimAndOr(query.toString());
-        result = (keyTerms.isEmpty()) ? result : keysQuery + " and (" + result + ") ";
-
-        return result;
-    }
-
 
     private static String surround(String s) {
         return "\'%" + s.toLowerCase() + "%\'";
     }
 
-    private String trimAndOr(String text) {
-        return text.replaceAll("\\s*(and)\\s*$", "").replaceAll("\\s*(or)\\s*$", "");
+    private String trimConjunctions(String text) {
+        return text.replaceAll("\\s*(and|or|where)\\s*$", "");
     }
 
     private boolean isKeyTerm(String term) {

@@ -25,7 +25,7 @@ public class TestSearchPattern {
         chkSet(s.setQuery("a"), "[a]");
         chkSet(s.setQuery("a b"), "[a, b]");
         chkSet(s.setQuery("\"a b\""), "[a b]");
-        chkSet(s.setQuery("\"a b\" c d"), "[a b, c, d]");
+        chkSet(s.setQuery("\"a b\" c d"), "[c, d, a b]");
 
         chkSet(s.setQuery("a OR    b"), "[a, b]");
         chkSet(s.setQuery("a OR c   b"), "[a, b, c]");
@@ -42,14 +42,14 @@ public class TestSearchPattern {
 
         chkSet(s.setQuery("a AND b"), "[a" + and + "b]");
         chkSet(s.setQuery("aANDa b AND c "), "[b" + and + "c, aANDa]");
-        chkSet(s.setQuery("\"a b\" AND e c"), "[c, a b" + and + "e]");
+        chkSet(s.setQuery("\"a b\" AND e c"), "[a b" + and + "e, c]");
         chkSet(s.setQuery("a AND b AND e OR c AND d"), "[a" + and + "b" + and + "e, c" + and + "d]");
         chkSet(s.setQuery("\"a AND b\""), "[a AND b]");
         chkSet(s.setQuery("\"a b\" AND c d AND p"), "[a b" + and + "c, d" + and + "p]");
         chkSet(s.setQuery("f a AND c OR d AND p"), "[f, a" + and + "c, d" + and + "p]");
 
         chkSet(s.setQuery("\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a    wonder\" t u e"),
-                "[x y, t, c" + and + "d, u, e, hello=someone, z, a" + and + "b, goodbye=a    wonder]");
+                "[t, c" + and + "d, u, e, x y, z, a" + and + "b, hello=someone, goodbye=a    wonder]");
     }
 
     private void chkSet(Search s, String expected) {
