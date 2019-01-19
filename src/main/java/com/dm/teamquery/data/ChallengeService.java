@@ -2,13 +2,14 @@ package com.dm.teamquery.data;
 
 import com.dm.teamquery.model.Challenge;
 import com.dm.teamquery.search.Search;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,11 +38,17 @@ public class ChallengeService {
     }
 
     public List<Challenge> search (String query){
+        return search(query, PageRequest.of(0,100));
+    }
+
+    public List<Challenge> search (String query, Pageable p){
 
         Search s = new Search(Challenge.class, query);
 
         return entityManager
                 .createQuery(s.getDatabaseQuery())
+                .setMaxResults(p.getPageSize())
+                .setFirstResult(p.getPageNumber()*p.getPageSize())
                 .getResultList();
     }
 
