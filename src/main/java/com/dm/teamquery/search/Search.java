@@ -5,8 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -22,7 +20,7 @@ import static org.hibernate.validator.internal.util.CollectionHelper.asSet;
 public class Search {
 
     @Getter private String AND_OPERATOR = "AND";
-    @Getter @Setter private String OR_OPERATOR = "OR";
+    @Getter private String OR_OPERATOR = "OR";
     @Getter @Setter private Set<String> fieldNames;
 
     private final String AND_HOLDER = ";=@!&@";
@@ -34,30 +32,21 @@ public class Search {
     private final String specialTerms = "(\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*|\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
     private String andSearchPattern = "(?<=\\S)\\s+" + AND_OPERATOR + "\\s+(?=\\S)";
 
+    private Class entityType;
     @Getter private String query;
-    @Getter private Class entityType;
-    @Getter private SearchEntity searchEntity;
     @Getter private Set<String> searchTerms = new HashSet<>();
-    @Getter @Setter private Pageable page;
     @Getter @Setter private QueryGenerator queryGenerator;
 
-
-    public Search(Class entityType, String query, Pageable page) {
+    public Search(Class entityType, String query) {
         this.query = query;
-        this.page = page;
         this.entityType = entityType;
-        this.searchEntity = new SearchEntity(query);
         this.queryGenerator = new QueryGenerator(entityType);
-        this.fieldNames = stream(entityType.getDeclaredFields())
-                .map(Field::getName).collect(Collectors.toCollection(LinkedHashSet::new));
         this.queryGenerator.setAND_HOLDER(AND_HOLDER);
+        this.fieldNames = stream(entityType.getDeclaredFields()).map(Field::getName).collect(Collectors.toCollection(LinkedHashSet::new));
         indexTerms();
     }
 
     public Search(Class entityType){this(entityType,"");}
-    public Search(Class entityType, String query) {
-        this(entityType, query, PageRequest.of(0, 100));
-    }
 
     private void indexTerms() {
         searchTerms = decode(encode(query));
@@ -111,11 +100,6 @@ public class Search {
         this.query = query;
         indexTerms();
         return this;
-    }
-
-    public void setAND_OPERATOR(String newAnd) {
-        this.andSearchPattern = this.andSearchPattern.replace(AND_OPERATOR,newAnd);
-        this.AND_OPERATOR = newAnd;
     }
 
 }

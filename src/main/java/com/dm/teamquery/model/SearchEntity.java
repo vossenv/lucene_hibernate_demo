@@ -1,4 +1,4 @@
-package com.dm.teamquery.search;
+package com.dm.teamquery.model;
 
 
 import com.dm.teamquery.config.LocalDateDeserializer;
