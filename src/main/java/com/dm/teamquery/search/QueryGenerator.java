@@ -15,14 +15,15 @@ import static org.hibernate.validator.internal.util.CollectionHelper.asSet;
 
 @EqualsAndHashCode
 @NoArgsConstructor
-@Getter
-@Setter
 public class QueryGenerator {
 
-    private Set<String> fieldNames;
-    private Class entityType;
-    private String colQuery;
-    private String AND_HOLDER = "%%";
+    @Getter @Setter private Set<String> fieldNames;
+    @Getter @Setter private Class entityType;
+    @Getter @Setter private String colQuery;
+
+    @Getter @Setter private String AND_HOLDER = "%%";
+    @Getter @Setter private String OR_OPERATOR = "OR";
+    @Getter @Setter private String AND_OPERATOR = "AND";
 
     public QueryGenerator(Class entityType) {
         this.entityType = entityType;
@@ -45,9 +46,9 @@ public class QueryGenerator {
     private Set<String> validateSearchTerms(Set<String> searchTerms) {
         return searchTerms.stream()
                 .filter(s -> !(s
-                        .replaceAll("%%", "")
-                        .replaceAll("AND", "")
-                        .replaceAll("OR", "")
+                        .replaceAll(AND_HOLDER, "")
+                        .replaceAll(AND_OPERATOR, "")
+                        .replaceAll(OR_OPERATOR, "")
                         .trim().isEmpty()))
                 .collect(Collectors.toSet());
     }
@@ -55,7 +56,7 @@ public class QueryGenerator {
     private String getFieldString(String s){
 
         StringBuilder query = new StringBuilder();
-        Set<String> terms = asSet(s.split("%%"));
+        Set<String> terms = asSet(s.split(AND_HOLDER));
 
         if (terms.size() == 1){
             String [] keys = s.split("=");

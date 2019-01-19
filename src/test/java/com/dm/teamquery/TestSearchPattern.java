@@ -36,18 +36,20 @@ public class TestSearchPattern {
     public void TestAnd() {
 
         Search s = new Search(Challenge.class);
-        String and = s.getAND_HOLDER();
+        String and = s.getQueryGenerator().getAND_HOLDER();
+        
+       // String r = s.setQuery("\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a    wonder\" t u e").getSearchTerms().toString();
 
         chkSet(s.setQuery("a AND b"), "[a" + and + "b]");
         chkSet(s.setQuery("aANDa b AND c "), "[b" + and + "c, aANDa]");
         chkSet(s.setQuery("\"a b\" AND e c"), "[c, a b" + and + "e]");
         chkSet(s.setQuery("a AND b AND e OR c AND d"), "[a" + and + "b" + and + "e, c" + and + "d]");
         chkSet(s.setQuery("\"a AND b\""), "[a AND b]");
-        chkSet(s.setQuery("\"a b\" AND c d AND p"), "[d" + and + "p, a b" + and + "c]");
-        chkSet(s.setQuery("f a AND c OR d AND p"), "[d" + and + "p, f, a" + and + "c]");
+        chkSet(s.setQuery("\"a b\" AND c d AND p"), "[a b" + and + "c, d" + and + "p]");
+        chkSet(s.setQuery("f a AND c OR d AND p"), "[f, a" + and + "c, d" + and + "p]");
 
         chkSet(s.setQuery("\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a    wonder\" t u e"),
-                "[x y, t, u, e, hello=someone, z, goodbye=a    wonder, c" + and + "d, a" + and + "b]");
+                "[x y, t, c" + and + "d, u, e, hello=someone, z, a" + and + "b, goodbye=a    wonder]");
     }
 
     private void chkSet(Search s, String expected) {

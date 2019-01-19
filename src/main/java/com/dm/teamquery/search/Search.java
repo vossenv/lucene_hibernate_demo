@@ -22,35 +22,29 @@ import static org.hibernate.validator.internal.util.CollectionHelper.asSet;
 
 @EqualsAndHashCode
 @NoArgsConstructor
-@Getter @Setter
 public class Search {
 
+    @Getter private String AND_OPERATOR = "AND";
+    @Getter @Setter private String OR_OPERATOR = "OR";
+    @Getter @Setter private Set<String> fieldNames;
 
-    private Set<String> fieldNames;
-    private String OR_OPERATOR = "OR";
-    private String AND_OPERATOR = "AND";
-    private String AND_HOLDER = "%%";
+    private final String AND_HOLDER = ";=@!&@";
+    private final String SPACE_HOLDER = "!a#!%";
+    private final String TAB_HOLDER = "@&%*";
+    private final String TERM_SEPARATOR = "#`]//:";
 
-    private String SPACE_HOLDER = "__";
-    private String TAB_HOLDER = "@@@";
-    private String TERM_SEPARATOR = "###";
-    private final String andSearchPattern = "(?<=\\S)\\s+" + AND_OPERATOR + "\\s+(?=\\S)";
-    private final String spaceTerms = "(\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
-    private final String keyTerms = "(\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*)";
     private final String badKeyTerms = "(\\S*\\s*=\\s*$|^\\s*=\\S*)";
-    private final String keyTermsx = "(\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*|\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
+    private final String specialTerms = "(\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*|\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
+    private String andSearchPattern = "(?<=\\S)\\s+" + AND_OPERATOR + "\\s+(?=\\S)";
 
-    private String query;
-    private Pageable page;
-    private Class entityType;
-    private QueryGenerator queryGenerator;
-    private SearchEntity searchEntity;
-    private Set<String> searchTerms = new HashSet<>();
+    @Getter private String query;
+    @Getter private Class entityType;
+    @Getter private SearchEntity searchEntity;
+    @Getter private Set<String> searchTerms = new HashSet<>();
+    @Getter @Setter private Pageable page;
+    @Getter @Setter private QueryGenerator queryGenerator;
 
-    public Search(Class entityType){this(entityType,"");}
-    public Search(Class entityType, String query) {
-        this(entityType, query, PageRequest.of(0, 100));
-    }
+
     public Search(Class entityType, String query, Pageable page) {
         this.query = query;
         this.page = page;
@@ -58,30 +52,32 @@ public class Search {
         this.searchEntity = new SearchEntity(query);
         this.queryGenerator = new QueryGenerator(entityType);
         this.fieldNames = stream(entityType.getDeclaredFields()).map(Field::getName).collect(Collectors.toSet());
+        this.queryGenerator.setAND_HOLDER(AND_HOLDER);
         indexTerms();
     }
 
+    public Search(Class entityType){this(entityType,"");}
+    public Search(Class entityType, String query) {
+        this(entityType, query, PageRequest.of(0, 100));
+    }
+
     private void indexTerms() {
-
-
         searchTerms = decode(encode(query));
         searchTerms = refine(searchTerms);
-
-        System.out.println();
     }
 
     private Set<String> refine (Set<String> initial) {
         return initial.stream()
-                .map(t -> t = stream(t.split("="))
-                        .map(String::trim)
-                        .collect(Collectors.joining("=")))
+                .map(t -> t = match(badKeyTerms, t).size() == 0 ?
+                        stream(t.split("="))
+                                .map(String::trim).collect(Collectors.joining("=")) : t)
                 .map(String::trim)
                 .filter(t -> !t.isEmpty() )
                 .collect(Collectors.toSet());
     }
 
     private String encode(String qstring) {
-        for (String t : match(keyTermsx, qstring)) {
+        for (String t : match(specialTerms, qstring)) {
             qstring = qstring.replace(t, t
                     .replaceAll("\\t", TAB_HOLDER)
                     .replaceAll("\\s", SPACE_HOLDER)
@@ -117,6 +113,11 @@ public class Search {
         this.query = query;
         indexTerms();
         return this;
+    }
+
+    public void setAND_OPERATOR(String newAnd) {
+        this.andSearchPattern = this.andSearchPattern.replace(AND_OPERATOR,newAnd);
+        this.AND_OPERATOR = newAnd;
     }
 
 }
