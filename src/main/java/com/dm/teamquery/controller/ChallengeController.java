@@ -19,12 +19,6 @@ public class ChallengeController {
     }
 
     @ResponseBody
-    @RequestMapping(value = {"/challenges"}, method = RequestMethod.GET)
-    public Object getAllChallenges()  {
-        return challengeService.findAll();
-    }
-
-    @ResponseBody
     @RequestMapping(value = {"/challenges/update"}, method = RequestMethod.POST)
     public Object addUpdateChallenge(@RequestBody Challenge challenge)  {
         return challengeService.updateChallenge(challenge);

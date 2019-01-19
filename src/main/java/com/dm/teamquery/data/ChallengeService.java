@@ -1,6 +1,7 @@
 package com.dm.teamquery.data;
 
 import com.dm.teamquery.model.Challenge;
+import com.dm.teamquery.model.SearchEntity;
 import com.dm.teamquery.search.Search;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,9 @@ public class ChallengeService {
     @Inject
     private ChallengeRepository challengeRepository;
 
+    @Inject
+    private SearchRepository searchRepository;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -31,27 +35,27 @@ public class ChallengeService {
         challengeRepository.deleteById(UUID.fromString(id));
     }
 
-    public List<Challenge> findAll() {
-        List<Challenge> l = new ArrayList<>();
-        challengeRepository.findAll().forEach(l::add);
-        return l;
-    }
-
     public List<Challenge> search (String query){
         return search(query, PageRequest.of(0,100));
     }
 
     public List<Challenge> search (String query, Pageable p){
 
-        Search s = new Search(Challenge.class, query);
+        List<Challenge> results = new ArrayList<>();
+        String dbQuery = new Search(Challenge.class, query).getDatabaseQuery();
+        SearchEntity entity = new SearchEntity(query, dbQuery);
 
-        return entityManager
-                .createQuery(s.getDatabaseQuery())
-                .setMaxResults(p.getPageSize())
-                .setFirstResult(p.getPageNumber()*p.getPageSize())
-                .getResultList();
+        try {
+            results = entityManager
+                    .createQuery(dbQuery)
+                    .setMaxResults(p.getPageSize())
+                    .setFirstResult(p.getPageNumber() * p.getPageSize())
+                    .getResultList();
+        } catch (Exception e) {
+            entity.setErrors(e.getMessage());
+        }
+
+        searchRepository.save(entity);
+        return results;
     }
-
-
-
 }

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "challenges")
+@Table(name = "challenge")
 @EqualsAndHashCode
 @Getter @Setter
 public class Challenge {
@@ -25,10 +25,10 @@ public class Challenge {
     @Column(name = "challengeid")
     private UUID challengeId;
 
-    @Column(name = "question", columnDefinition = "VARCHAR(3000)")
+    @Column(name = "question", columnDefinition = "TEXT")
     private String question;
 
-    @Column(name = "answer", columnDefinition = "VARCHAR(3000)")
+    @Column(name = "answer", columnDefinition = "TEXT")
     private String answer;
 
     @Column(name = "author")
@@ -39,7 +39,6 @@ public class Challenge {
 
     @Column(name = "enabled")
     private Boolean enabled;
-
 
     @JsonSerialize(using = ToStringSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
