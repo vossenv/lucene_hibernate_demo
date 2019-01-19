@@ -1,24 +1,14 @@
 package com.dm.teamquery;
 
 
-import com.dm.teamquery.data.ChallengeRepository;
-import com.dm.teamquery.data.ChallengeService;
-import com.dm.teamquery.data.SearchEngine;
 import com.dm.teamquery.model.Challenge;
+import com.dm.teamquery.search.Search;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
@@ -26,78 +16,44 @@ import static org.junit.Assert.assertEquals;
 @TestPropertySource("classpath:application-test.properties")
 public class TestSearchPattern {
 
-    @Inject ChallengeService challengeService;
-    @Inject ChallengeRepository challengeRepository;
-    @Inject SearchEngine searchEngine;
 
-    private List<String> keyWords = new ArrayList<>();
-    private Map<String, List<String>> expected;
-    private Map<String, List<String>> result;
+    @Test
+    public void TestSimple() {
 
-    @PostConstruct
-    private void buildSearchKeywordList() {
-        asList(Challenge.class.getDeclaredFields()).forEach(f -> keyWords.add(f.getName().toLowerCase()));
-        keyWords.add("terms");
+        Search s = new Search(Challenge.class);
+
+        chkSet(s.setQuery("a"), "[a]");
+        chkSet(s.setQuery("a b"), "[a, b]");
+        chkSet(s.setQuery("\"a b\""), "[a b]");
+        chkSet(s.setQuery("\"a b\" c d"), "[c, d, a b]");
+
+        chkSet(s.setQuery("a OR    b"), "[a, b]");
+        chkSet(s.setQuery("a OR c   b"), "[a, b, c]");
+
     }
 
     @Test
-    public void  TestBooleanAdd() {
+    public void TestAnd() {
 
-        result = searchEngine.constructSearchMap("\"x y\" z OR a AND b c AND d AND e author=someone");
-        expected = getEmptyMap();
-        expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDdANDe"));
-        expected.get("author").add("someone");
-        assertEquals(expected, result);
+        Search s = new Search(Challenge.class);
+        String and = s.getQueryGenerator().getAND_HOLDER();
+        
+       // String r = s.setQuery("\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a    wonder\" t u e").getSearchTerms().toString();
 
-        result = searchEngine.constructSearchMap("\"x y\" z a AND b c AND d AND e author=someone");
-        expected = getEmptyMap();
-        expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDdANDe"));
-        expected.get("author").add("someone");
-        assertEquals(expected, result);
+        chkSet(s.setQuery("a AND b"), "[a" + and + "b]");
+        chkSet(s.setQuery("aANDa b AND c "), "[b" + and + "c, aANDa]");
+        chkSet(s.setQuery("\"a b\" AND e c"), "[a b" + and + "e, c]");
+        chkSet(s.setQuery("a AND b AND e OR c AND d"), "[a" + and + "b" + and + "e, c" + and + "d]");
+        chkSet(s.setQuery("\"a AND b\""), "[a AND b]");
+        chkSet(s.setQuery("\"a b\" AND c d AND p"), "[a b" + and + "c, d" + and + "p]");
+        chkSet(s.setQuery("f a AND c OR d AND p"), "[f, a" + and + "c, d" + and + "p]");
+
+        chkSet(s.setQuery("\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a    wonder\" t u e"),
+                "[t, c" + and + "d, u, e, x y, z, a" + and + "b, hello=someone, goodbye=a    wonder]");
     }
 
-    @Test
-    public void TestBooleanOr() {
-
-        result = searchEngine.constructSearchMap("a AND b OR c AND d author=someone");
-        expected = getEmptyMap();
-        expected.get("terms").addAll(asList("aANDb", "cANDd"));
-        expected.get("author").add("someone");
-        assertEquals(expected, result);
-
-        result = searchEngine.constructSearchMap("x y z OR a AND b OR c AND d author=someone");
-        expected = getEmptyMap();
-        expected.get("terms").addAll(asList("x", "y", "z", "aANDb", "cANDd"));
-        expected.get("author").add("someone");
-        assertEquals(expected, result);
-
-        result = searchEngine.constructSearchMap("\"x y\" z OR a AND b OR c AND d author=someone");
-        expected = getEmptyMap();
-        expected.get("terms").addAll(asList("x y", "z", "aANDb", "cANDd"));
-        expected.get("author").add("someone");
-        assertEquals(expected, result);
+    private void chkSet(Search s, String expected) {
+        assertEquals(s.getSearchTerms().toString(), expected);
     }
 
-    @Test
-    public void TestStandardFilter() {
-
-        result = searchEngine.constructSearchMap("hello there author=someone");
-        expected = getEmptyMap();
-        expected.get("terms").addAll(asList("hello", "there"));
-        expected.get("author").add("someone");
-        assertEquals(expected, result);
-
-        result = searchEngine.constructSearchMap("question=\"anyone else\" hello there \"new face\" author=someone");
-        expected = getEmptyMap();
-        expected.get("terms").addAll(asList("new face", "hello", "there"));
-        expected.get("author").add("someone");
-        expected.get("question").add("anyone else");
-        assertEquals(expected, result);
-    }
-
-    private Map<String, List<String>> getEmptyMap(){
-        Map<String, List<String>> searchPatterns = new HashMap<>();
-        keyWords.forEach(k -> searchPatterns.put(k, new ArrayList<>()));
-        return searchPatterns;
-    }
 }

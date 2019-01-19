@@ -16,7 +16,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "challenges")
-@Getter @Setter @EqualsAndHashCode
+@EqualsAndHashCode
+@Getter @Setter
 public class Challenge {
 
     @Id
