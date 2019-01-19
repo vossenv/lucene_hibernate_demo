@@ -9,8 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Set;
-
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
@@ -23,7 +21,6 @@ public class TestSearchPattern {
     public void TestSimple() {
 
         Search s = new Search(Challenge.class);
-       // String a = s.setQuery("f a AND c OR d AND p").toString();
 
         chkSet(s.setQuery("a"), "[a]");
         chkSet(s.setQuery("a b"), "[a, b]");
@@ -53,10 +50,8 @@ public class TestSearchPattern {
                 "[x y, t, u, e, hello=someone, z, goodbye=a    wonder, c" + and + "d, a" + and + "b]");
     }
 
-
-    private void chkSet(Set<String> results, String expected) {
-        assertEquals(results.toString(), expected);
+    private void chkSet(Search s, String expected) {
+        assertEquals(s.getSearchTerms().toString(), expected);
     }
-
 
 }

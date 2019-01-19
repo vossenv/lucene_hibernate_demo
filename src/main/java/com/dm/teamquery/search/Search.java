@@ -36,6 +36,9 @@ public class Search {
     private String TERM_SEPARATOR = "###";
     private final String andSearchPattern = "(?<=\\S)\\s+" + AND_OPERATOR + "\\s+(?=\\S)";
     private final String spaceTerms = "(\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
+    private final String keyTerms = "(\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*)";
+    private final String badKeyTerms = "(\\S*\\s*=\\s*$|^\\s*=\\S*)";
+    private final String keyTermsx = "(\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*|\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
 
     private String query;
     private Pageable page;
@@ -73,12 +76,12 @@ public class Search {
                         .map(String::trim)
                         .collect(Collectors.joining("=")))
                 .map(String::trim)
-                .filter(t -> !t.isEmpty())
+                .filter(t -> !t.isEmpty() )
                 .collect(Collectors.toSet());
     }
 
     private String encode(String qstring) {
-        for (String t : match(spaceTerms, qstring)) {
+        for (String t : match(keyTermsx, qstring)) {
             qstring = qstring.replace(t, t
                     .replaceAll("\\t", TAB_HOLDER)
                     .replaceAll("\\s", SPACE_HOLDER)
@@ -110,10 +113,10 @@ public class Search {
         return new LinkedList<>(termList);
     }
 
-    public Set<String> setQuery(String query) {
+    public Search setQuery(String query) {
         this.query = query;
         indexTerms();
-        return this.searchTerms;
+        return this;
     }
 
 }

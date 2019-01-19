@@ -3,6 +3,7 @@ package com.dm.teamquery;
 
 import com.dm.teamquery.data.ChallengeRepository;
 import com.dm.teamquery.data.ChallengeService;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -20,16 +21,16 @@ public class TestChallenges {
 
 
 
-//    @Test
-//    public void TestGet() {
-//
+    @Test
+    public void TestGet() {
+
 //        Challenge c = origninalList.get(5);
 //        Challenge d = challengeRepository.findChallengeByChallengeId(c.getChallengeId());
 //        Challenge e = challengeService.findChallengeByChallengeId(c.getChallengeId().toString());
 //        assertEquals(c, d);
 //        assertEquals(d, e);
-//
-//    }
+
+    }
 //
 //    @Test
 //    public void TestDelete() {
