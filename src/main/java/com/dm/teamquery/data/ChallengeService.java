@@ -55,7 +55,11 @@ public class ChallengeService {
             entity.setErrors(e.getMessage());
         }
 
-        searchRepository.save(entity);
+        try {
+            searchRepository.save(entity);
+        } catch (Exception e) {
+            // Do nothing -- non-critical function.  Add logging later
+        }
         return results;
     }
 }
