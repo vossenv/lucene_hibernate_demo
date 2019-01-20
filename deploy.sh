@@ -14,7 +14,7 @@ function check_remote(){
     count=0
     while [ "$apiStatus" != "true" ]; do
         if [ "$count" -gt 50 ]; then break; fi
-        apiStatus=$(curl $url -s)
+        apiStatus=$(curl $url -k -s)
         count=$((count + 1))
         sleep 1
         echo -n "$count "
