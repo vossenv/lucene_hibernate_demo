@@ -1,0 +1,208 @@
+{
+	"info": {
+		"_postman_id": "fb1f5f5a-60eb-479d-b018-5366581668f8",
+		"name": "TeamQuery Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Basic Search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea5e0f13-84cc-457d-907d-f5ca09c6c160",
+						"exec": [
+							"pm.test(\"response is ok\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "query",
+						"value": "e",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "page",
+						"value": "0",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:9002/challenges/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9002",
+					"path": [
+						"challenges",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "No results",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea5e0f13-84cc-457d-907d-f5ca09c6c160",
+						"exec": [
+							"pm.test(\"response is ok\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var data = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(data.length).to.equals(0)\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "query",
+						"type": "text",
+						"value": "0000000000000000000000000000000000000000000000"
+					},
+					{
+						"key": "page",
+						"type": "text",
+						"value": "0",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:9002/challenges/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9002",
+					"path": [
+						"challenges",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Challenge",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea5e0f13-84cc-457d-907d-f5ca09c6c160",
+						"exec": [
+							"pm.test(\"response is ok\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var data = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(data.question).to.equal(\"Test Question\")\r",
+							"    pm.expect(data.answer).to.equal(\"Test Answer\")\r",
+							"    pm.expect(data.author).to.equal(\"Danimae\")\r",
+							"    pm.expect(data.lastAuthor).to.equal(\"Danimae\")\r",
+							"    pm.expect(data.enabled).to.equal(true)\r",
+							"    pm.expect(data).to.have.property('dateCreated')\r",
+							"    pm.expect(data).to.have.property('dateLastModified')\r",
+							"    pm.expect(data).to.have.property('challengeId')\r",
+							"    \r",
+							"\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "page",
+						"type": "text",
+						"value": "0",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\r\n        \"question\": \"Test Question\",\r\n        \"answer\": \"Test Answer\",\r\n        \"author\": \"Danimae\",\r\n        \"lastAuthor\": \"Danimae\"\r\n    }"
+				},
+				"url": {
+					"raw": "http://localhost:9002/challenges/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9002",
+					"path": [
+						"challenges",
+						"update"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "6ef1ee32-661c-4742-8102-3e1d5efe7e9b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "0c488813-4ef2-4769-a3e2-f4ed905d5629",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "257aab8f-d0bc-463c-961e-fcf40e549be2",
+			"key": "target",
+			"value": "http://localhost:9002",
+			"type": "string"
+		}
+	]
+}
