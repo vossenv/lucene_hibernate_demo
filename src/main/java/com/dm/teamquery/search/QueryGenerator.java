@@ -23,7 +23,7 @@ public class QueryGenerator {
     private Set<String> fieldNames;
     private Class entityType;
     private String colQuery;
-    private String AND_HOLDER = "%%";
+    private String AND_HOLDER = ";=@!&@";
     private String OR_OPERATOR = "OR";
     private String AND_OPERATOR = "AND";
 
@@ -98,5 +98,4 @@ public class QueryGenerator {
         String[] parts = term.split("=");
         return parts.length > 0 && fieldNames.contains(parts[0].trim());
     }
-
 }
