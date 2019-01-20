@@ -18,7 +18,6 @@ import java.util.UUID;
 @Service
 public class SearchService {
 
-
     @Inject
     private SearchRepository searchRepository;
 

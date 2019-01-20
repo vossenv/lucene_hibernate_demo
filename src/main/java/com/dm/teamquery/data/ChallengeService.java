@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +32,7 @@ public class ChallengeService {
     public Challenge updateChallenge(Challenge c) throws EntityUpdateException {
         if (null == c.getChallengeId()) c.setChallengeId(UUID.randomUUID());
         try {
+            c.setDateLastModified(LocalDateTime.now());
             return challengeRepository.save(c);
         } catch (Exception e) {
             throw new EntityUpdateException(e.getMessage());
