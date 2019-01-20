@@ -30,7 +30,7 @@ public class TestFullSearch {
 
         Search s = new Search(Challenge.class);
 
-       // String query = s.setQuery("question=\"users\" AND e").getDatabaseQuery();
+       String query = s.setQuery("question = adobe").getDatabaseQuery();
 
         assertEquals(challengeService.search("").size(), 17);
         assertEquals(challengeService.search("question = adobe").size(), 1);

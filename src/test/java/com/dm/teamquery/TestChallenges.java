@@ -33,6 +33,7 @@ public class TestChallenges {
         List<Challenge> allChallenges = challengeService.search("");
         int initialSize = allChallenges.size();
         Challenge c = allChallenges.get(0);
+        String originalQuestion = c.getQuestion();
         UUID id = c.getChallengeId();
         LocalDateTime time = c.getDateLastModified();
 
@@ -43,16 +44,21 @@ public class TestChallenges {
         assertEquals(c, e);
         assertNotEquals(time, e.getDateLastModified());
         assertEquals(initialSize, challengeService.search("").size());
+
+        c.setQuestion(originalQuestion);
+        challengeService.updateChallenge(c);
     }
 
     @Test
-    public void TestAdd() throws EntityUpdateException {
+    public void TestAdd() throws EntityUpdateException, BadEntityException {
 
         Challenge c = new Challenge();
         Challenge d = challengeService.updateChallenge(c);
 
         c.setChallengeId(d.getChallengeId());
         assertEquals(c, d);
+
+        challengeService.deleteChallengeById(d.getChallengeId());
     }
 
     @Test
@@ -70,13 +76,16 @@ public class TestChallenges {
     }
 
     @Test
-    public void TestDelete() throws BadEntityException {
+    public void TestDelete() throws BadEntityException, EntityUpdateException {
 
         Challenge c = challengeService.search("").get(0);
         challengeService.deleteChallengeById(c.getChallengeId());
 
         List<Challenge> results = challengeService.search(c.getChallengeId());
         assertEquals(0, results.size());
+
+        Challenge d = challengeService.updateChallenge(c);
+        assertEquals(d.getChallengeId(), c.getChallengeId());
 
     }
 
