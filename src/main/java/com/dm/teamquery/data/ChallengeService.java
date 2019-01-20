@@ -39,9 +39,10 @@ public class ChallengeService {
         }
     }
 
-    public void deleteChallengeById(String id) throws BadEntityException{
+    public String deleteChallengeById(String id) throws BadEntityException{
         try {
             challengeRepository.deleteById(UUID.fromString(id));
+            return "Successfully deleted " + id;
         } catch (Exception e) {
             throw new BadEntityException(e.getMessage());
         }

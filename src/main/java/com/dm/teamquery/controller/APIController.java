@@ -27,9 +27,8 @@ public class APIController {
     }
 
     @RequestMapping(value = {"/challenges/{id}/delete"}, method = RequestMethod.GET)
-    public String deleteChallenge(@PathVariable("id") String id)  throws BadEntityException {
-        challengeService.deleteChallengeById(id);
-        return "Success";
+    public String deleteChallenge(@PathVariable("id") String id) throws BadEntityException {
+        return challengeService.deleteChallengeById(id);
     }
 
     @RequestMapping(value = {"/challenges/search"}, method = RequestMethod.GET)
@@ -40,8 +39,7 @@ public class APIController {
 
     @RequestMapping(value = {"/searches/{id}/delete"}, method = RequestMethod.GET)
     public String deleteSearch(@PathVariable("id") String id) throws BadEntityException {
-        searchService.deleteSearchEntityById(id);
-        return "Success";
+        return searchService.deleteSearchEntityById(id);
     }
 
     @RequestMapping(value = {"/searches/search"}, method = RequestMethod.GET)

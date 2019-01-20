@@ -24,9 +24,10 @@ public class SearchService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public void deleteSearchEntityById(String id) throws BadEntityException{
+    public String deleteSearchEntityById(String id) throws BadEntityException{
         try {
             searchRepository.deleteById(UUID.fromString(id));
+            return "Successfully deleted " + id;
         } catch (Exception e) {
             throw new BadEntityException(e.getMessage());
         }
