@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @RestController
+@SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
 public class APIController {
 
     @Inject
@@ -32,9 +34,14 @@ public class APIController {
     }
 
     @RequestMapping(value = {"/challenges/search"}, method = RequestMethod.GET)
-    public Object searchChallenge(HttpServletRequest request) throws InvalidParameterException {
-       SimplePage p = new SimplePage(request);
-       return ApiResponseBuilder.buildApiResponse(challengeService.search(p.getQuery()), p);
+    public Object searchChallenge(
+            @RequestParam("disabled") Optional<String> disabledMode,
+            HttpServletRequest request) throws InvalidParameterException {
+
+        boolean disabled = disabledMode.isPresent() && Boolean.parseBoolean(disabledMode.get());
+
+        SimplePage p = new SimplePage(request);
+        return ApiResponseBuilder.buildApiResponse(challengeService.search(p.getQuery(), p.getPageable(), disabled), p);
     }
 
     @RequestMapping(value = {"/searches/{id}/delete"}, method = RequestMethod.GET)

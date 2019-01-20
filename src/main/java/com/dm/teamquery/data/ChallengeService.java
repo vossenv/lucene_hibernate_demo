@@ -53,13 +53,22 @@ public class ChallengeService {
     }
 
     public List<Challenge> search(Object query) {
-        return search(query, PageRequest.of(0, 100));
+        return search(query, PageRequest.of(0, 100), false);
+    }
+
+    public List<Challenge> search(Object query, boolean disabled) {
+        return search(query, PageRequest.of(0, 100), disabled);
     }
 
     public List<Challenge> search(Object query, Pageable p) {
+        return search(query, p, false);
+    }
+
+    public List<Challenge> search(Object query, Pageable p, boolean disabled) {
 
         List<Challenge> results = new ArrayList<>();
         String dbQuery = new Search(Challenge.class, query.toString()).getDatabaseQuery();
+        dbQuery = prepareQuery(dbQuery, disabled);
         SearchEntity entity = new SearchEntity(query.toString(), dbQuery);
 
         try {
@@ -79,4 +88,14 @@ public class ChallengeService {
         }
         return results;
     }
+
+    private String prepareQuery(String query, boolean disabled){
+        String key = disabled ? "0" : "1";
+        if (query.equals("from Challenge"))
+            return "from Challenge where enabled = " + key;
+        else {
+            return query.replace("from Challenge where ", "from Challenge where enabled = " + key + " and (") + ")";
+        }
+    }
+
 }

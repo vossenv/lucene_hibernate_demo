@@ -5,6 +5,8 @@ import com.dm.teamquery.Execption.InvalidParameterException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -18,6 +20,7 @@ public class SimplePage {
     private String query;
     private String URL;
     private String host;
+    private Pageable pageable;
     private List<String> errors = new ArrayList<>();
 
     public SimplePage(HttpServletRequest request) throws InvalidParameterException {
@@ -32,6 +35,7 @@ public class SimplePage {
 
         this.size = validateParameter("size", size, 1, 1000);
         this.page = validateParameter("page", page, 0, Integer.MAX_VALUE);
+        this.pageable = PageRequest.of(this.page, this.size);
 
         if (errors.size() > 0) {
             InvalidParameterException e = new InvalidParameterException();

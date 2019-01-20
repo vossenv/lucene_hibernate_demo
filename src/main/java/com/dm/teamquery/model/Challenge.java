@@ -2,11 +2,15 @@ package com.dm.teamquery.model;
 
 
 import com.dm.teamquery.config.LocalDateDeserializer;
+import com.dm.teamquery.config.LocalDateSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
-import lombok.*;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -48,13 +52,13 @@ public class Challenge {
     private Boolean enabled = true;
 
     @NotNull
-    @JsonSerialize(using = ToStringSerializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @Column(name = "datecreated")
     private LocalDateTime dateCreated = LocalDateTime.now();
 
     @NotNull
-    @JsonSerialize(using = ToStringSerializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @Column(name = "datelastmodified")
     private LocalDateTime dateLastModified = LocalDateTime.now();
