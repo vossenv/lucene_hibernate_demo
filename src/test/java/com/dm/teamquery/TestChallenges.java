@@ -1,8 +1,10 @@
 package com.dm.teamquery;
 
 
-import com.dm.teamquery.data.ChallengeRepository;
+import com.dm.teamquery.Execption.BadEntityException;
+import com.dm.teamquery.Execption.EntityUpdateException;
 import com.dm.teamquery.data.ChallengeService;
+import com.dm.teamquery.model.Challenge;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +12,13 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.fail;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -17,49 +26,68 @@ import javax.inject.Inject;
 public class TestChallenges {
 
     @Inject ChallengeService challengeService;
-    @Inject ChallengeRepository challengeRepository;
-
-
 
     @Test
-    public void TestGet() {
+    public void TestUpdae() throws EntityUpdateException {
 
-//        Challenge c = origninalList.get(5);
-//        Challenge d = challengeRepository.findChallengeByChallengeId(c.getChallengeId());
-//        Challenge e = challengeService.findChallengeByChallengeId(c.getChallengeId().toString());
-//        assertEquals(c, d);
-//        assertEquals(d, e);
+        List<Challenge> allChallenges = challengeService.search("");
+        int initialSize = allChallenges.size();
+        Challenge c = allChallenges.get(0);
+        UUID id = c.getChallengeId();
+        LocalDateTime time = c.getDateLastModified();
+
+        c.setQuestion("ABC");
+        assertEquals(c,  challengeService.updateChallenge(c));
+
+        Challenge e = challengeService.search(id).get(0);
+        assertEquals(c, e);
+        assertNotEquals(time, e.getDateLastModified());
+        assertEquals(initialSize, challengeService.search("").size());
+    }
+
+    @Test
+    public void TestAdd() throws EntityUpdateException {
+
+        Challenge c = new Challenge();
+        Challenge d = challengeService.updateChallenge(c);
+
+        c.setChallengeId(d.getChallengeId());
+        assertEquals(c, d);
+    }
+
+    @Test
+    public void TestAddNullField() {
+
+        Challenge c = new Challenge();
+        c.setAuthor(null);
+
+        try {
+            challengeService.updateChallenge(c);
+            fail("Should have failed due to null field");
+        } catch (EntityUpdateException e) {
+            // pass
+        }
+    }
+
+    @Test
+    public void TestDelete() throws BadEntityException {
+
+        Challenge c = challengeService.search("").get(0);
+        challengeService.deleteChallengeById(c.getChallengeId());
+
+        List<Challenge> results = challengeService.search(c.getChallengeId());
+        assertEquals(0, results.size());
 
     }
-//
-//    @Test
-//    public void TestDelete() {
-//
-//        Challenge c = origninalList.get(2);
-//        challengeService.deleteChallengeById(c.getChallengeId().toString());
-//        assertNull(challengeService.findChallengeByChallengeId(c.getChallengeId().toString()));
-//
-//    }
-//
-//    @Test
-//    public void TestUpdate() {
-//
-//        Challenge c = origninalList.get(3);
-//        c.setAnswer("There is no answer...");
-//        Challenge d = challengeService.updateChallenge(c);
-//        assertEquals(d, challengeService.findChallengeByChallengeId(c.getChallengeId().toString()));
-//
-//        Challenge e = new Challenge();
-//        e.setAnswer("This is the final answer!");
-//        e.setQuestion("Was there a question");
-//        e.setAuthor("Vossen");
-//        e.setDateLastModified(LocalDateTime.now());
-//        e.setDateCreated(LocalDateTime.now());
-//
-//        e = challengeService.updateChallenge(e);
-//        assertEquals(e, challengeService.findChallengeByChallengeId(e.getChallengeId().toString()));
 
-//    }
-
+    @Test
+    public void TestDeleteNull(){
+        try {
+            challengeService.deleteChallengeById("abc");
+            fail("Should have failed due to nonexistent ID");
+        } catch (BadEntityException e){
+            // pass
+        }
+    }
 
 }

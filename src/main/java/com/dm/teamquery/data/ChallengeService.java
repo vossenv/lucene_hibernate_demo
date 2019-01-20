@@ -39,6 +39,10 @@ public class ChallengeService {
         }
     }
 
+    public String deleteChallengeById(UUID id) throws BadEntityException{
+        return deleteChallengeById(id.toString());
+    }
+
     public String deleteChallengeById(String id) throws BadEntityException{
         try {
             challengeRepository.deleteById(UUID.fromString(id));
@@ -48,15 +52,15 @@ public class ChallengeService {
         }
     }
 
-    public List<Challenge> search(String query) {
+    public List<Challenge> search(Object query) {
         return search(query, PageRequest.of(0, 100));
     }
 
-    public List<Challenge> search(String query, Pageable p) {
+    public List<Challenge> search(Object query, Pageable p) {
 
         List<Challenge> results = new ArrayList<>();
-        String dbQuery = new Search(Challenge.class, query).getDatabaseQuery();
-        SearchEntity entity = new SearchEntity(query, dbQuery);
+        String dbQuery = new Search(Challenge.class, query.toString()).getDatabaseQuery();
+        SearchEntity entity = new SearchEntity(query.toString(), dbQuery);
 
         try {
             results = entityManager

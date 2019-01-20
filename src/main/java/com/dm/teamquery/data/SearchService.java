@@ -24,6 +24,10 @@ public class SearchService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    public String deleteSearchEntityById(UUID id) throws BadEntityException{
+        return deleteSearchEntityById(id.toString());
+    }
+
     public String deleteSearchEntityById(String id) throws BadEntityException{
         try {
             searchRepository.deleteById(UUID.fromString(id));
@@ -33,15 +37,15 @@ public class SearchService {
         }
     }
 
-    public List<SearchEntity> search (String query){
+    public List<SearchEntity> search (Object query){
         return search(query, PageRequest.of(0,100));
     }
 
-    public List<SearchEntity> search (String query, Pageable p){
+    public List<SearchEntity> search (Object query, Pageable p){
 
         List<SearchEntity> results = new ArrayList<>();
-        String dbQuery = new Search(SearchEntity.class, query).getDatabaseQuery();
-        SearchEntity entity = new SearchEntity(query, dbQuery);
+        String dbQuery = new Search(SearchEntity.class, query.toString()).getDatabaseQuery();
+        SearchEntity entity = new SearchEntity(query.toString(), dbQuery);
 
         try {
             results = entityManager
