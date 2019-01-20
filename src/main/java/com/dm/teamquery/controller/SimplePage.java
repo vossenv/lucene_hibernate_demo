@@ -1,4 +1,4 @@
-package com.dm.teamquery.model;
+package com.dm.teamquery.controller;
 
 
 import com.dm.teamquery.Execption.InvalidParameterException;

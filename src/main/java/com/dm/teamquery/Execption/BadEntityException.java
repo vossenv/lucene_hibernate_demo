@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class InvalidParameterException extends Exception {
+public class BadEntityException extends Exception {
 
 
-    public InvalidParameterException(){
+    public BadEntityException(){
         super();
     }
 
-    public InvalidParameterException (String message) {
+    public BadEntityException (String message) {
         super(message);
         errorList.add(message);
     }

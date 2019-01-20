@@ -1,6 +1,6 @@
 package com.dm.teamquery.config;
 
-import com.dm.teamquery.model.SimplePage;
+import com.dm.teamquery.controller.SimplePage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
