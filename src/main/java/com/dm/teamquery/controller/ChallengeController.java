@@ -38,9 +38,7 @@ public class ChallengeController {
     @RequestMapping(value = {"/challenges/search"}, method = RequestMethod.GET)
     public Object searchChallenge(
             HttpServletRequest request) throws InvalidParameterException {
-
        SimplePage p = new SimplePage(request);
        return ApiResponseBuilder.buildApiResponse(challengeService.search(p.getQuery()), p);
-
     }
 }
