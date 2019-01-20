@@ -1,17 +1,17 @@
 package com.dm.teamquery.controller;
 
+import com.dm.teamquery.Execption.InvalidParameterException;
+import com.dm.teamquery.config.ApiResponseBuilder;
 import com.dm.teamquery.data.ChallengeService;
 import com.dm.teamquery.model.Challenge;
+import com.dm.teamquery.model.SimplePage;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Optional;
 
 @Controller
-@SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "DefaultAnnotationParam"})
 public class ChallengeController {
 
     @Inject
@@ -36,23 +36,11 @@ public class ChallengeController {
 
     @ResponseBody
     @RequestMapping(value = {"/challenges/search"}, method = RequestMethod.GET)
-    public List<Challenge> searchChallenge(
-            @RequestParam("size") Optional<String> size,
-            @RequestParam("page") Optional<String> page,
-            HttpServletRequest request){
+    public Object searchChallenge(
+            HttpServletRequest request) throws InvalidParameterException {
 
-        String q;
-
-        try {
-            q = request.getHeader("query");
-        } catch (NullPointerException e) {
-            q = "";
-        }
-
-        return challengeService.search(q);
+       SimplePage p = new SimplePage(request);
+       return ApiResponseBuilder.buildApiResponse(challengeService.search(p.getQuery()), p);
 
     }
-
-
-
 }
