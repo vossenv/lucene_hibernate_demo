@@ -112,6 +112,112 @@
 			"response": []
 		},
 		{
+			"name": "Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea5e0f13-84cc-457d-907d-f5ca09c6c160",
+						"exec": [
+							"pm.test(\"Test Delete\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.have.body(\"Successfully deleted 08693c3e-d251-4cf5-98bc-1fd234b44f2e\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "query",
+						"type": "text",
+						"value": "0000000000000000000000000000000000000000000000",
+						"disabled": true
+					},
+					{
+						"key": "page",
+						"type": "text",
+						"value": "0",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{target}}/challenges/08693c3e-d251-4cf5-98bc-1fd234b44f2e/delete",
+					"host": [
+						"{{target}}"
+					],
+					"path": [
+						"challenges",
+						"08693c3e-d251-4cf5-98bc-1fd234b44f2e",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Again",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea5e0f13-84cc-457d-907d-f5ca09c6c160",
+						"exec": [
+							"pm.test(\"Test Delete\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    var data = pm.response.json()\r",
+							"    pm.expect(data.message).to.include(\"No class com.dm.teamquery.model.Challenge entity with id 08693c3e-d251-4cf5-98bc-1fd234b44f2e exists!\")\r",
+							"    \r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "query",
+						"type": "text",
+						"value": "0000000000000000000000000000000000000000000000",
+						"disabled": true
+					},
+					{
+						"key": "page",
+						"type": "text",
+						"value": "0",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{target}}/challenges/08693c3e-d251-4cf5-98bc-1fd234b44f2e/delete",
+					"host": [
+						"{{target}}"
+					],
+					"path": [
+						"challenges",
+						"08693c3e-d251-4cf5-98bc-1fd234b44f2e",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Add Challenge",
 			"event": [
 				{
@@ -199,7 +305,7 @@
 	],
 	"variable": [
 		{
-			"id": "257aab8f-d0bc-463c-961e-fcf40e549be2",
+			"id": "8bef6828-357a-4d0f-abfc-3c203308550b",
 			"key": "target",
 			"value": "http://localhost:9002",
 			"type": "string"
