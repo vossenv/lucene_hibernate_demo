@@ -1,5 +1,7 @@
 package com.dm.teamquery.data;
 
+import com.dm.teamquery.Execption.BadEntityException;
+import com.dm.teamquery.Execption.EntityUpdateException;
 import com.dm.teamquery.model.Challenge;
 import com.dm.teamquery.model.SearchEntity;
 import com.dm.teamquery.search.Search;
@@ -26,20 +28,28 @@ public class ChallengeService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public Challenge updateChallenge(Challenge c) {
+    public Challenge updateChallenge(Challenge c) throws EntityUpdateException {
         if (null == c.getChallengeId()) c.setChallengeId(UUID.randomUUID());
-        return challengeRepository.save(c);
+        try {
+            return challengeRepository.save(c);
+        } catch (Exception e) {
+            throw new EntityUpdateException(e.getMessage());
+        }
     }
 
-    public void deleteChallengeById(String id){
-        challengeRepository.deleteById(UUID.fromString(id));
+    public void deleteChallengeById(String id) throws BadEntityException{
+        try {
+            challengeRepository.deleteById(UUID.fromString(id));
+        } catch (Exception e) {
+            throw new BadEntityException(e.getMessage());
+        }
     }
 
-    public List<Challenge> search (String query){
-        return search(query, PageRequest.of(0,100));
+    public List<Challenge> search(String query) {
+        return search(query, PageRequest.of(0, 100));
     }
 
-    public List<Challenge> search (String query, Pageable p){
+    public List<Challenge> search(String query, Pageable p) {
 
         List<Challenge> results = new ArrayList<>();
         String dbQuery = new Search(Challenge.class, query).getDatabaseQuery();

@@ -30,22 +30,14 @@ public class APIController {
     @ResponseBody
     @RequestMapping(value = {"/challenges/update"}, method = RequestMethod.POST)
     public Object addUpdateChallenge(@RequestBody Challenge challenge) throws EntityUpdateException {
-        try {
-            return challengeService.updateChallenge(challenge);
-        } catch (Exception e){
-            throw new EntityUpdateException(e.getMessage());
-        }
+        return challengeService.updateChallenge(challenge);
     }
 
     @ResponseBody
     @RequestMapping(value = {"/challenges/{id}/delete"}, method = RequestMethod.GET)
     public String deleteChallenge(@PathVariable("id") String id)  throws BadEntityException {
-        try {
-            challengeService.deleteChallengeById(id);
-            return "Success";
-        } catch (Exception e) {
-            throw new BadEntityException(e.getMessage());
-        }
+        challengeService.deleteChallengeById(id);
+        return "Success";
     }
 
     @ResponseBody
@@ -59,12 +51,8 @@ public class APIController {
     @ResponseBody
     @RequestMapping(value = {"/searches/{id}/delete"}, method = RequestMethod.GET)
     public String deleteSearch(@PathVariable("id") String id) throws BadEntityException {
-        try {
-            searchService.deleteSearchEntityById(id);
-            return "Success";
-        } catch (Exception e) {
-            throw new BadEntityException(e.getMessage());
-        }
+        searchService.deleteSearchEntityById(id);
+        return "Success";
     }
 
     @ResponseBody

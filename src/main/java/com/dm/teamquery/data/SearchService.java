@@ -1,5 +1,6 @@
 package com.dm.teamquery.data;
 
+import com.dm.teamquery.Execption.BadEntityException;
 import com.dm.teamquery.model.SearchEntity;
 import com.dm.teamquery.model.SearchEntity;
 import com.dm.teamquery.search.Search;
@@ -24,8 +25,12 @@ public class SearchService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public void deleteSearchEntityById(String id){
-        searchRepository.deleteById(UUID.fromString(id));
+    public void deleteSearchEntityById(String id) throws BadEntityException{
+        try {
+            searchRepository.deleteById(UUID.fromString(id));
+        } catch (Exception e) {
+            throw new BadEntityException(e.getMessage());
+        }
     }
 
     public List<SearchEntity> search (String query){
