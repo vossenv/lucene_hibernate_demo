@@ -5,7 +5,7 @@
 
 service_name="teamquery"
 host="thenewcarag.com"
-url="thenewcarag.com/teamquery/status"
+url="https://thenewcarag.com/teamquery/status"
 username="deployment"
 
 function check_remote(){

@@ -17,6 +17,7 @@ public class ApiResponseBuilder {
         headers.add("Search-Size", p.getSize().toString());
         headers.add("Search-Page", p.getPage().toString());
 
+        headers.add("Previous-Page", String.valueOf( Integer.max(p.getPage() - 1, 0)));
         headers.add("Next-Page", String.valueOf((p.getPage() + 1)));
         headers.add("Next-Size", String.valueOf(p.getSize()));
         headers.add("Result-Count", (String.valueOf(((List<?>)body).size())));
