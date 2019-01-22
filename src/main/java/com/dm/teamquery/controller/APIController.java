@@ -4,6 +4,7 @@ import com.dm.teamquery.Execption.BadEntityException;
 import com.dm.teamquery.Execption.EntityUpdateException;
 import com.dm.teamquery.Execption.InvalidParameterException;
 import com.dm.teamquery.config.ApiResponseBuilder;
+import com.dm.teamquery.config.ExtendedLogger;
 import com.dm.teamquery.data.ChallengeService;
 import com.dm.teamquery.data.SearchService;
 import com.dm.teamquery.model.Challenge;
@@ -16,6 +17,9 @@ import java.util.Optional;
 @RestController
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
 public class APIController {
+
+    @Inject
+    private ExtendedLogger el;
 
     @Inject
     private ChallengeService challengeService;
