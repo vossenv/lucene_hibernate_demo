@@ -18,14 +18,9 @@ import java.util.Optional;
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
 public class APIController {
 
-    @Inject
-    private ExtendedLogger el;
-
-    @Inject
-    private ChallengeService challengeService;
-
-    @Inject
-    private SearchService searchService;
+    @Inject private ExtendedLogger el;
+    @Inject private ChallengeService challengeService;
+    @Inject private SearchService searchService;
 
     @RequestMapping(value = {"/challenges/update"}, method = RequestMethod.POST)
     public Object addUpdateChallenge(@RequestBody Challenge challenge) throws EntityUpdateException {
