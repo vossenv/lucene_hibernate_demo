@@ -36,3 +36,5 @@ api/.vagrant
 api/deploy.sh
 api/Vagrantfile
 staging/*
+
+*.log

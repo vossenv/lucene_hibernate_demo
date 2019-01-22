@@ -5,6 +5,8 @@ import com.dm.teamquery.Execption.EntityUpdateException;
 import com.dm.teamquery.model.Challenge;
 import com.dm.teamquery.model.SearchEntity;
 import com.dm.teamquery.search.Search;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ import java.util.UUID;
 
 @Service
 public class ChallengeService {
+
+
+    private final static Logger logger = LogManager.getLogger("ProcessLog");
 
     @Inject
     private ChallengeRepository challengeRepository;
