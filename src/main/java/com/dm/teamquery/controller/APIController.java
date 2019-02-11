@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
 public class APIController {
 
