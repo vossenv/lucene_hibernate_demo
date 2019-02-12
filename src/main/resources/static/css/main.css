@@ -71,7 +71,11 @@ body::after {
 }
 
 #results {
+    padding: 15px;
+    text-align:left;
     color: white;
+    border-radius: 15px;
+    word-wrap: normal !important;
 }
 
 

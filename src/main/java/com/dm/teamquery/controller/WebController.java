@@ -1,6 +1,7 @@
 package com.dm.teamquery.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class WebController {
 
     @RequestMapping(value = {"","/"}, method = RequestMethod.GET)
-    public Object indexPage()  {
+    public Object indexPage(Model model)  {
+
+        model.addAttribute("ctx", "teamquery");
         return "index.html";
     }
 

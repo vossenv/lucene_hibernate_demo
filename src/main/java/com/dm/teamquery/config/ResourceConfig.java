@@ -15,8 +15,8 @@ public class ResourceConfig extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/");
 
-        registry.addResourceHandler("/teamquery/static/**")
-                .addResourceLocations("classpath:/static/");
+//        registry.addResourceHandler("/teamquery/static/**")
+//                .addResourceLocations("classpath:/static/");
     }
 
     @Override

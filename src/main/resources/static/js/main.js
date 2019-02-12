@@ -1,11 +1,11 @@
 "use strict";
+
+var ctx = $("#ctx").text().replace(/\/$/, "");
+
 jQuery(function () {
 
 
-
-    $( "#search-button" ).click(function() {
-        doSearch();
-    });
+    $( "#search-button" ).click(function() { doSearch(); });
 
 });
 
@@ -13,14 +13,15 @@ jQuery(function () {
 function doSearch(){
 
 
+
     $.ajax({
-        url: "/challenges/search",
+        url: ctx + "/challenges/search",
         type: "GET",
         beforeSend: function(xhr){xhr.setRequestHeader('query', $("#search-bar").val());},
         success: function(data) {
 
-            console.log(data);
-            $("#results").text(JSON.stringify(data))
+
+            $("#results").html(JSON.stringify(data, undefined, 2));
 
         }
     });
