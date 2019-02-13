@@ -2,6 +2,7 @@
 
 var ctx = $("#ctx").text().replace(/\/$/, "");
 
+
 jQuery(function () {
 
 
@@ -12,12 +13,21 @@ jQuery(function () {
 
 function doSearch(){
 
+    var page_size = $('#page-size').find(":selected").text();
+    var query = $("#search-bar").val();
 
+    var headers = {
+        'query': query,
+        'size': page_size,
+        'Content-Type':'application/json'
+    };
+
+    console.log(headers);
 
     $.ajax({
         url: ctx + "/challenges/search",
         type: "GET",
-        beforeSend: function(xhr){xhr.setRequestHeader('query', $("#search-bar").val());},
+        headers: headers,
         success: function(data) {
 
 

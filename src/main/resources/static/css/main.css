@@ -13,34 +13,10 @@
 
 
 
-#search-bar:focus,
-#search-bar:active {
-    box-shadow: 0px 0px var(--search-hover-size) var(--search-hover-color) !important;
-    -webkit-filter: drop-shadow(0px 0px var(--search-hover-size) var(--search-hover-color)) !important;
-    filter:drop-shadow(0px 0px var(--search-hover-size) var(--search-hover-color)) !important;
-}
-
-
-
 body {
-    background-color: black;
-}
-
-
-body::after {
-    background-image: var(--background-url);
+    color:white;
+    background: linear-gradient(  rgba(0,0,0,0.5), rgba(0, 0, 0, 0.5)), var(--background-url) no-repeat fixed;
     background-size: cover;
-    background-repeat: no-repeat;
-    background-position: fixed;
-    opacity: 0.5;
-
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    z-index: -1;
 }
 
 .title-text {
@@ -67,56 +43,26 @@ body::after {
 #help-text {
     margin-top: -10px;
     text-align: left;
-    color: white;
 }
 
 #results {
+    color:white;
     padding: 15px;
     text-align:left;
-    color: white;
     border-radius: 15px;
-    word-wrap: normal !important;
+}
+
+#search-footer {
+    padding-right: 25px
+}
+
+pre {
+
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-/* .btn-danger {
-
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    outline: none;
-}
-
-.btn-danger:hover {
-    box-shadow: 0px 0px var(--btn-hover-size) var(--btn-hover-color);
-    -webkit-filter: drop-shadow(0px 0px var(--btn-hover-size) var(--btn-hover-color));
-    filter:drop-shadow(0px 0px var(--btn-hover-size) var(--btn-hover-color))
-}
-
-.btn,
-.btn-danger:focus,
-.btn-danger:active,
-.btn.active.focus,
-.btn.active:focus,
-.btn.focus,
-.btn:active,
-.btn:focus,
-.btn:active.focus,
-.btn:active:focus{
-    outline: 0;
-    box-shadow:none;
-} */

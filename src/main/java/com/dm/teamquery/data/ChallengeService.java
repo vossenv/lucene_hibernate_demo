@@ -4,6 +4,7 @@ import com.dm.teamquery.Execption.BadEntityException;
 import com.dm.teamquery.Execption.EntityUpdateException;
 import com.dm.teamquery.model.Challenge;
 import com.dm.teamquery.model.SearchEntity;
+import com.dm.teamquery.model.SearchResult;
 import com.dm.teamquery.search.Search;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +16,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,11 +44,11 @@ public class ChallengeService {
         }
     }
 
-    public String deleteChallengeById(UUID id) throws BadEntityException{
+    public String deleteChallengeById(UUID id) throws BadEntityException {
         return deleteChallengeById(id.toString());
     }
 
-    public String deleteChallengeById(String id) throws BadEntityException{
+    public String deleteChallengeById(String id) throws BadEntityException {
         try {
             challengeRepository.deleteById(UUID.fromString(id));
             return "Successfully deleted " + id;
@@ -57,31 +57,24 @@ public class ChallengeService {
         }
     }
 
-    public List<Challenge> search(Object query) {
-        return search(query, PageRequest.of(0, 100), false);
-    }
-
-    public List<Challenge> search(Object query, boolean disabled) {
-        return search(query, PageRequest.of(0, 100), disabled);
-    }
-
+    public List<Challenge> search(Object query) {return search(query, PageRequest.of(0, 100), false);}
+    public List<Challenge> search(Object query, boolean disabled) { return search(query, PageRequest.of(0, 100), disabled); }
     public List<Challenge> search(Object query, Pageable p) {
         return search(query, p, false);
     }
-
     public List<Challenge> search(Object query, Pageable p, boolean disabled) {
 
-        List<Challenge> results = new ArrayList<>();
-        String dbQuery = new Search(Challenge.class, query.toString()).getDatabaseQuery();
-        dbQuery = prepareQuery(dbQuery, disabled);
+
+        String dbQuery = prepareQuery(new Search(Challenge.class, query.toString()).getDatabaseQuery(), disabled);
         SearchEntity entity = new SearchEntity(query.toString(), dbQuery);
+        SearchResult result = new SearchResult(Challenge.class);
 
         try {
-            results = entityManager
-                    .createQuery(dbQuery)
-                    .setMaxResults(p.getPageSize())
-                    .setFirstResult(p.getPageNumber() * p.getPageSize())
-                    .getResultList();
+            long startTime = System.nanoTime();
+            result.setRowCount(execCountSearch(dbQuery));
+            result.setResultsList(execPagedSearch(dbQuery, p));
+            result.setSearchTime(System.nanoTime() - startTime);
+
         } catch (Exception e) {
             entity.setErrors(e.getMessage());
         }
@@ -91,10 +84,22 @@ public class ChallengeService {
         } catch (Exception e) {
             // Do nothing -- non-critical function.  Add logging later
         }
-        return results;
+        return (List<Challenge>) result.getResultsList();
     }
 
-    private String prepareQuery(String query, boolean disabled){
+    private List<Challenge> execPagedSearch(String dbQuery, Pageable p) {
+        return entityManager
+                .createQuery(dbQuery)
+                .setMaxResults(p.getPageSize())
+                .setFirstResult(p.getPageNumber() * p.getPageSize())
+                .getResultList();
+    }
+
+    private long execCountSearch(String dbQuery) {
+        return (long) entityManager.createQuery("select count(*) " + dbQuery).getResultList().get(0);
+    }
+
+    private String prepareQuery(String query, boolean disabled) {
         String key = disabled ? "0" : "1";
         if (query.equals("from Challenge"))
             return "from Challenge where enabled = " + key;
