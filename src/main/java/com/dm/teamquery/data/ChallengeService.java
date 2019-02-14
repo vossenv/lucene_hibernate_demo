@@ -3,6 +3,7 @@ package com.dm.teamquery.data;
 import com.dm.teamquery.Execption.BadEntityException;
 import com.dm.teamquery.Execption.EntityUpdateException;
 import com.dm.teamquery.model.Challenge;
+import com.dm.teamquery.model.ChallengeResult;
 import com.dm.teamquery.model.SearchEntity;
 import com.dm.teamquery.model.SearchResult;
 import com.dm.teamquery.search.Search;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,10 +46,6 @@ public class ChallengeService {
         }
     }
 
-    public String deleteChallengeById(UUID id) throws BadEntityException {
-        return deleteChallengeById(id.toString());
-    }
-
     public String deleteChallengeById(String id) throws BadEntityException {
         try {
             challengeRepository.deleteById(UUID.fromString(id));
@@ -57,20 +55,21 @@ public class ChallengeService {
         }
     }
 
-    public List<Challenge> search(Object query) {return search(query, PageRequest.of(0, 100), false);}
-    public List<Challenge> search(Object query, boolean disabled) { return search(query, PageRequest.of(0, 100), disabled); }
-    public List<Challenge> search(Object query, Pageable p) {
+    public ChallengeResult search(Object query) {return search(query, PageRequest.of(0, 100), false);}
+    public ChallengeResult search(Object query, boolean disabled) { return search(query, PageRequest.of(0, 100), disabled); }
+    public ChallengeResult search(Object query, Pageable p) {
         return search(query, p, false);
     }
-    public List<Challenge> search(Object query, Pageable p, boolean disabled) {
+    public ChallengeResult search(Object query, Pageable p, boolean disabled) {
 
-
+        long startTime = System.nanoTime();
         String dbQuery = prepareQuery(new Search(Challenge.class, query.toString()).getDatabaseQuery(), disabled);
         SearchEntity entity = new SearchEntity(query.toString(), dbQuery);
-        SearchResult result = new SearchResult(Challenge.class);
+        ChallengeResult result = new ChallengeResult();
 
         try {
-            long startTime = System.nanoTime();
+
+            result.setOriginalQuery(query.toString());
             result.setRowCount(execCountSearch(dbQuery));
             result.setResultsList(execPagedSearch(dbQuery, p));
             result.setSearchTime(System.nanoTime() - startTime);
@@ -84,7 +83,8 @@ public class ChallengeService {
         } catch (Exception e) {
             // Do nothing -- non-critical function.  Add logging later
         }
-        return (List<Challenge>) result.getResultsList();
+
+        return result;
     }
 
     private List<Challenge> execPagedSearch(String dbQuery, Pageable p) {

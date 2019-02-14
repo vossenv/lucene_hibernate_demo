@@ -30,7 +30,7 @@ public class TestChallenges {
     @Test
     public void TestUpdae() throws EntityUpdateException {
 
-        List<Challenge> allChallenges = challengeService.search("");
+        List<Challenge> allChallenges = challengeService.search("").getResultsList();
         int initialSize = allChallenges.size();
         Challenge c = allChallenges.get(0);
         String originalQuestion = c.getQuestion();
@@ -40,10 +40,10 @@ public class TestChallenges {
         c.setQuestion("ABC");
         assertEquals(c,  challengeService.updateChallenge(c));
 
-        Challenge e = challengeService.search(id).get(0);
+        Challenge e = challengeService.search(id).getResultsList().get(0);
         assertEquals(c, e);
         assertNotEquals(time, e.getDateLastModified());
-        assertEquals(initialSize, challengeService.search("").size());
+        assertEquals(initialSize, challengeService.search("").getResultsList().size());
 
         c.setQuestion(originalQuestion);
         challengeService.updateChallenge(c);
@@ -58,7 +58,7 @@ public class TestChallenges {
         c.setChallengeId(d.getChallengeId());
         assertEquals(c, d);
 
-        challengeService.deleteChallengeById(d.getChallengeId());
+        challengeService.deleteChallengeById(d.getChallengeId().toString());
     }
 
     @Test
@@ -78,10 +78,10 @@ public class TestChallenges {
     @Test
     public void TestDelete() throws BadEntityException, EntityUpdateException {
 
-        Challenge c = challengeService.search("").get(0);
-        challengeService.deleteChallengeById(c.getChallengeId());
+        Challenge c = challengeService.search("").getResultsList().get(0);
+        challengeService.deleteChallengeById(c.getChallengeId().toString());
 
-        List<Challenge> results = challengeService.search(c.getChallengeId());
+        List<Challenge> results = challengeService.search(c.getChallengeId()).getResultsList();
         assertEquals(0, results.size());
 
         Challenge d = challengeService.updateChallenge(c);

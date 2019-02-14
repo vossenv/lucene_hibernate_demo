@@ -13,20 +13,16 @@ import java.util.*;
 @NoArgsConstructor
 public class SearchResult {
 
-    private Class objType;
     private long rowCount;
-    BigDecimal searchTime;
-    private Set<?> resultsList;
-
-    public SearchResult(Class objType) {
-        this.objType = objType;
-    }
+    private BigDecimal searchTime;
+    private Collection resultsList;
+    private String originalQuery;
 
     public List<?> getResultsList() {
         return new LinkedList<>(resultsList);
     }
 
-    public void setResultsList(Collection<?> resultsList) {
+    public void setResultsList(Collection resultsList) {
         this.resultsList = new HashSet<>(resultsList);
     }
 

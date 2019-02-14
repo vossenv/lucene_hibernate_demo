@@ -19,8 +19,8 @@ import static org.hibernate.validator.internal.util.CollectionHelper.asSet;
 @NoArgsConstructor
 public class Search {
 
-    @Getter private String AND_OPERATOR = "AND";
-    @Getter private String OR_OPERATOR = "OR";
+    @Getter private final String AND_OPERATOR = "AND";
+    @Getter private final String OR_OPERATOR = "OR";
     @Getter @Setter private Set<String> fieldNames;
 
     private final String AND_HOLDER = ";=@!&@";
@@ -30,7 +30,7 @@ public class Search {
 
     private final String badKeyTerms = "(\\S*\\s*=\\s*$|^\\s*=\\S*)";
     private final String specialTerms = "(\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*|\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
-    private String andSearchPattern = "(?<=\\S)\\s+" + AND_OPERATOR + "\\s+(?=\\S)";
+    private final String andSearchPattern = "(?<=\\S)\\s+" + AND_OPERATOR + "\\s+(?=\\S)";
 
     private Class entityType;
     @Getter private String query;

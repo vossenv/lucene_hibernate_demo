@@ -32,14 +32,14 @@ public class TestFullSearch {
 
         String query = s.setQuery("question = adobe").getDatabaseQuery();
 
-        assertEquals(challengeService.search("").size(), 17);
-        assertEquals(challengeService.search("question = adobe").size(), 1);
-        assertEquals(challengeService.search("question = adobe OR author = rhianna").size(), 17);
-        assertEquals(challengeService.search("37766f9a-9a5a-47d2-a22f-701986cb4d7f").size(), 1);
-        assertEquals(challengeService.search("ID").size(), 8);
-        assertEquals(challengeService.search("ID AND federated").size(), 4);
-        assertEquals(challengeService.search("\"to the individual\"").size(), 1);
-        assertEquals(challengeService.search("question=\"users\" AND e").size(), 2);
+        assertEquals(challengeService.search("").getResultsList().size(), 17);
+        assertEquals(challengeService.search("question = adobe").getResultsList().size(), 1);
+        assertEquals(challengeService.search("question = adobe OR author = rhianna").getResultsList().size(), 17);
+        assertEquals(challengeService.search("37766f9a-9a5a-47d2-a22f-701986cb4d7f").getResultsList().size(), 1);
+        assertEquals(challengeService.search("ID").getResultsList().size(), 8);
+        assertEquals(challengeService.search("ID AND federated").getResultsList().size(), 4);
+        assertEquals(challengeService.search("\"to the individual\"").getResultsList().size(), 1);
+        assertEquals(challengeService.search("question=\"users\" AND e").getResultsList().size(), 2);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class TestFullSearch {
 
         for (int i = 0; i < 15; i ++ ){
 
-            List<Challenge> nextPage = challengeService.search("", PageRequest.of(i, 5));
+            List<Challenge> nextPage = challengeService.search("", PageRequest.of(i, 5)).getResultsList();
 
             if (nextPage.size() == 0) {
                 assertEquals(4, i);
@@ -65,7 +65,7 @@ public class TestFullSearch {
     @Test
     public void testGetDisabled() {
 
-        List<Challenge> disabledResults = challengeService.search("", true);
+        List<Challenge> disabledResults = challengeService.search("", true).getResultsList();
         assertEquals(1, disabledResults.size());
         assertEquals(disabledResults.get(0).getEnabled(), false);
     }

@@ -2,7 +2,6 @@ package com.dm.teamquery.data;
 
 import com.dm.teamquery.Execption.BadEntityException;
 import com.dm.teamquery.model.SearchEntity;
-import com.dm.teamquery.model.SearchEntity;
 import com.dm.teamquery.search.Search;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
