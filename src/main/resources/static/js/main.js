@@ -5,8 +5,7 @@ var ctx = $("#ctx").text().replace(/\/$/, "");
 
 jQuery(function () {
 
-
-    $( "#search-button" ).click(function() { doSearch(); });
+    $( "#search-button" ).on("click", function() { doSearch(); });
 
 });
 
