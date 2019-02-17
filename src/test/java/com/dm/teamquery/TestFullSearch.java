@@ -32,6 +32,8 @@ public class TestFullSearch {
 
         String query = s.setQuery("question = adobe").getDatabaseQuery();
 
+
+
         assertEquals(challengeService.search("").getResultsList().size(), 17);
         assertEquals(challengeService.search("question = adobe").getResultsList().size(), 1);
         assertEquals(challengeService.search("question = adobe OR author = rhianna").getResultsList().size(), 17);

@@ -5,7 +5,6 @@ import com.dm.teamquery.Execption.EntityUpdateException;
 import com.dm.teamquery.model.Challenge;
 import com.dm.teamquery.model.ChallengeResult;
 import com.dm.teamquery.model.SearchEntity;
-import com.dm.teamquery.model.SearchResult;
 import com.dm.teamquery.search.Search;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +16,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
