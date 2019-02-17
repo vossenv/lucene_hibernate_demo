@@ -23,7 +23,8 @@ public class Search {
     @Getter private final String OR_OPERATOR = "OR";
     @Getter @Setter private Set<String> fieldNames;
 
-    private final String AND_HOLDER = ";=@!&@";
+    @Getter
+    private final String OR_HOLDER = ";=@!&@";
     private final String SPACE_HOLDER = "!a#!%";
     private final String TAB_HOLDER = "@&%*";
     private final String TERM_SEPARATOR = "#`]//:";
@@ -31,6 +32,7 @@ public class Search {
     private final String badKeyTerms = "(\\S*\\s*=\\s*$|^\\s*=\\S*)";
     private final String specialTerms = "(\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*|\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
     private final String andSearchPattern = "(?<=\\S)\\s+" + AND_OPERATOR + "\\s+(?=\\S)";
+    private final String orSearchPattern = "(?<=\\S)\\s+" + OR_OPERATOR + "\\s+(?=\\S)";
 
     private Class entityType;
     @Getter private String query;
@@ -41,7 +43,7 @@ public class Search {
         this.query = query;
         this.entityType = entityType;
         this.queryGenerator = new QueryGenerator(entityType);
-        this.queryGenerator.setAND_HOLDER(AND_HOLDER);
+        this.queryGenerator.setOR_HOLDER(OR_HOLDER);
         this.fieldNames = stream(entityType.getDeclaredFields()).map(Field::getName).collect(Collectors.toCollection(LinkedHashSet::new));
         indexTerms();
     }
@@ -71,8 +73,8 @@ public class Search {
                     .replaceAll("\"", ""));
         }
         return qstring
-                .replaceAll(andSearchPattern, AND_HOLDER)
-                .replaceAll(OR_OPERATOR, " ")
+                .replaceAll(orSearchPattern, OR_HOLDER)
+                .replaceAll(" " + AND_OPERATOR + " ", " ")
                 .replaceAll("\\s+", TERM_SEPARATOR);
     }
 

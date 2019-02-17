@@ -22,13 +22,24 @@ public class TestSearchPattern {
 
         Search s = new Search(Challenge.class);
 
-        chkSet(s.setQuery("a"), "[a]");
-        chkSet(s.setQuery("a b"), "[a, b]");
-        chkSet(s.setQuery("\"a b\""), "[a b]");
-        chkSet(s.setQuery("\"a b\" c d"), "[c, d, a b]");
+        String q1 = s.setQuery("a").getSearchTerms().toString();
+        String q2 = s.setQuery("a b").getSearchTerms().toString();
+        String q3 = s.setQuery("\"a b\"").getSearchTerms().toString();
+        String q4 = s.setQuery("\"a b\" c d").getSearchTerms().toString();
+        String q5 = s.setQuery("a AND    b").getSearchTerms().toString();
+        String q6 = s.setQuery("a AND c   b").getSearchTerms().toString();
+        String q7 = s.setQuery("question = adobe OR author = rhianna").getSearchTerms().toString();
 
-        chkSet(s.setQuery("a OR    b"), "[a, b]");
-        chkSet(s.setQuery("a OR c   b"), "[a, b, c]");
+        System.out.println();
+
+        assertEquals(q1,"[a]");
+        assertEquals(q2,"[a, b]");
+        assertEquals(q3,"[a b]");
+        assertEquals(q4,"[c, d, a b]");
+        assertEquals(q5,"[a, b]");
+        assertEquals(q6,"[a, b, c]");
+        assertEquals(q7,"[question=adobe;=@!&@author=rhianna]");
+
 
     }
 
@@ -36,24 +47,32 @@ public class TestSearchPattern {
     public void TestAnd() {
 
         Search s = new Search(Challenge.class);
-        String and = s.getQueryGenerator().getAND_HOLDER();
-        
-       // String r = s.setQuery("\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a    wonder\" t u e").getSearchTerms().toString();
+        String or = s.getOR_HOLDER();
 
-        chkSet(s.setQuery("a AND b"), "[a" + and + "b]");
-        chkSet(s.setQuery("aANDa b AND c "), "[b" + and + "c, aANDa]");
-        chkSet(s.setQuery("\"a b\" AND e c"), "[a b" + and + "e, c]");
-        chkSet(s.setQuery("a AND b AND e OR c AND d"), "[a" + and + "b" + and + "e, c" + and + "d]");
-        chkSet(s.setQuery("\"a AND b\""), "[a AND b]");
-        chkSet(s.setQuery("\"a b\" AND c d AND p"), "[a b" + and + "c, d" + and + "p]");
-        chkSet(s.setQuery("f a AND c OR d AND p"), "[f, a" + and + "c, d" + and + "p]");
+        String r = s.setQuery("a AND b AND e OR c AND d").getSearchTerms().toString();
 
-        chkSet(s.setQuery("\"x y\" z OR a AND b c AND d hello = someone goodbye = \"a    wonder\" t u e"),
-                "[t, c" + and + "d, u, e, x y, z, a" + and + "b, hello=someone, goodbye=a    wonder]");
+        String q1 = s.setQuery("a OR b").getSearchTerms().toString().replaceAll(or," OR ");
+        String q2 = s.setQuery("aORa b OR c ").getSearchTerms().toString().replaceAll(or," OR ");
+        String q3 = s.setQuery("\"a b\" OR e c").getSearchTerms().toString().replaceAll(or," OR ");
+        String q4 = s.setQuery("a OR b OR e AND c OR d").getSearchTerms().toString().replaceAll(or," OR ");
+        String q5 = s.setQuery("\"a b\" OR c d OR p").getSearchTerms().toString().replaceAll(or," OR ");
+        String q6 = s.setQuery("f a OR c AND d OR p").getSearchTerms().toString().replaceAll(or," OR ");
+        String q7 = s.setQuery("\"x y\" z AND a OR b c OR d hello = someone goodbye = \"a    wonder\" t u e").getSearchTerms().toString().replaceAll(or," OR ");
+
+        System.out.println();
+
+        assertEquals(q1,"[a OR b]");
+        assertEquals(q2,"[aORa, b OR c]");
+        assertEquals(q3,"[a b OR e, c]");
+        assertEquals(q4,"[a OR b OR e, c OR d]");
+        assertEquals(q5,"[a b OR c, d OR p]");
+        assertEquals(q6,"[f, a OR c, d OR p]");
+        assertEquals(q7,"[t, c OR d, u, e, x y, z, a OR b, hello=someone, goodbye=a    wonder]");
+
+
+
     }
 
-    private void chkSet(Search s, String expected) {
-        assertEquals(s.getSearchTerms().toString(), expected);
-    }
+
 
 }

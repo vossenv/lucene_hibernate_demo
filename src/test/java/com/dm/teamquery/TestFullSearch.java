@@ -2,7 +2,6 @@ package com.dm.teamquery;
 
 import com.dm.teamquery.data.ChallengeService;
 import com.dm.teamquery.model.Challenge;
-import com.dm.teamquery.search.Search;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,15 +27,13 @@ public class TestFullSearch {
     @Test
     public void testSimpleSearch () {
 
-        Search s = new Search(Challenge.class);
-
-        String query = s.setQuery("question = adobe").getDatabaseQuery();
-
-
+//        Search s = new Search(Challenge.class);
+//        String query = s.setQuery("question = adobe OR author = rhianna").getDatabaseQuery();
+//        List<Challenge> cl = challengeService.search("question=\"users\" AND e").getResultsList();
 
         assertEquals(challengeService.search("").getResultsList().size(), 17);
         assertEquals(challengeService.search("question = adobe").getResultsList().size(), 1);
-        assertEquals(challengeService.search("question = adobe OR author = rhianna").getResultsList().size(), 17);
+        assertEquals(challengeService.search("question = adobe OR author = rhianna").getResultsList().size(), 1);
         assertEquals(challengeService.search("37766f9a-9a5a-47d2-a22f-701986cb4d7f").getResultsList().size(), 1);
         assertEquals(challengeService.search("ID").getResultsList().size(), 8);
         assertEquals(challengeService.search("ID AND federated").getResultsList().size(), 4);

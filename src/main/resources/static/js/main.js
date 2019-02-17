@@ -1,21 +1,27 @@
 "use strict";
 
-var ctx = $("#ctx").text().replace(/\/$/, "");
+let ctx = $("#ctx").text().replace(/\/$/, "");
 
 
 jQuery(function () {
 
-    $( "#search-button" ).on("click", function() { doSearch(); });
+    $( "#search-button" ).on("click", function(event) {event.preventDefault(); doSearch(); });
+
+    $('input').on('keypress', (event)=> {
+        if(event.which === 13){
+        doSearch();
+    }
+});
 
 });
 
 
 function doSearch(){
 
-    var page_size = $('#page-size').find(":selected").text();
-    var query = $("#search-bar").val();
+    let page_size = $('#page-size').find(":selected").text();
+    let query = $("#search-bar").val();
 
-    var headers = {
+    let headers = {
         'query': query,
         'size': page_size,
         'Content-Type':'application/json'
