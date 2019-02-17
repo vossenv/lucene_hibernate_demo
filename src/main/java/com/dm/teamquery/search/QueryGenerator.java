@@ -23,7 +23,8 @@ public class QueryGenerator {
     private Set<String> fieldNames;
     private Class entityType;
     private String colQuery;
-    private String AND_HOLDER = ";=@!&@";
+    private String AND_HOLDER = ";+@!&@";
+    private String OR_HOLDER = ";=@!&@";
     private String OR_OPERATOR = "OR";
     private String AND_OPERATOR = "AND";
 
@@ -41,17 +42,17 @@ public class QueryGenerator {
                 + entityType.getSimpleName() + " where "
                 + searchTerms.stream()
                 .map(this::getFieldString)
-                .collect(Collectors.joining(" or ")));
+                .collect(Collectors.joining(" and ")));
     }
 
     private String getFieldString(String s){
 
-        Set<String> terms = asSet(s.split(AND_HOLDER));
-        StringBuilder query = new StringBuilder();
+        Set<String> terms = asSet(s.split(OR_HOLDER));
+        StringBuilder query = new StringBuilder("(");
 
         if (terms.size() == 1){
             String [] keys = s.split("=");
-            return (isKeyTerm(s) && keys.length > 1) ? keys[0] + " like " + surround(keys[1]) : colQuery.replace("?", surround(s));
+            return (isKeyTerm(s) && keys.length > 1) ? keys[0] + " like " + surround(keys[1]) : "(" + colQuery.replace("?", surround(s)) + ")";
         }
 
         final Set<String> keyTerms = terms.stream().filter(this::isKeyTerm).collect(Collectors.toCollection(LinkedHashSet::new));
@@ -62,24 +63,29 @@ public class QueryGenerator {
                 .map(k -> k.split("=")[0] + " like " + surround(k.split("=")[1]))
                 .collect(Collectors.joining(" and ")) + ")";
 
-        fieldNames.forEach(f -> {
-            query.append("(");
-            Iterator<String> nI = normalTerms.iterator();
-            while (nI.hasNext()) {
-                query.append(f).append(" like ")
-                        .append(surround(nI.next()))
-                        .append(nI.hasNext() ? " and " : ") or ");
-            }
-        });
+        if (normalTerms.size() > 0) {
+            fieldNames.forEach(f -> {
+                query.append("(");
+                Iterator<String> nI = normalTerms.iterator();
+                while (nI.hasNext()) {
+                    query.append(f).append(" like ")
+                            .append(surround(nI.next()))
+                            .append(nI.hasNext() ? " or " : ") or ");
+                }
+            });
 
-        String result = trimConjunctions(query.toString());
-        return (keyTerms.isEmpty()) ? result : keysQuery + " and (" + result + ") ";
+            String result = trimConjunctions(query.toString()) + ")";
+            return (keyTerms.isEmpty()) ? result : keysQuery + " and (" + result + ") ";
+
+        } else {
+            return keysQuery;
+        }
     }
 
     private Set<String> validateSearchTerms(Set<String> searchTerms) {
         return searchTerms.stream()
                 .filter(s -> !(s
-                        .replaceAll(AND_HOLDER, "")
+                        .replaceAll(OR_HOLDER, "")
                         .replaceAll(AND_OPERATOR, "")
                         .replaceAll(OR_OPERATOR, "")
                         .trim().isEmpty()))
