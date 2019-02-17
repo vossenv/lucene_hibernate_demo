@@ -38,10 +38,11 @@ public class APIController {
             @RequestParam("disabled") Optional<String> disabledMode,
             HttpServletRequest request) throws InvalidParameterException {
 
+        long startTime = System.nanoTime();
         boolean disabled = disabledMode.isPresent() && Boolean.parseBoolean(disabledMode.get());
-
         SimplePage p = new SimplePage(request);
-        return ApiResponseBuilder.buildApiResponse(challengeService.search(p.getQuery(), p.getPageable(), disabled), p);
+        return ApiResponseBuilder.buildApiResponse(challengeService.search(p.getQuery(), p.getPageable(), disabled), p, startTime);
+
     }
 
     @RequestMapping(value = {"/searches/{id}/delete"}, method = RequestMethod.GET)
@@ -51,7 +52,8 @@ public class APIController {
 
     @RequestMapping(value = {"/searches/search"}, method = RequestMethod.GET)
     public Object searchSearch(HttpServletRequest request) throws InvalidParameterException {
+        long startTime = System.nanoTime();
         SimplePage p = new SimplePage(request);
-        return ApiResponseBuilder.buildApiResponse(searchService.search(p.getQuery()), p);
+        return ApiResponseBuilder.buildApiResponse(searchService.search(p.getQuery()), p, startTime);
     }
 }

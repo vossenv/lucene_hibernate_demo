@@ -6,13 +6,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 //@SuppressWarnings("Duplicates")
 public class ApiResponseBuilder {
 
-    public static ResponseEntity<Object> buildApiResponse(Object body, SimplePage p){
+    public static ResponseEntity<Object> buildApiResponse(Object body, SimplePage p, long startTime){
 
         HttpHeaders headers = new HttpHeaders();
         SearchResult s = (SearchResult) body;
+        List<?> resultsList = s.getResultsList();
 
         headers.add("Search-Size", p.getSize().toString());
         headers.add("Search-Page", p.getPage().toString());
@@ -21,8 +24,9 @@ public class ApiResponseBuilder {
         headers.add("Next-Size", String.valueOf(p.getSize()));
         headers.add("Result-Count", String.valueOf(s.getRowCount()));
         headers.add("Search-Time-Seconds", String.valueOf(s.getSearchTime()));
+        headers.add("Total-Time-Seconds", String.valueOf((System.nanoTime() - startTime)*1.0e-9));
         headers.add("Original-Query", s.getOriginalQuery());
 
-        return new ResponseEntity<>(s.getResultsList(),headers, HttpStatus.OK);
+        return new ResponseEntity<>(resultsList,headers, HttpStatus.OK);
     }
 }
