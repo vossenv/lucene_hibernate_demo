@@ -18,6 +18,14 @@ public class WebController {
         return "index.html";
     }
 
+    @RequestMapping(value = {"/challenge"}, method = RequestMethod.GET)
+    public Object challengePage(Model model)  {
+
+        model.addAttribute("ctx", "teamquery");
+        model.addAttribute("challenge", "true");
+        return "index.html";
+    }
+
     @ResponseBody
     @RequestMapping(value = {"/status"}, method = RequestMethod.GET)
     public String status() {
