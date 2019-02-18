@@ -29,11 +29,11 @@ function buildPageString(pageCount){
     let next = "&nbsp;<span class='pagenum' id='next-page' onClick='clickNavPage(this.id, "+pageCount+")'>next</span>&nbsp;";
     let prev = "&nbsp;<span class='pagenum' id='prev-page' onClick='clickNavPage(this.id,"+pageCount+")'>previous</span>&nbsp;";
 
-    let pagestring = prev; //; //pageCount > 1 ? "<" : "";
+    let pagestring = prev;
     for (let i = 1; i < pageCount + 1; i++) {
         pagestring += "&nbsp;<span class='pagenum' id='pageNum-" + i + "' onClick='clickPageNum(this.innerHTML)'>" + i + "</span>&nbsp;";
     }
-    return pagestring + next; // + (pageCount > 1 ? ">" : "");
+    return pagestring + next;
 }
 
 function doSearch(page_num) {
@@ -59,10 +59,14 @@ function doSearch(page_num) {
 
             let cpage = parseInt(xhr.getResponseHeader('Current-Page')) + 1;
             let pagestring = buildPageString(parseInt(xhr.getResponseHeader('Page-Count')));
+            let searchTime = xhr.getResponseHeader('Total-Time-Seconds');
+            let rowCount = xhr.getResponseHeader('Result-Count');
 
             $("#paging-div").html(pagestring);
             $("#pageNum-"+ cpage).css('color', '#dc3545');
             $("#current-page").text(cpage);
+            $("#stats-div").text(" " + rowCount + " total results.  Search completed in " + Number(searchTime).toFixed(5) + " seconds.")
+            $("#search-footer").show();
 
         }
     });
