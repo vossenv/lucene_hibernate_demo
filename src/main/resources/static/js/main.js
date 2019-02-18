@@ -4,39 +4,65 @@ let ctx = $("#ctx").text().replace(/\/$/, "");
 
 
 jQuery(function () {
+    setListeners();
+});
 
-    $( "#search-button" ).on("click", function(event) {event.preventDefault(); doSearch(); });
 
-    $('input').on('keypress', (event)=> {
-        if(event.which === 13){
-        doSearch();
+function clickPageNum(pageNum) {
+    doSearch(parseInt(pageNum) - 1);
+}
+
+function clickNavPage(id, pageCount) {
+
+    let cpage = parseInt($("#current-page").text());
+
+    cpage += (id === "next-page") ? 1 : (-1);
+    cpage = (cpage < 1) ? 1 : cpage;
+    cpage = (cpage > pageCount) ? pageCount : cpage;
+
+    doSearch(parseInt(cpage) - 1);
+
+}
+
+function buildPageString(pageCount){
+
+    let next = "&nbsp;<span class='pagenum' id='next-page' onClick='clickNavPage(this.id, "+pageCount+")'>next</span>&nbsp;";
+    let prev = "&nbsp;<span class='pagenum' id='prev-page' onClick='clickNavPage(this.id,"+pageCount+")'>previous</span>&nbsp;";
+
+    let pagestring = prev; //; //pageCount > 1 ? "<" : "";
+    for (let i = 1; i < pageCount + 1; i++) {
+        pagestring += "&nbsp;<span class='pagenum' id='pageNum-" + i + "' onClick='clickPageNum(this.innerHTML)'>" + i + "</span>&nbsp;";
     }
-});
+    return pagestring + next; // + (pageCount > 1 ? ">" : "");
+}
 
-});
+function doSearch(page_num) {
 
-
-function doSearch(){
-
-    let page_size = $('#page-size').find(":selected").text();
+    $("#first-visit").text("false");
     let query = $("#search-bar").val();
+    let page_size = $('#page-size').find(":selected").text();
 
     let headers = {
         'query': query,
         'size': page_size,
-        'Content-Type':'application/json'
+        'page': page_num,
+        'Content-Type': 'application/json'
     };
-
-    console.log(headers);
 
     $.ajax({
         url: ctx + "/challenges/search",
         type: "GET",
         headers: headers,
-        success: function(data) {
-
+        success: function (data, status, xhr) {
 
             $("#results").html(JSON.stringify(data, undefined, 2));
+
+            let cpage = parseInt(xhr.getResponseHeader('Current-Page')) + 1;
+            let pagestring = buildPageString(parseInt(xhr.getResponseHeader('Page-Count')));
+
+            $("#paging-div").html(pagestring);
+            $("#pageNum-"+ cpage).css('color', '#dc3545');
+            $("#current-page").text(cpage);
 
         }
     });
@@ -45,4 +71,23 @@ function doSearch(){
 
 
 
-
+function setListeners(){
+    document.getElementById("search-button")
+        .addEventListener("click", function(event) {
+            event.preventDefault();
+            doSearch(0);
+        });
+    document.getElementById("search-bar")
+        .addEventListener("keydown", function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                document.getElementById("search-button").click();
+            }
+        });
+    document.getElementById("page-size")
+        .addEventListener("change", function() {
+            if ($("#first-visit").text() !== "true"){
+                doSearch(0);
+            }
+        });
+}

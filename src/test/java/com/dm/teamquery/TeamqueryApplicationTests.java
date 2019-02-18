@@ -11,6 +11,16 @@ public class TeamqueryApplicationTests {
 
 	@Test
 	public void contextLoads() {
+
+
+		int rows = 17;
+		int size = 5;
+
+		double x = Math.ceil((double) rows / (double) size);
+
+		System.out.println();
+
+
 	}
 
 }

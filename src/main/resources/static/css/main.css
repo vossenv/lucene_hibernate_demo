@@ -64,4 +64,18 @@ pre {
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 
+#paging-div, #page-size {
+    display:inline-block;
+}
 
+.pagenum {
+    color:white;
+    text-decoration:underline;
+    font-size:18px;
+}
+
+.pagenum:hover {
+    color:#dc3545;
+    cursor:pointer;
+
+}

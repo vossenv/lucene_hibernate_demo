@@ -16,16 +16,17 @@ public class ApiResponseBuilder {
         HttpHeaders headers = new HttpHeaders();
         SearchResult s = (SearchResult) body;
         List<?> resultsList = s.getResultsList();
+        int pageCount = (int) Math.ceil((double) s.getRowCount() / (double) p.getSize());
 
-        headers.add("Search-Size", p.getSize().toString());
-        headers.add("Search-Page", p.getPage().toString());
+        headers.add("Page-Size", p.getSize().toString());
+        headers.add("Current-Page", p.getPage().toString());
         headers.add("Previous-Page", String.valueOf( Integer.max(p.getPage() - 1, 0)));
         headers.add("Next-Page", String.valueOf((p.getPage() + 1)));
-        headers.add("Next-Size", String.valueOf(p.getSize()));
         headers.add("Result-Count", String.valueOf(s.getRowCount()));
         headers.add("Search-Time-Seconds", String.valueOf(s.getSearchTime()));
         headers.add("Total-Time-Seconds", String.valueOf((System.nanoTime() - startTime)*1.0e-9));
         headers.add("Original-Query", s.getOriginalQuery());
+        headers.add("Page-Count", String.valueOf(pageCount));
 
         return new ResponseEntity<>(resultsList,headers, HttpStatus.OK);
     }

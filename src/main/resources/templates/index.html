@@ -36,14 +36,18 @@
         </div>
     </div>
     <div id="search-footer" class="row">
+        <!--<div id="paging-div" class="col-md-10 text-center">-->
+            <!--&lt;!&ndash;<span id="pageing-div"></span>&ndash;&gt;-->
+        <!--</div>-->
         <div class="col-md-12 text-right">
+            <span id="paging-div"></span>&nbsp;&nbsp;
             <label for="page-size">Results per page</label>
             <select id="page-size" class="selectpicker">
-                <option>1</option>
+                <option selected="selected">1</option>
                 <option>5</option>
                 <option>10</option>
                 <option>25</option>
-                <option selected="selected">50</option>
+                <option >50</option>
                 <option>100</option>
             </select>
         </div>
@@ -51,7 +55,8 @@
 </div>
 
 <span id="ctx" style="display: none" th:text="@{/}">&nbsp</span>
-
+<span id="first-visit" style="display: none">true</span>
+<span id="current-page" style="display: none"></span>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
