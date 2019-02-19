@@ -17,19 +17,31 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private final static String INVALID_PARAMETER = "You have entered an invalid offset or limit";
+    private final static String INVALID_PAGING_PARAMETER = "You have entered an invalid offset or limit";
+    private final static String INVALID_PARAMETER = "You have entered an invalid query parameter";
     private final static String RESOURCE_NOT_FOUND = "The requested resource could not be found. ";
     private final static String UNSUPPORTED_MESSAGE = "The request method is not supported";
 
     @ExceptionHandler(InvalidParameterException.class)
     protected ResponseEntity<Object> handleInvalidParameterException(InvalidParameterException e ) {
-        return buildResponseEntity(INVALID_PARAMETER, HttpStatus.BAD_REQUEST, e.getErrorList());
+        return buildResponseEntity(INVALID_PAGING_PARAMETER, HttpStatus.BAD_REQUEST, e.getErrorList());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e ) {
+        return buildResponseEntity(INVALID_PARAMETER, HttpStatus.BAD_REQUEST, Arrays.asList(e.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    protected ResponseEntity<Object> handleIllegalStateException(IllegalStateException e ) {
+        return buildResponseEntity(INVALID_PARAMETER, HttpStatus.BAD_REQUEST, Arrays.asList(e.getMessage()));
     }
 
     @Override
@@ -55,12 +67,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private ResponseEntity<Object> buildResponseEntity(String message, HttpStatus status, List<String> errorDetails) {
-
         ApiError apiError = new ApiError(status);
         apiError.setMessage(message);
         apiError.getErrorMessageList().addAll(errorDetails);
         return new ResponseEntity<>(apiError, apiError.getStatus());
-
     }
 
     private ResponseEntity<Object> buildResponseEntity(Exception e, String message, HttpStatus status) {

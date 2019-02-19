@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -51,6 +52,11 @@ public class ChallengeService {
         } catch (Exception e) {
             throw new BadEntityException(e.getMessage());
         }
+    }
+
+    public Optional<Challenge> getChallengeById(UUID challengeId) {
+
+        return challengeRepository.findById(challengeId);
     }
 
     public ChallengeResult search(Object query) {return search(query, PageRequest.of(0, 100), false);}

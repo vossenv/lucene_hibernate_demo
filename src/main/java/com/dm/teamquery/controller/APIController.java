@@ -8,11 +8,22 @@ import com.dm.teamquery.config.ExtendedLogger;
 import com.dm.teamquery.data.ChallengeService;
 import com.dm.teamquery.data.SearchService;
 import com.dm.teamquery.model.Challenge;
+import com.dm.teamquery.model.ChallengeResource;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
+import java.util.UUID;
+
+import static org.springframework.hateoas.core.DummyInvocationUtils.methodOn;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
 @CrossOrigin
@@ -33,6 +44,40 @@ public class APIController {
         return challengeService.deleteChallengeById(id);
     }
 
+    @RequestMapping(value = {"/challenges/{id}"}, method = RequestMethod.GET)
+    public Object searchChallengeById(@PathVariable("id") String id,
+            @RequestParam("disabled") Optional<String> disabledMode){
+
+
+//        Resource<Student> resource = new Resource<Student>(student.get());
+//        ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllStudents());
+//        resource.add(linkTo.withRel("all-students"));
+
+        Optional<Challenge> result = challengeService.getChallengeById(UUID.fromString(id));
+        if (result.isPresent() && (result.get().getEnabled() || disabledMode.isPresent())) {
+          //  Resource<> res = new Resource<>(result.get());
+
+            Link link = linkTo(this.getClass()).slash("challenges").slash(id).withSelfRel();
+
+            ChallengeResource c = new ChallengeResource(result.get());
+          //  c.add(link);
+         //  res.add(link);
+
+            ResponseEntity x = new ResponseEntity<>(c, new HttpHeaders(), HttpStatus.OK);
+            return x;
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+
+//        Optional<Challenge> result = challengeService.getChallengeById(UUID.fromString(id));
+//        return (result.isPresent() && (result.get().getEnabled() || disabledMode.isPresent()))
+//                ? ResponseEntity.ok()
+//                .body(new Resource<>(result.get())
+//                        .add();
+//        ) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     @RequestMapping(value = {"/challenges/search"}, method = RequestMethod.GET)
     public Object searchChallenge(
             @RequestParam("disabled") Optional<String> disabledMode,
@@ -42,7 +87,6 @@ public class APIController {
         boolean disabled = disabledMode.isPresent() && Boolean.parseBoolean(disabledMode.get());
         SimplePage p = new SimplePage(request);
         return ApiResponseBuilder.buildApiResponse(challengeService.search(p.getQuery(), p.getPageable(), disabled), p, startTime);
-
     }
 
     @RequestMapping(value = {"/searches/{id}/delete"}, method = RequestMethod.GET)
