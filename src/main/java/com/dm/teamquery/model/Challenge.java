@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
-import org.springframework.hateoas.ResourceSupport;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

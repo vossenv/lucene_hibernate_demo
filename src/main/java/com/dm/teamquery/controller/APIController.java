@@ -45,7 +45,7 @@ public class APIController {
     }
 
     @RequestMapping(value = {"/challenges/{id}"}, method = RequestMethod.GET)
-    public Object searchChallengeById(@PathVariable("id") String id,
+    public Resource<Challenge> searchChallengeById(@PathVariable("id") String id,
             @RequestParam("disabled") Optional<String> disabledMode){
 
 
@@ -63,10 +63,15 @@ public class APIController {
           //  c.add(link);
          //  res.add(link);
 
+            Link selfRel = linkTo(APIController.class)
+                    .slash("challenges")
+                    .slash(result.get().getChallengeId().toString())
+                    .withSelfRel();
+            Resource<Challenge> x1 = new Resource<>(result.get(),selfRel);
             ResponseEntity x = new ResponseEntity<>(c, new HttpHeaders(), HttpStatus.OK);
-            return x;
+            return x1;
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return null; //new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
 
