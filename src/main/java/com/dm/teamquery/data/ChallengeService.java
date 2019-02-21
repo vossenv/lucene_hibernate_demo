@@ -1,14 +1,18 @@
 package com.dm.teamquery.data;
 
 
+import com.dm.teamquery.data.Repository.ChallengeRepository;
+import com.dm.teamquery.data.Repository.SearchInfoRepository;
+import com.dm.teamquery.entity.SearchInfo;
 import com.dm.teamquery.execption.BadEntityException;
 import com.dm.teamquery.execption.EntityUpdateException;
 import com.dm.teamquery.entity.Challenge;
 
+import com.dm.teamquery.execption.SearchFailedException;
 import com.dm.teamquery.search.Search;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +33,9 @@ public class ChallengeService {
     @Inject
     private ChallengeRepository challengeRepository;
 
+    @Inject
+    private SearchInfoRepository searchInfoRepository;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -38,7 +45,7 @@ public class ChallengeService {
             c.setDateLastModified(LocalDateTime.now());
             return challengeRepository.save(c);
         } catch (Exception e) {
-            throw new EntityUpdateException(e.getMessage());
+            throw new EntityUpdateException(ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -47,45 +54,33 @@ public class ChallengeService {
             challengeRepository.deleteById(UUID.fromString(id));
             return "Successfully deleted " + id;
         } catch (Exception e) {
-            throw new BadEntityException(e.getMessage());
+            throw new BadEntityException(ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
     public Optional<Challenge> getChallengeById(UUID challengeId) {
-
         return challengeRepository.findById(challengeId);
     }
 
-    public SearchResult search(Object query) {return search(query, PageRequest.of(0, 100), false);}
-    public SearchResult search(Object query, boolean disabled) { return search(query, PageRequest.of(0, 100), disabled); }
-    public SearchResult search(Object query, Pageable p) {
-        return search(query, p, false);
-    }
-    public SearchResult search(Object query, Pageable p, boolean disabled) {
+    public SearchResponse search(SearchRequest request) throws SearchFailedException {
 
         long startTime = System.nanoTime();
-        String dbQuery = prepareQuery(new Search(Challenge.class, query.toString()).getDatabaseQuery(), disabled);
-       // SearchEntity entity = new SearchEntity(query.toString(), dbQuery);
-        SearchResult result = new SearchResult();
+        String query = request.getQuery();
+        String dbQuery = prepareQuery(new Search(Challenge.class, query).getDatabaseQuery(), request.getIncludeDisabled());
+        SearchInfo search = new SearchInfo(query, dbQuery);
+        SearchResponse response = new SearchResponse(request);
 
         try {
-
-            result.setOriginalQuery(query.toString());
-            result.setRowCount(execCountSearch(dbQuery));
-            result.setResultsList(execPagedSearch(dbQuery, p));
-            result.setSearchTime(System.nanoTime() - startTime);
-
+            response.setRowCount(execCountSearch(dbQuery));
+            response.setResultsList(execPagedSearch(dbQuery, request.getPageable()));
+            response.setSearchTime((System.nanoTime() - startTime)*1.0e-9);
+            searchInfoRepository.save(search);
+            return response;
         } catch (Exception e) {
-            //entity.setErrors(e.getMessage());
+            search.setErrors(ExceptionUtils.getRootCauseMessage(e));
+            searchInfoRepository.save(search);
+            throw new SearchFailedException(ExceptionUtils.getRootCauseMessage(e));
         }
-
-//        try {
-//            searchRepository.save(entity);
-//        } catch (Exception e) {
-//            // Do nothing -- non-critical function.  Add logging later
-//        }
-
-        return result;
     }
 
     private List<Challenge> execPagedSearch(String dbQuery, Pageable p) {

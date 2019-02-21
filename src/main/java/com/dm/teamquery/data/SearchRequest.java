@@ -1,11 +1,9 @@
-package com.dm.teamquery.controller;
+package com.dm.teamquery.data;
 
 
 import com.dm.teamquery.execption.InvalidParameterException;
-import com.dm.teamquery.data.SearchResult;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -15,22 +13,22 @@ import org.springframework.http.ResponseEntity;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-@Getter @Setter
-@EqualsAndHashCode
+@Data
+@NoArgsConstructor
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
-public class SimplePage {
+public class SearchRequest {
 
-    private Integer size;
-    private Integer page;
-    private String query;
-    private String URL;
-    private String host;
-    private Boolean includeDisabled;
-    private Pageable pageable;
+    private Integer size = 100;
+    private Integer page = 0;
+    private String query = "";
+    private String URL="";
+    private String host="";
+    private Boolean includeDisabled = false;
+    private Pageable pageable = PageRequest.of(0, 100);
     private Long requestTime = System.nanoTime();
     private List<String> errors = new ArrayList<>();
 
-    public SimplePage(HttpServletRequest request, Optional<String> disabled) throws InvalidParameterException {
+    public SearchRequest(HttpServletRequest request, Optional<String> disabled) throws InvalidParameterException {
 
         Set<String> headers = new HashSet<>(Collections.list(request.getHeaderNames()));
         this.includeDisabled = disabled.isPresent() && Boolean.parseBoolean(disabled.get());
@@ -52,7 +50,7 @@ public class SimplePage {
         }
     }
 
-    public ResponseEntity prepareResponse (Object body, SearchResult meta) {
+    public ResponseEntity prepareResponse (Object body, SearchResponse meta) {
 
         HttpHeaders headers = new HttpHeaders();
         int pageCount = (int) Math.ceil((double) meta.getRowCount() / (double) this.size);
