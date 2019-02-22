@@ -3,23 +3,23 @@ package com.dm.teamquery.controller;
 
 import com.dm.teamquery.data.ChallengeService;
 import com.dm.teamquery.data.SearchRequest;
-import com.dm.teamquery.data.SearchResponse;
 import com.dm.teamquery.entity.Challenge;
-import com.dm.teamquery.execption.*;
-import org.springframework.hateoas.Resources;
+import com.dm.teamquery.execption.BadEntityException;
+import com.dm.teamquery.execption.EntityUpdateException;
+import com.dm.teamquery.execption.InvalidParameterException;
+import com.dm.teamquery.execption.SearchFailedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 
 @RestController
 @CrossOrigin
-@SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
 @RequestMapping(value = "/challenges", produces = "application/hal+json")
 public class ChallengeController {
 
@@ -45,12 +45,10 @@ public class ChallengeController {
     }
 
     @RequestMapping(value = {"/search"}, method = RequestMethod.GET)
-    public Object searchChallenge(
-            @RequestParam("disabled") Optional<String> disabled,
-            HttpServletRequest request) throws InvalidParameterException,
-            SearchFailedException, ResourceCreationFailedException {
+    public Object searchChallenge(HttpServletRequest request)
+            throws InvalidParameterException, SearchFailedException, UnsupportedEncodingException {
 
-        return  challengeService.search(new SearchRequest(request, disabled))
+        return  challengeService.search(new SearchRequest(request))
                 .getResponse(Challenge.class, ChallengeResource.class);
 
     }

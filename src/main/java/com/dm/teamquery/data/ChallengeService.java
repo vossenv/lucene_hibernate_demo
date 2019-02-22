@@ -66,7 +66,7 @@ public class ChallengeService {
 
         long startTime = System.nanoTime();
         String query = request.getQuery();
-        String dbQuery = prepareQuery(new Search(Challenge.class, query).getDatabaseQuery(), request.getIncludeDisabled());
+        String dbQuery = prepareQuery(new Search(Challenge.class, query).getDatabaseQuery(), request.getIncDisabled());
         SearchInfo search = new SearchInfo(query, dbQuery);
         SearchResponse response = new SearchResponse(request);
 

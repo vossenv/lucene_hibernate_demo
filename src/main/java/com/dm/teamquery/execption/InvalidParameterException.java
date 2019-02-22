@@ -15,6 +15,11 @@ public class InvalidParameterException extends Exception {
         super();
     }
 
+    public InvalidParameterException(List<String> errors){
+        super();
+        errorList = errors;
+    }
+
     public InvalidParameterException (String message) {
         super(message);
         errorList.add(message);

@@ -6,12 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.net.URLDecoder.decode;
 
 @Data
 @NoArgsConstructor
@@ -20,51 +24,34 @@ public class SearchRequest {
 
     private Integer size = 100;
     private Integer page = 0;
-    private String query = "";
+    private String query="";
     private String URL="";
-    private String host="";
-    private Boolean includeDisabled = false;
+    private Boolean incDisabled = false;
     private Pageable pageable = PageRequest.of(0, 100);
     private Long requestTime = System.nanoTime();
     private List<String> errors = new ArrayList<>();
 
-    public SearchRequest(HttpServletRequest request, Optional<String> disabled) throws InvalidParameterException {
+    public SearchRequest(HttpServletRequest request) throws InvalidParameterException, UnsupportedEncodingException{
 
-        Set<String> headers = new HashSet<>(Collections.list(request.getHeaderNames()));
-        this.includeDisabled = disabled.isPresent() && Boolean.parseBoolean(disabled.get());
+        Map<String, String> requestMap = Collections.list(request.getHeaderNames()).stream()
+               .collect(Collectors.toMap(Object::toString, request::getHeader));
 
-        this.host = request.getHeader("host");
+        (Collections.list(request.getParameterNames()))
+                .forEach(p -> requestMap.put(p, request.getParameter(p)));
+
         this.URL = request.getRequestURL().toString();
-        this.query = headers.contains("query") ? request.getHeader("query") : "";
-        String page = headers.contains("page") ? request.getHeader("page") : "0";
-        String size = headers.contains("size") ? request.getHeader("size") : "100";
-
+        this.incDisabled = requestMap.containsKey("disabled");
+        this.query = requestMap.containsKey("query") ? decode(requestMap.get("query"), "UTF-8") : this.query;
+        String page = requestMap.containsKey("page") ? requestMap.get("page") : this.page.toString();
+        String size = requestMap.containsKey("size") ? requestMap.get("size") : this.size.toString();
         this.size = validateParameter("size", size, 1, 1000);
         this.page = validateParameter("page", page, 0, Integer.MAX_VALUE);
-        this.pageable = PageRequest.of(this.page, this.size);
 
         if (errors.size() > 0) {
-            InvalidParameterException e = new InvalidParameterException();
-            e.getErrorList().addAll(errors);
-            throw e;
+            throw new InvalidParameterException(errors);
         }
-    }
 
-    public ResponseEntity prepareResponse (Object body, SearchResponse meta) {
-
-        HttpHeaders headers = new HttpHeaders();
-        int pageCount = (int) Math.ceil((double) meta.getRowCount() / (double) this.size);
-
-        headers.add("Page-Size", this.size.toString());
-        headers.add("Current-Page", this.page.toString());
-        headers.add("Previous-Page", String.valueOf( Integer.max(this.page - 1, 0)));
-        headers.add("Next-Page", String.valueOf((this.page + 1)));
-        headers.add("Result-Count", String.valueOf(meta.getRowCount()));
-        headers.add("Search-Time-Seconds", String.valueOf(meta.getSearchTime()));
-        headers.add("Total-Time-Seconds", String.valueOf((System.nanoTime() - this.requestTime)*1.0e-9));
-        headers.add("Original-Query", this.query);
-        headers.add("Page-Count", String.valueOf(pageCount));
-        return new ResponseEntity<>(body,headers, HttpStatus.OK);
+        this.pageable = PageRequest.of(this.page, this.size);
     }
 
     private int validateParameter (String type, String param, int min, int max){
@@ -80,6 +67,4 @@ public class SearchRequest {
            return 0;
         }
     }
-
-
 }

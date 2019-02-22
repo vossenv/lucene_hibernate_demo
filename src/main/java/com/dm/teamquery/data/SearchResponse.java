@@ -1,20 +1,16 @@
 package com.dm.teamquery.data;
 
-import com.dm.teamquery.execption.ResourceCreationFailedException;
+import io.vavr.API;
 import lombok.Data;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.dm.teamquery.config.LambdaExceptionUtil.rethrowFunction;
-
 
 @Data
-
 public class SearchResponse {
     private SearchRequest request;
     private long rowCount;
@@ -26,40 +22,32 @@ public class SearchResponse {
         this.request = request;
     }
 
-    public ResponseEntity getResponse (Class type, Class dest) throws ResourceCreationFailedException{
-        try {
-            Constructor<?> c = dest.getConstructor(type);
-            Resources r = new Resources(resultsList.stream()
-                    .map(rethrowFunction(o -> c.newInstance(type.cast(o))))
-                    .collect(Collectors.toList()));
-            return request.prepareResponse(r, this);
-        } catch (Exception e) {
-            throw new ResourceCreationFailedException(ExceptionUtils.getRootCauseMessage(e));
-        }
+    public ResponseEntity getResponse (Class type, Class dest){
+
+        return prepareResponse(new Resources(
+                resultsList.stream()
+                                .map(API.unchecked(o ->
+                                dest.getConstructor(type)
+                                .newInstance(type.cast(o))))
+                                .collect(Collectors.toList())));
+    }
+
+    private ResponseEntity prepareResponse (Object body) {
+
+        HttpHeaders headers = new HttpHeaders();
+        int pageCount = (int) Math.ceil((double) this.getRowCount() / (double) request.getSize());
+
+        headers.add("Page-Size", request.getSize().toString());
+        headers.add("Current-Page", request.getPage().toString());
+        headers.add("Previous-Page", String.valueOf( Integer.max(request.getPage() - 1, 0)));
+        headers.add("Next-Page", String.valueOf((request.getPage() + 1)));
+        headers.add("Result-Count", String.valueOf(this.rowCount));
+        headers.add("Search-Time-Seconds", String.valueOf(this.searchTime));
+        headers.add("Total-Time-Seconds", String.valueOf((System.nanoTime() - request.getRequestTime())*1.0e-9));
+        headers.add("Original-Query", request.getQuery());
+        headers.add("Page-Count", String.valueOf(pageCount));
+        return new ResponseEntity<>(body,headers, HttpStatus.OK);
     }
 }
 
 
-
-
-
-
-//    static <T> Consumer<T> throwingConsumerWrapper(
-//            ThrowingConsumer<T, Exception> throwingConsumer) {
-//
-//        return i -> {
-//            try {
-//                throwingConsumer.accept(i);
-//            } catch (Exception ex) {
-//                throw new RuntimeException(ex);
-//            }
-//        };
-//    }
-
-//@FunctionalInterface
-//interface ThrowingConsumer<T, E extends Exception> {
-//    void accept(T t) throws E;
-//}
-
-// List<Object> nl = new ArrayList<>();
-//resultsList.forEach(throwingConsumerWrapper( (o) -> nl.add(constructor.newInstance(type.cast(o)))));

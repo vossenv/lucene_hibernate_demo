@@ -27,7 +27,7 @@ import java.util.List;
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private final static String INVALID_PAGING_PARAMETER = "You have entered an invalid offset or limit";
+    private final static String INVALID_PAGING_PARAMETER = "You have entered an invalid paging parameter";
     private final static String INVALID_PARAMETER = "You have entered an invalid query parameter";
     private final static String RESOURCE_NOT_FOUND = "The requested resource could not be found. ";
     private final static String UNSUPPORTED_MESSAGE = "The request method is not supported";
