@@ -26,10 +26,15 @@ public class SearchRequest {
     private Integer page = 0;
     private String query="";
     private String URL="";
+    private String client_ip="";
     private Boolean incDisabled = false;
     private Pageable pageable = PageRequest.of(0, 100);
     private Long requestTime = System.nanoTime();
     private List<String> errors = new ArrayList<>();
+
+    public SearchRequest(String query){
+        this.query = query;
+    }
 
     public SearchRequest(HttpServletRequest request) throws InvalidParameterException, UnsupportedEncodingException{
 
@@ -39,6 +44,7 @@ public class SearchRequest {
         (Collections.list(request.getParameterNames()))
                 .forEach(p -> requestMap.put(p, request.getParameter(p)));
 
+        this.client_ip = getClientIpAddress(request);
         this.URL = request.getRequestURL().toString();
         this.incDisabled = requestMap.containsKey("disabled");
         this.query = requestMap.containsKey("query") ? decode(requestMap.get("query"), "UTF-8") : this.query;
@@ -66,5 +72,28 @@ public class SearchRequest {
            errors.add("Error parsing " + type + ": '" + param + "'.  Please enter a valid integer between " + min + " and " + max);
            return 0;
         }
+    }
+
+    private static final String[] IP_HEADER_CANDIDATES = {
+            "X-Forwarded-For",
+            "Proxy-Client-IP",
+            "WL-Proxy-Client-IP",
+            "HTTP_X_FORWARDED_FOR",
+            "HTTP_X_FORWARDED",
+            "HTTP_X_CLUSTER_CLIENT_IP",
+            "HTTP_CLIENT_IP",
+            "HTTP_FORWARDED_FOR",
+            "HTTP_FORWARDED",
+            "HTTP_VIA",
+            "REMOTE_ADDR" };
+
+    public static String getClientIpAddress(HttpServletRequest request) {
+        for (String header : IP_HEADER_CANDIDATES) {
+            String ip = request.getHeader(header);
+            if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
+                return ip;
+            }
+        }
+        return request.getRemoteAddr();
     }
 }

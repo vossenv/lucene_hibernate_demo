@@ -1,11 +1,11 @@
 package com.dm.teamquery;
 
 
-
 import com.dm.teamquery.data.ChallengeService;
 import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.BadEntityException;
 import com.dm.teamquery.execption.EntityUpdateException;
+import com.dm.teamquery.execption.SearchFailedException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,28 +28,28 @@ public class TestChallenges {
 
     @Inject
     ChallengeService challengeService;
-//
-//    @Test
-//    public void TestUpdae() throws EntityUpdateException {
-//
-//        List<Challenge> allChallenges = challengeService.search("").getResultsList();
-//        int initialSize = allChallenges.size();
-//        Challenge c = allChallenges.get(0);
-//        String originalQuestion = c.getQuestion();
-//        UUID id = c.getChallengeId();
-//        LocalDateTime time = c.getDateLastModified();
-//
-//        c.setQuestion("ABC");
-//        assertEquals(c,  challengeService.updateChallenge(c));
-//
-//        Challenge e = challengeService.search(id).getResultsList().get(0);
-//        assertEquals(c, e);
-//        assertNotEquals(time, e.getDateLastModified());
-//        assertEquals(initialSize, challengeService.search("").getResultsList().size());
-//
-//        c.setQuestion(originalQuestion);
-//        challengeService.updateChallenge(c);
-//    }
+
+    @Test
+    public void TestUpdate() throws EntityUpdateException, SearchFailedException {
+
+        List<Challenge> allChallenges = challengeService.basicSearch("");
+        int initialSize = allChallenges.size();
+        Challenge c = allChallenges.get(0);
+        String originalQuestion = c.getQuestion();
+        UUID id = c.getChallengeId();
+        LocalDateTime time = c.getDateLastModified();
+
+        c.setQuestion("ABC");
+        assertEquals(c,  challengeService.updateChallenge(c));
+
+        Challenge e = challengeService.basicSearch(id.toString()).get(0);
+        assertEquals(c, e);
+        assertNotEquals(time, e.getDateLastModified());
+        assertEquals(initialSize, challengeService.basicSearch("").size());
+
+        c.setQuestion(originalQuestion);
+        challengeService.updateChallenge(c);
+    }
 
     @Test
     public void TestAdd() throws EntityUpdateException, BadEntityException {
@@ -77,19 +77,19 @@ public class TestChallenges {
         }
     }
 
-//    @Test
-//    public void TestDelete() throws BadEntityException, EntityUpdateException {
-//
-//        Challenge c = challengeService.search("").getResultsList().get(0);
-//        challengeService.deleteChallengeById(c.getChallengeId().toString());
-//
-//        List<Challenge> results = challengeService.search(c.getChallengeId()).getResultsList();
-//        assertEquals(0, results.size());
-//
-//        Challenge d = challengeService.updateChallenge(c);
-//        assertEquals(d.getChallengeId(), c.getChallengeId());
-//
-//    }
+    @Test
+    public void TestDelete() throws BadEntityException, EntityUpdateException, SearchFailedException {
+
+        Challenge c = challengeService.basicSearch("").get(0);
+        challengeService.deleteChallengeById(c.getChallengeId().toString());
+
+        List<Challenge> results = challengeService.basicSearch(c.getChallengeId().toString());
+        assertEquals(0, results.size());
+
+        Challenge d = challengeService.updateChallenge(c);
+        assertEquals(d.getChallengeId(), c.getChallengeId());
+
+    }
 
     @Test
     public void TestDeleteNull(){

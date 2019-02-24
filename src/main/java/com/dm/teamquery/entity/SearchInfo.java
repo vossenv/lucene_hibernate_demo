@@ -29,7 +29,7 @@ public class SearchInfo {
     @Column(name = "initialquery", columnDefinition = "VARCHAR(3000)")
     String initialQuery;
 
-    @Column(name = "databsequery", columnDefinition = "VARCHAR(3000)")
+    @Column(name = "databasequery", columnDefinition = "VARCHAR(3000)")
     String databaseQuery;
 
     @Column(name = "errors", columnDefinition = "VARCHAR(3000)")

@@ -28,7 +28,7 @@ import java.util.UUID;
 public class ChallengeService {
 
 
-    private final static Logger logger = LogManager.getLogger("ProcessLog");
+    private final static Logger logger = LogManager.getLogger("ServiceLog");
 
     @Inject
     private ChallengeRepository challengeRepository;
@@ -62,6 +62,10 @@ public class ChallengeService {
         return challengeRepository.findById(challengeId);
     }
 
+    public List<Challenge> basicSearch(String query) throws SearchFailedException {
+        return (List<Challenge>) search(new SearchRequest(query)).getResultsList();
+    }
+
     public SearchResponse search(SearchRequest request) throws SearchFailedException {
 
         long startTime = System.nanoTime();
@@ -69,6 +73,8 @@ public class ChallengeService {
         String dbQuery = prepareQuery(new Search(Challenge.class, query).getDatabaseQuery(), request.getIncDisabled());
         SearchInfo search = new SearchInfo(query, dbQuery);
         SearchResponse response = new SearchResponse(request);
+
+        logger.debug("Processing search request from " +  request.getClient_ip() + ", query: " + (query.isEmpty() ? "[none]" : query));
 
         try {
             response.setRowCount(execCountSearch(dbQuery));

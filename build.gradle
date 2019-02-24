@@ -6,28 +6,42 @@ plugins {
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.dm'
-version = '0.0.1-SNAPSHOT'
+version = '1.0'
 sourceCompatibility = '1.8'
 
 repositories {
 	mavenCentral()
+    jcenter()
+}
+
+configurations {
+    compile.exclude module: 'spring-boot-starter-logging'
+    compile.exclude module: "logback-classic"
 }
 
 dependencies {
 
+	implementation 'org.springframework.boot:spring-boot-starter'                   // ????
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa')         // Hibernate
+    implementation("org.springframework.boot:spring-boot-starter-hateoas")          // HATEOAS
+	implementation('org.springframework.boot:spring-boot-starter-thymeleaf')        // Thymeleaf
 
-	//implementation('org.springframework.boot:spring-boot-starter-web')
-	implementation('javax.inject:javax.inject:1')
-    implementation('org.projectlombok:lombok:1.18.4')
-	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
-  //  implementation('com.h2database:h2')
-    implementation('mysql:mysql-connector-java')
-	implementation 'org.springframework.boot:spring-boot-starter'
-    implementation("org.springframework.boot:spring-boot-starter-hateoas")
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation('org.apache.commons:commons-lang3:3.7') // for ExceptionUtils
-    compile group: 'io.vavr', name: 'vavr', version: '0.10.0'
+    //implementation('com.h2database:h2')
+    //implementation('org.springframework.boot:spring-boot-starter-web')
 
+    implementation('org.apache.commons:commons-lang3:3.7')                          // for ExceptionUtils
+	implementation('io.vavr:vavr:0.10.0')                                           // function library
+    implementation('javax.inject:javax.inject:1')                                   // INJECT
+    implementation('org.projectlombok:lombok:1.18.4')                               // Getter/Setter/Data
+    implementation('mysql:mysql-connector-java')                                    // MySQL
+    
+    // Logging
+    implementation 'org.apache.logging.log4j:log4j-api:2.+'
+    implementation 'org.apache.logging.log4j:log4j-core:2.+'
+    implementation ('org.springframework.boot:spring-boot-starter-log4j2:2.1.1.RELEASE')
+    implementation ('com.lmax:disruptor:3.4.2')
+    
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
 
 
 }
