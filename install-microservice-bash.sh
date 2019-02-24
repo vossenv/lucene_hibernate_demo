@@ -60,7 +60,7 @@ while [ "$apiStatus" != "true" ]; do
 
     if [ "$count" -gt 50 ]; then break; fi
 
-    apiStatus=$(curl localhost:9002/status -s)
+    apiStatus=$(curl localhost:9003/status -s)
     count=$((count + 1))
 
     sleep 1
