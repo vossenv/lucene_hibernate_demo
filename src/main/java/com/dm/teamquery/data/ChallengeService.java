@@ -1,8 +1,8 @@
 package com.dm.teamquery.data;
 
 
-import com.dm.teamquery.data.Repository.ChallengeRepository;
-import com.dm.teamquery.data.Repository.SearchInfoRepository;
+import com.dm.teamquery.data.repository.ChallengeRepository;
+import com.dm.teamquery.data.repository.SearchInfoRepository;
 import com.dm.teamquery.entity.SearchInfo;
 import com.dm.teamquery.execption.BadEntityException;
 import com.dm.teamquery.execption.EntityUpdateException;
