@@ -1,4 +1,4 @@
-package com.dm.teamquery.Execption;
+package com.dm.teamquery.execption;
 
 
 import org.springframework.http.HttpStatus;

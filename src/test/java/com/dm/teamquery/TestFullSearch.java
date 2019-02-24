@@ -1,7 +1,9 @@
 package com.dm.teamquery;
 
 import com.dm.teamquery.data.ChallengeService;
-import com.dm.teamquery.model.Challenge;
+import com.dm.teamquery.data.SearchRequest;
+import com.dm.teamquery.entity.Challenge;
+import com.dm.teamquery.execption.SearchFailedException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,30 +27,32 @@ public class TestFullSearch {
     ChallengeService challengeService;
 
     @Test
-    public void testSimpleSearch () {
+    public void testSimpleSearch () throws SearchFailedException {
 
 //        Search s = new Search(Challenge.class);
 //        String query = s.setQuery("question = adobe OR author = rhianna").getDatabaseQuery();
-//        List<Challenge> cl = challengeService.search("question=\"users\" AND e").getResultsList();
+//        List<Challenge> cl = challengeService.basicSearch("question=\"users\" AND e");
 
-        assertEquals(challengeService.search("").getResultsList().size(), 17);
-        assertEquals(challengeService.search("question = adobe").getResultsList().size(), 1);
-        assertEquals(challengeService.search("question = adobe OR author = rhianna").getResultsList().size(), 1);
-        assertEquals(challengeService.search("37766f9a-9a5a-47d2-a22f-701986cb4d7f").getResultsList().size(), 1);
-        assertEquals(challengeService.search("ID").getResultsList().size(), 8);
-        assertEquals(challengeService.search("ID AND federated").getResultsList().size(), 4);
-        assertEquals(challengeService.search("\"to the individual\"").getResultsList().size(), 1);
-        assertEquals(challengeService.search("question=\"users\" AND e").getResultsList().size(), 2);
+        assertEquals(challengeService.basicSearch("").size(), 17);
+        assertEquals(challengeService.basicSearch("question = adobe").size(), 1);
+        assertEquals(challengeService.basicSearch("question = adobe OR author = rhianna").size(), 1);
+        assertEquals(challengeService.basicSearch("37766f9a-9a5a-47d2-a22f-701986cb4d7f").size(), 1);
+        assertEquals(challengeService.basicSearch("ID").size(), 8);
+        assertEquals(challengeService.basicSearch("ID AND federated").size(), 4);
+        assertEquals(challengeService.basicSearch("\"to the individual\"").size(), 1);
+        assertEquals(challengeService.basicSearch("question=\"users\" AND e").size(), 2);
     }
 
     @Test
-    public void testPagedSearch (){
+    public void testPagedSearch () throws SearchFailedException{
 
-        List<Challenge> results = new ArrayList<>();
+        List<Object> results = new ArrayList<>();
 
         for (int i = 0; i < 15; i ++ ){
 
-            List<Challenge> nextPage = challengeService.search("", PageRequest.of(i, 5)).getResultsList();
+            SearchRequest sr = new SearchRequest();
+            sr.setPageable(PageRequest.of(i,5));
+            List<?> nextPage = challengeService.search(sr).getResultsList();
 
             if (nextPage.size() == 0) {
                 assertEquals(4, i);
@@ -62,10 +66,13 @@ public class TestFullSearch {
     }
 
     @Test
-    public void testGetDisabled() {
+    public void testGetDisabled() throws SearchFailedException{
 
-        List<Challenge> disabledResults = challengeService.search("", true).getResultsList();
+        SearchRequest sr = new SearchRequest();
+        sr.setIncDisabled(true);
+        
+        List<?> disabledResults = challengeService.search(sr).getResultsList();
         assertEquals(1, disabledResults.size());
-        assertEquals(disabledResults.get(0).getEnabled(), false);
+        assertEquals(((Challenge) disabledResults.get(0)).getEnabled(), false);
     }
 }

@@ -10,8 +10,8 @@
         </Console>
         <RollingFile name="rollingLog"
                      append="false"
-                     fileName="${APP_LOG_ROOT}/micropifs.log"
-                     filePattern="${APP_LOG_ROOT}/archive/micropifs-%d{yyyy-MM-dd}-%i.log">
+                     fileName="${APP_LOG_ROOT}/teamquery.log"
+                     filePattern="${APP_LOG_ROOT}/archive/teamquery-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="${LOG_PATTERN}" />
             <Policies>
                 <OnStartupTriggeringPolicy />
@@ -26,7 +26,7 @@
             <AppenderRef ref="rollingLog" />
             <AppenderRef ref="Console" />
         </Root>
-        <Logger name="ProcessLog" level="debug" additivity="false">
+        <Logger name="ServiceLog" level="debug" additivity="false">
             <AppenderRef ref="rollingLog" />
             <AppenderRef ref="Console" />
         </Logger>

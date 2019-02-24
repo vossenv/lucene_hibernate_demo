@@ -8,19 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class InvalidParameterException extends Exception {
+public class SearchFailedException extends Exception {
 
 
-    public InvalidParameterException(){
+    public SearchFailedException(){
         super();
     }
 
-    public InvalidParameterException(List<String> errors){
-        super();
-        errorList = errors;
-    }
-
-    public InvalidParameterException (String message) {
+    public SearchFailedException(String message) {
         super(message);
         errorList.add(message);
     }

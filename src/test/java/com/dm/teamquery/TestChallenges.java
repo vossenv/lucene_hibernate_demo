@@ -1,10 +1,11 @@
 package com.dm.teamquery;
 
 
-import com.dm.teamquery.Execption.BadEntityException;
-import com.dm.teamquery.Execption.EntityUpdateException;
 import com.dm.teamquery.data.ChallengeService;
-import com.dm.teamquery.model.Challenge;
+import com.dm.teamquery.entity.Challenge;
+import com.dm.teamquery.execption.BadEntityException;
+import com.dm.teamquery.execption.EntityUpdateException;
+import com.dm.teamquery.execption.SearchFailedException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,12 +26,13 @@ import static org.junit.Assert.fail;
 @TestPropertySource("classpath:application-test.properties")
 public class TestChallenges {
 
-    @Inject ChallengeService challengeService;
+    @Inject
+    ChallengeService challengeService;
 
     @Test
-    public void TestUpdae() throws EntityUpdateException {
+    public void TestUpdate() throws EntityUpdateException, SearchFailedException {
 
-        List<Challenge> allChallenges = challengeService.search("").getResultsList();
+        List<Challenge> allChallenges = challengeService.basicSearch("");
         int initialSize = allChallenges.size();
         Challenge c = allChallenges.get(0);
         String originalQuestion = c.getQuestion();
@@ -40,10 +42,10 @@ public class TestChallenges {
         c.setQuestion("ABC");
         assertEquals(c,  challengeService.updateChallenge(c));
 
-        Challenge e = challengeService.search(id).getResultsList().get(0);
+        Challenge e = challengeService.basicSearch(id.toString()).get(0);
         assertEquals(c, e);
         assertNotEquals(time, e.getDateLastModified());
-        assertEquals(initialSize, challengeService.search("").getResultsList().size());
+        assertEquals(initialSize, challengeService.basicSearch("").size());
 
         c.setQuestion(originalQuestion);
         challengeService.updateChallenge(c);
@@ -76,12 +78,12 @@ public class TestChallenges {
     }
 
     @Test
-    public void TestDelete() throws BadEntityException, EntityUpdateException {
+    public void TestDelete() throws BadEntityException, EntityUpdateException, SearchFailedException {
 
-        Challenge c = challengeService.search("").getResultsList().get(0);
+        Challenge c = challengeService.basicSearch("").get(0);
         challengeService.deleteChallengeById(c.getChallengeId().toString());
 
-        List<Challenge> results = challengeService.search(c.getChallengeId()).getResultsList();
+        List<Challenge> results = challengeService.basicSearch(c.getChallengeId().toString());
         assertEquals(0, results.size());
 
         Challenge d = challengeService.updateChallenge(c);

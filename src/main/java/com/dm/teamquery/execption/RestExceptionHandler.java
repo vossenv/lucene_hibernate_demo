@@ -1,13 +1,15 @@
-package com.dm.teamquery.Execption;
+package com.dm.teamquery.execption;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ConstraintViolationException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +27,7 @@ import java.util.List;
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private final static String INVALID_PAGING_PARAMETER = "You have entered an invalid offset or limit";
+    private final static String INVALID_PAGING_PARAMETER = "You have entered an invalid paging parameter";
     private final static String INVALID_PARAMETER = "You have entered an invalid query parameter";
     private final static String RESOURCE_NOT_FOUND = "The requested resource could not be found. ";
     private final static String UNSUPPORTED_MESSAGE = "The request method is not supported";
@@ -51,11 +54,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object>  handleNoHandlerFoundException(
+    protected ResponseEntity<Object> handleNoHandlerFoundException(
             NoHandlerFoundException e, HttpHeaders headers, HttpStatus status, WebRequest request) {
 
         List<String> errorDetails = new ArrayList<>();
         errorDetails.add("The URL is invalid: " + e.getHeaders().getHost() + e.getRequestURL());
+
 
         return buildResponseEntity(RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND, errorDetails);
     }
@@ -78,7 +82,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         errorDetails.add(ExceptionUtils.getRootCauseMessage(e));
         return buildResponseEntity(message, status, errorDetails);
     }
+}
 
+@Getter @Setter
+class ApiError {
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    private LocalDateTime timestamp;
+    private HttpStatus status;
+    private String message;
+    private List<String> errorMessageList = new ArrayList<>();
 
-
+    ApiError(HttpStatus status) {
+        this.timestamp = LocalDateTime.now();
+        this.status = status;
+    }
 }

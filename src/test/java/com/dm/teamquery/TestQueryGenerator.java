@@ -1,7 +1,7 @@
 package com.dm.teamquery;
 
 
-import com.dm.teamquery.model.Challenge;
+import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.search.Search;
 import org.junit.Test;
 import org.junit.runner.RunWith;
