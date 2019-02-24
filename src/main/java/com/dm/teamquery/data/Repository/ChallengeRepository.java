@@ -1,4 +1,4 @@
-package com.dm.teamquery.data.repository;
+package com.dm.teamquery.data.Repository;
 
 import com.dm.teamquery.entity.Challenge;
 import org.springframework.data.repository.CrudRepository;
