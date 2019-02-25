@@ -38,10 +38,12 @@ public class ChallengeController {
 
     @DeleteMapping(value = {"/{id}"})
     public Object deleteChallenge(@PathVariable("id") String id) throws EntityNotFoundForIdException,
-            InvalidEntityIdException, DeleteFailedException, JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(challengeService.deleteChallengeById(id));
-        return ResponseEntity.ok(jsonInString);
+            InvalidEntityIdException, DeleteFailedException {
+        String result = challengeService.deleteChallengeById(id);
+        try {
+            result = new ObjectMapper().writeValueAsString(result);
+        } catch (JsonProcessingException e){ /* Skip */}
+        return ResponseEntity.ok(result);
     }
 
 

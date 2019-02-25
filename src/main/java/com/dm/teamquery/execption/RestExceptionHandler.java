@@ -58,16 +58,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(INVALID_PAGING_PARAMETER, HttpStatus.BAD_REQUEST, e.getErrorList());
     }
 
-
-    @ExceptionHandler(IllegalArgumentException.class)
+    // Controller
+    @ExceptionHandler({IllegalStateException.class,IllegalArgumentException.class})
     protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e ) {
         return buildResponseEntity(INVALID_PARAMETER, HttpStatus.BAD_REQUEST, Arrays.asList(e.getMessage()));
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    protected ResponseEntity<Object> handleIllegalStateException(IllegalStateException e ) {
-        return buildResponseEntity(INVALID_PARAMETER, HttpStatus.BAD_REQUEST, Arrays.asList(e.getMessage()));
-    }
 
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported (
@@ -75,16 +71,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(e, UNSUPPORTED_MESSAGE, HttpStatus.BAD_REQUEST);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleNoHandlerFoundException(
-            NoHandlerFoundException e, HttpHeaders headers, HttpStatus status, WebRequest request) {
-
-        List<String> errorDetails = new ArrayList<>();
-        errorDetails.add("The URL is invalid: " + e.getHeaders().getHost() + e.getRequestURL());
-
-
-        return buildResponseEntity(RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND, errorDetails);
-    }
+//    @Override
+//    protected ResponseEntity<Object> handleNoHandlerFoundException(
+//            NoHandlerFoundException e, HttpHeaders headers, HttpStatus status, WebRequest request) {
+//        List<String> errorDetails = new ArrayList<>();
+//        errorDetails.add("The URL is invalid: " + e.getHeaders().getHost() + e.getRequestURL());
+//        return buildResponseEntity(RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND, errorDetails);
+//    }
 
     @ExceptionHandler
     public String constraintViolationHandler(ConstraintViolationException ex) {
