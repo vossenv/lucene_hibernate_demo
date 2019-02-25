@@ -28,14 +28,36 @@ import java.util.List;
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final static String INVALID_PAGING_PARAMETER = "You have entered an invalid paging parameter";
+    private final static String INVALID_ENTITY_ID = "You have entered an invalid entity id (UUID format required)";
+    private final static String ENTITY_NOT_FOUND = "The specified entity does not exist";
     private final static String INVALID_PARAMETER = "You have entered an invalid query parameter";
     private final static String RESOURCE_NOT_FOUND = "The requested resource could not be found. ";
     private final static String UNSUPPORTED_MESSAGE = "The request method is not supported";
+    private final static String UNKNOWN_FAILURE = "Request failed for unknown reason";
 
+
+    // Entity CRUD
+    @ExceptionHandler(InvalidEntityIdException.class)
+    protected ResponseEntity<Object> handleInvalidEntityIdException(InvalidEntityIdException e ) {
+        return buildResponseEntity(INVALID_ENTITY_ID, HttpStatus.BAD_REQUEST, e.getErrorList());
+    }
+
+    @ExceptionHandler(EntityNotFoundForIdException.class)
+    protected ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundForIdException e ) {
+        return buildResponseEntity(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND, e.getErrorList());
+    }
+
+    @ExceptionHandler({DeleteFailedException.class, SearchFailedException.class})
+    protected ResponseEntity<Object> handleFailedException(TeamQueryException e ) {
+        return buildResponseEntity(UNKNOWN_FAILURE, HttpStatus.INTERNAL_SERVER_ERROR,(e.getErrorList()));
+    }
+
+    // Paging
     @ExceptionHandler(InvalidParameterException.class)
     protected ResponseEntity<Object> handleInvalidParameterException(InvalidParameterException e ) {
         return buildResponseEntity(INVALID_PAGING_PARAMETER, HttpStatus.BAD_REQUEST, e.getErrorList());
     }
+
 
     @ExceptionHandler(IllegalArgumentException.class)
     protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e ) {

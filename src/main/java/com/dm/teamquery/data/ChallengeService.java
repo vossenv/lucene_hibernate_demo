@@ -4,15 +4,14 @@ package com.dm.teamquery.data;
 import com.dm.teamquery.data.repository.ChallengeRepository;
 import com.dm.teamquery.data.repository.SearchInfoRepository;
 import com.dm.teamquery.entity.SearchInfo;
-import com.dm.teamquery.execption.BadEntityException;
-import com.dm.teamquery.execption.EntityUpdateException;
+import com.dm.teamquery.execption.*;
 import com.dm.teamquery.entity.Challenge;
 
-import com.dm.teamquery.execption.SearchFailedException;
 import com.dm.teamquery.search.Search;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +20,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,18 +49,37 @@ public class ChallengeService {
         }
     }
 
-    public String deleteChallengeById(String id) throws BadEntityException {
+    public String deleteChallengeById(String id)
+            throws EntityNotFoundForIdException, InvalidEntityIdException, DeleteFailedException {
         try {
-            challengeRepository.deleteById(UUID.fromString(id));
-            return "Successfully deleted " + id;
+            throw new ArrayIndexOutOfBoundsException("");
+         //   challengeRepository.deleteById(UUID.fromString(id));
+           // return "Successfully deleted " + id;
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundForIdException("No entity was found for id: " + id);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidEntityIdException(ExceptionUtils.getRootCauseMessage(e));
         } catch (Exception e) {
-            throw new BadEntityException(ExceptionUtils.getRootCauseMessage(e));
+            throw new DeleteFailedException(e.getClass().getSimpleName()
+                    + " - " + ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
-    public Optional<Challenge> getChallengeById(UUID challengeId) {
-        return challengeRepository.findById(challengeId);
+    public Challenge getChallengeById(UUID challengeId)
+            throws EntityNotFoundForIdException, InvalidEntityIdException, SearchFailedException {
+        try {
+
+            return challengeRepository.findById(challengeId).get();
+        } catch (NoSuchElementException e) {
+            throw new EntityNotFoundForIdException("No entity was found for id: " + challengeId.toString());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidEntityIdException(ExceptionUtils.getRootCauseMessage(e));
+        } catch (Exception e) {
+            throw new SearchFailedException(e.getClass().getSimpleName()
+                    + " - " + ExceptionUtils.getRootCauseMessage(e));
+        }
     }
+
 
     public List<Challenge> basicSearch(String query) throws SearchFailedException {
         return (List<Challenge>) search(new SearchRequest(query)).getResultsList();
@@ -74,12 +93,12 @@ public class ChallengeService {
         SearchInfo search = new SearchInfo(query, dbQuery);
         SearchResponse response = new SearchResponse(request);
 
-        logger.debug("Processing search request from " +  request.getClient_ip() + ", query: " + (query.isEmpty() ? "[none]" : query));
+        logger.debug("Processing search request from " + request.getClient_ip() + ", query: " + (query.isEmpty() ? "[none]" : query));
 
         try {
             response.setRowCount(execCountSearch(dbQuery));
             response.setResultsList(execPagedSearch(dbQuery, request.getPageable()));
-            response.setSearchTime((System.nanoTime() - startTime)*1.0e-9);
+            response.setSearchTime((System.nanoTime() - startTime) * 1.0e-9);
             searchInfoRepository.save(search);
             return response;
         } catch (Exception e) {

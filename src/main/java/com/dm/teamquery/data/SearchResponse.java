@@ -2,10 +2,13 @@ package com.dm.teamquery.data;
 
 import io.vavr.API;
 import lombok.Data;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,12 +27,15 @@ public class SearchResponse {
 
     public ResponseEntity getResponse (Class type, Class dest){
 
-        return prepareResponse(new Resources(
+        Resources responseBody = new Resources(
                 resultsList.stream()
-                                .map(API.unchecked(o ->
+                        .map(API.unchecked(o ->
                                 dest.getConstructor(type)
-                                .newInstance(type.cast(o))))
-                                .collect(Collectors.toList())));
+                                        .newInstance(type.cast(o))))
+                                            .collect(Collectors.toList()));
+
+        responseBody.add(new Link(ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString(), "this"));
+        return prepareResponse(responseBody);
     }
 
     private ResponseEntity prepareResponse (Object body) {

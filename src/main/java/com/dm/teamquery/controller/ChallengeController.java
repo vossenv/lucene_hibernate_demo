@@ -4,10 +4,9 @@ package com.dm.teamquery.controller;
 import com.dm.teamquery.data.ChallengeService;
 import com.dm.teamquery.data.SearchRequest;
 import com.dm.teamquery.entity.Challenge;
-import com.dm.teamquery.execption.BadEntityException;
-import com.dm.teamquery.execption.EntityUpdateException;
-import com.dm.teamquery.execption.InvalidParameterException;
-import com.dm.teamquery.execption.SearchFailedException;
+import com.dm.teamquery.execption.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,24 +26,26 @@ public class ChallengeController {
     private ChallengeService challengeService;
 
     @GetMapping("/{id}")
-    public Object get(@PathVariable final String id) {
-        return challengeService
-                .getChallengeById(UUID.fromString(id))
-                .map(p -> ResponseEntity.ok(new ChallengeResource(p)))
-                .orElseThrow(EntityNotFoundException::new);
+    public Object get(@PathVariable final String id) throws EntityNotFoundForIdException,
+            InvalidEntityIdException, SearchFailedException {
+        return ResponseEntity.ok(new ChallengeResource(challengeService.getChallengeById(UUID.fromString(id))));
     }
 
-    @RequestMapping(value = {"/update"}, method = RequestMethod.POST)
+    @PostMapping(value = {"/update"})
     public Object addUpdateChallenge(@RequestBody Challenge challenge) throws EntityUpdateException {
         return ResponseEntity.ok(new ChallengeResource(challengeService.updateChallenge(challenge)));
     }
 
-    @RequestMapping(value = {"/{id}/delete"}, method = RequestMethod.GET)
-    public String deleteChallenge(@PathVariable("id") String id) throws BadEntityException {
-        return challengeService.deleteChallengeById(id);
+    @DeleteMapping(value = {"/{id}"})
+    public Object deleteChallenge(@PathVariable("id") String id) throws EntityNotFoundForIdException,
+            InvalidEntityIdException, DeleteFailedException, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonInString = mapper.writeValueAsString(challengeService.deleteChallengeById(id));
+        return ResponseEntity.ok(jsonInString);
     }
 
-    @RequestMapping(value = {"/search"}, method = RequestMethod.GET)
+
+    @GetMapping(value = {"/search"})
     public Object searchChallenge(HttpServletRequest request)
             throws InvalidParameterException, SearchFailedException, UnsupportedEncodingException {
 
