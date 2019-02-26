@@ -44,6 +44,7 @@ public class ChallengeService {
         try {
             c.setDateLastModified(LocalDateTime.now());
             return challengeRepository.save(c);
+
         } catch (Exception e) {
             throw new EntityUpdateException(ExceptionUtils.getRootCauseMessage(e));
         }
@@ -52,9 +53,8 @@ public class ChallengeService {
     public String deleteChallengeById(String id)
             throws EntityNotFoundForIdException, InvalidEntityIdException, DeleteFailedException {
         try {
-            throw new ArrayIndexOutOfBoundsException("");
-         //   challengeRepository.deleteById(UUID.fromString(id));
-           // return "Successfully deleted " + id;
+            challengeRepository.deleteById(UUID.fromString(id));
+            return "Successfully deleted " + id;
         } catch (EmptyResultDataAccessException e) {
             throw new EntityNotFoundForIdException("No entity was found for id: " + id);
         } catch (IllegalArgumentException e) {
@@ -68,7 +68,6 @@ public class ChallengeService {
     public Challenge getChallengeById(UUID challengeId)
             throws EntityNotFoundForIdException, InvalidEntityIdException, SearchFailedException {
         try {
-
             return challengeRepository.findById(challengeId).get();
         } catch (NoSuchElementException e) {
             throw new EntityNotFoundForIdException("No entity was found for id: " + challengeId.toString());

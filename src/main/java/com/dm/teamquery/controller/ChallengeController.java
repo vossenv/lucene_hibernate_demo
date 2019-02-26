@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
@@ -32,7 +32,7 @@ public class ChallengeController {
     }
 
     @PostMapping(value = {"/update"})
-    public Object addUpdateChallenge(@RequestBody Challenge challenge) throws EntityUpdateException {
+    public Object addUpdateChallenge(@Valid @RequestBody Challenge challenge) throws EntityUpdateException {
         return ResponseEntity.ok(new ChallengeResource(challengeService.updateChallenge(challenge)));
     }
 
@@ -46,11 +46,9 @@ public class ChallengeController {
         return ResponseEntity.ok(result);
     }
 
-
     @GetMapping(value = {"/search"})
     public Object searchChallenge(HttpServletRequest request)
             throws InvalidParameterException, SearchFailedException, UnsupportedEncodingException {
-
         return  challengeService.search(new SearchRequest(request))
                 .getResponse(Challenge.class, ChallengeResource.class);
 
