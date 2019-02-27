@@ -44,7 +44,7 @@ public class TestFullSearch {
     }
 
     @Test
-    public void testPagedSearch () throws SearchFailedException{
+    public void testPagedSearch () throws SearchFailedException {
 
         List<Object> results = new ArrayList<>();
 
@@ -66,7 +66,7 @@ public class TestFullSearch {
     }
 
     @Test
-    public void testGetDisabled() throws SearchFailedException{
+    public void testGetDisabled() throws SearchFailedException {
 
         SearchRequest sr = new SearchRequest();
         sr.setIncDisabled(true);

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class BadEntityException extends TeamQueryException {
-    public BadEntityException (String message) {
+    public BadEntityException(String message) {
         super(message);
     }
 }

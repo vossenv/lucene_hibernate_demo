@@ -12,7 +12,7 @@ public class InvalidParameterException extends TeamQueryException {
         super(errors);
     }
 
-    public InvalidParameterException (String message) {
+    public InvalidParameterException(String message) {
         super(message);
     }
 }

@@ -21,7 +21,6 @@ import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -43,8 +42,8 @@ public class ChallengeService {
         if (null == c.getChallengeId()) c.setChallengeId(UUID.randomUUID());
         try {
             c.setDateLastModified(LocalDateTime.now());
-            return challengeRepository.save(c);
-
+            challengeRepository.save(c);
+            return getChallengeById(c.getChallengeId());
         } catch (Exception e) {
             throw new EntityUpdateException(ExceptionUtils.getRootCauseMessage(e));
         }

@@ -55,13 +55,13 @@ public class Challenge extends ResourceSupport {
     private Boolean enabled = true;
 
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @Column(name = "datecreated", updatable = false)
     private LocalDateTime dateCreated = LocalDateTime.now();
 
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @Column(name = "datelastmodified")
     private LocalDateTime dateLastModified = LocalDateTime.now();

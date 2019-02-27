@@ -32,8 +32,9 @@ public class ChallengeController {
     }
 
     @PostMapping(value = {"/update"})
-    public Object addUpdateChallenge(@Valid @RequestBody Challenge challenge) throws EntityUpdateException {
-        return ResponseEntity.ok(new ChallengeResource(challengeService.updateChallenge(challenge)));
+    public Object addUpdateChallenge(@Valid @RequestBody Challenge challenge) throws Exception {
+        challengeService.updateChallenge(challenge);
+        return ResponseEntity.ok(new ChallengeResource(challengeService.getChallengeById(challenge.getChallengeId())));
     }
 
     @DeleteMapping(value = {"/{id}"})
