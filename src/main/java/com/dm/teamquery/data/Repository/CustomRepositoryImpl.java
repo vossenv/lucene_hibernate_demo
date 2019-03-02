@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
+import javax.validation.ConstraintViolationException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID> implements CustomRepository<T, ID> {
@@ -25,14 +27,16 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
     }
 
     @Override
-    public void refresh(T t) {
-        entityManager.refresh(t);
-    }
+    public List<T> findAllEntities() {return findAll(); }
 
     @Override
-    public <S extends T> S save(S entity) {
+    @Transactional
+    public <S extends T> S saveAndFlush(S entity) {
         try {
-            refresh(super.save(entity));
+            if (existsEntity(entity)) entityManager.refresh(super.saveAndFlush(entity));
+            else super.saveAndFlush(entity);
+        } catch (ConstraintViolationException e) {
+            throw e;
         } catch (Exception e) {
             throw new PersistenceException(ExceptionUtils.getRootCauseMessage(e));
         }
@@ -72,9 +76,10 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
         return findById(id).isPresent();
     }
 
+    @Override
+    public boolean existsEntity(T entity) {
+        ID id = (ID) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
+        return (id != null) && existsEntity(id);
+    }
 
-//    @Override
-//    public T update(T t) {
-//        return null;
-//    }
 }

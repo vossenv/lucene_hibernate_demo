@@ -3,14 +3,12 @@ package com.dm.teamquery.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.ResourceSupport;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -20,15 +18,15 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "challenge")
-public class Challenge extends ResourceSupport {
+public class Challenge extends Auditable<String>  {
 
     @Id
     @Type(type="uuid-char")
-//    @GeneratedValue(generator = "UUID")
-//    @GenericGenerator(
-//            name = "UUID",
-//            strategy = "org.hibernate.id.UUIDGenerator"
-//    )
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
     @Column(name = "challengeid")
     private UUID challengeId;
 
@@ -44,7 +42,7 @@ public class Challenge extends ResourceSupport {
 
     @NotNull
     @Column(name = "author", updatable = false)
-    private String author ;//= "anonymous";
+    private String author;
 
     @NotNull
     @Column(name = "lastauthor")
@@ -55,17 +53,15 @@ public class Challenge extends ResourceSupport {
     private Boolean enabled = true;
 
 
-    @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    @Column(name = "datecreated", updatable = false)
-    private LocalDateTime dateCreated = LocalDateTime.now();
-
-    @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    @Column(name = "datelastmodified")
-    private LocalDateTime dateLastModified = LocalDateTime.now();
+//    @NotNull
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    @Column(name = "datecreated", updatable = false)
+//    private LocalDateTime dateCreated = LocalDateTime.now();
+//
+//    @NotNull
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    @Column(name = "datelastmodified")
+//    private LocalDateTime dateLastModified = LocalDateTime.now();
 
 
 }

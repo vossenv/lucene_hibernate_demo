@@ -41,7 +41,7 @@ public class ChallengeService {
     public Challenge updateChallenge(Challenge c) throws EntityUpdateException {
         if (null == c.getChallengeId()) c.setChallengeId(UUID.randomUUID());
         try {
-            c.setDateLastModified(LocalDateTime.now());
+       //     c.setDateLastModified(LocalDateTime.now());
 
             c = challengeRepository.save(c);
           //  Challenge y = challengeRepository.refresh(c);
