@@ -54,7 +54,7 @@ public class SearchRequest {
         this.page = validateParameter("page", page, 0, Integer.MAX_VALUE);
 
         if (errors.size() > 0) {
-            throw new InvalidParameterException(errors);
+            throw new InvalidParameterException((String []) errors.toArray());
         }
 
         this.pageable = PageRequest.of(this.page, this.size);

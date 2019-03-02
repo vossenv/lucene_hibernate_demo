@@ -5,21 +5,20 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
 @Setter
 public class TeamQueryException extends Exception {
-
     private List<String> errorList = new ArrayList<>();
-
-    public TeamQueryException(String message) {
-        super(message);
-        errorList.add(message);
-    }
-
-    public TeamQueryException(List<String> errors) {
+    public TeamQueryException(String... args) {
         super();
-        errorList = errors;
+        errorList.addAll(Arrays.asList(args));
+    }
+    public TeamQueryException(StackTraceElement[] trace, String... args) {
+        super();
+        this.setStackTrace(trace);
+        errorList.addAll(Arrays.asList(args));
     }
 }

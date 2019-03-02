@@ -44,7 +44,7 @@ public class Challenge extends ResourceSupport {
 
     @NotNull
     @Column(name = "author", updatable = false)
-    private String author = "anonymous";
+    private String author ;//= "anonymous";
 
     @NotNull
     @Column(name = "lastauthor")
@@ -53,6 +53,7 @@ public class Challenge extends ResourceSupport {
     @NotNull
     @Column(name = "enabled")
     private Boolean enabled = true;
+
 
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

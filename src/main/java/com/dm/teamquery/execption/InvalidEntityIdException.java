@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class InvalidEntityIdException extends TeamQueryException {
-    public InvalidEntityIdException(String message) {
-        super(message);
+    public InvalidEntityIdException(String... errors) { super(errors); }
+    public InvalidEntityIdException(StackTraceElement [] trace, String... errors) {
+        super(trace, errors);
     }
 }

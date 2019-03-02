@@ -5,8 +5,6 @@ import com.dm.teamquery.data.ChallengeService;
 import com.dm.teamquery.data.SearchRequest;
 import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,25 +24,23 @@ public class ChallengeController {
     private ChallengeService challengeService;
 
     @GetMapping("/{id}")
-    public Object get(@PathVariable final String id) throws EntityNotFoundForIdException,
-            InvalidEntityIdException, SearchFailedException {
+    public Object get(@PathVariable final String id) throws EntityNotFoundException,
+            InvalidEntityIdException, EntityLookupException {
         return ResponseEntity.ok(new ChallengeResource(challengeService.getChallengeById(UUID.fromString(id))));
     }
 
     @PostMapping(value = {"/update"})
     public Object addUpdateChallenge(@Valid @RequestBody Challenge challenge) throws Exception {
         challengeService.updateChallenge(challenge);
+        Challenge z = challengeService.getChallengeById(challenge.getChallengeId());
         return ResponseEntity.ok(new ChallengeResource(challengeService.getChallengeById(challenge.getChallengeId())));
     }
 
     @DeleteMapping(value = {"/{id}"})
-    public Object deleteChallenge(@PathVariable("id") String id) throws EntityNotFoundForIdException,
-            InvalidEntityIdException, DeleteFailedException {
-        String result = challengeService.deleteChallengeById(id);
-        try {
-            result = new ObjectMapper().writeValueAsString(result);
-        } catch (JsonProcessingException e){ /* Skip */}
-        return ResponseEntity.ok(result);
+    public Object deleteChallenge(@PathVariable("id") String id) throws EntityNotFoundException, DeleteFailedException {
+        challengeService.deleteChallengeById(UUID.fromString(id));
+
+        return ResponseEntity.ok("Success");
     }
 
     @GetMapping(value = {"/search"})

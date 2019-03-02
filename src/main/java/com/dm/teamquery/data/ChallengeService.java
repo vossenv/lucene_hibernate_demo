@@ -1,6 +1,7 @@
 package com.dm.teamquery.data;
 
 
+
 import com.dm.teamquery.data.repository.ChallengeRepository;
 import com.dm.teamquery.data.repository.SearchInfoRepository;
 import com.dm.teamquery.entity.SearchInfo;
@@ -20,7 +21,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -42,40 +42,71 @@ public class ChallengeService {
         if (null == c.getChallengeId()) c.setChallengeId(UUID.randomUUID());
         try {
             c.setDateLastModified(LocalDateTime.now());
-            challengeRepository.save(c);
-            return getChallengeById(c.getChallengeId());
+
+            c = challengeRepository.save(c);
+          //  Challenge y = challengeRepository.refresh(c);
+            //challengeRepository.refresh(challengeRepository.save(c));
+            //c.getChallengeId();
+//            challengeRepository.refresh(getChallengeById(c.getChallengeId()));
+//            String x = challengeRepository.hello();
+            //entityManager.clear();
+            return c;
+          //  return getChallengeById(c.getChallengeId());
         } catch (Exception e) {
             throw new EntityUpdateException(ExceptionUtils.getRootCauseMessage(e));
         }
     }
-
-    public String deleteChallengeById(String id)
-            throws EntityNotFoundForIdException, InvalidEntityIdException, DeleteFailedException {
-        try {
-            challengeRepository.deleteById(UUID.fromString(id));
-            return "Successfully deleted " + id;
-        } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundForIdException("No entity was found for id: " + id);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidEntityIdException(ExceptionUtils.getRootCauseMessage(e));
-        } catch (Exception e) {
-            throw new DeleteFailedException(e.getClass().getSimpleName()
-                    + " - " + ExceptionUtils.getRootCauseMessage(e));
-        }
+    public void deleteChallengeByUUIDId(UUID id)
+            throws EntityNotFoundException, InvalidEntityIdException, DeleteFailedException {
+        //return true;
+        // challengeRepository.deleteEntityById(UUID.fromString(id));
+        challengeRepository.deleteById(id);
+// try {
+//            //challengeRepository.d
+        // challengeRepository.deleteById(UUID.fromString(id));
+//            return "Successfully deleted " + id;
+//        } catch (EmptyResultDataAccessException e) {
+//            throw new EntityNotFoundException("No entity was found for id: " + id);
+//        } catch (IllegalArgumentException e) {
+//            throw new InvalidEntityIdException(ExceptionUtils.getRootCauseMessage(e));
+//        } catch (Exception e) {
+//            throw new DeleteFailedException(e.getClass().getSimpleName()
+//                    + " - " + ExceptionUtils.getRootCauseMessage(e));
+//        }
+    }
+    public void deleteChallengeById(UUID id)
+            throws EntityNotFoundException, DeleteFailedException {
+       //return true;
+        challengeRepository.deleteEntityById(id);
+        //challengeRepository.deleteById(id);
+// try //{
+//            //challengeRepository.d
+           // challengeRepository.deleteById(UUID.fromString(id));
+//            return "Successfully deleted " + id;
+//        } catch (EmptyResultDataAccessException e) {
+//            throw new EntityNotFoundException("No entity was found for id: " + id);
+//        } catch (IllegalArgumentException e) {
+//            throw new InvalidEntityIdException(ExceptionUtils.getRootCauseMessage(e));
+//        } catch (Exception e) {
+//            throw new DeleteFailedException(e.getClass().getSimpleName()
+//                    + " - " + ExceptionUtils.getRootCauseMessage(e));
+//        }
     }
 
-    public Challenge getChallengeById(UUID challengeId)
-            throws EntityNotFoundForIdException, InvalidEntityIdException, SearchFailedException {
-        try {
-            return challengeRepository.findById(challengeId).get();
-        } catch (NoSuchElementException e) {
-            throw new EntityNotFoundForIdException("No entity was found for id: " + challengeId.toString());
-        } catch (IllegalArgumentException e) {
-            throw new InvalidEntityIdException(ExceptionUtils.getRootCauseMessage(e));
-        } catch (Exception e) {
-            throw new SearchFailedException(e.getClass().getSimpleName()
-                    + " - " + ExceptionUtils.getRootCauseMessage(e));
-        }
+    public Challenge getChallengeById(UUID challengeId) throws EntityNotFoundException, InvalidEntityIdException, EntityLookupException {
+       //return null;
+        return challengeRepository.findById(challengeId).get();
+//        try {
+//            return challengeRepository.findById(challengeId).get();
+//        } catch (NoSuchElementException e) {
+//            throw new EntityNotFoundException("No entity was found for id: " + challengeId.toString());
+//
+////        } catch (IllegalArgumentException e) {
+////            throw new InvalidEntityIdException(ExceptionUtils.getRootCauseMessage(e));
+//        } catch (Exception e) {
+//            throw new SearchFailedException(e.getClass().getSimpleName()
+//                    + " - " + ExceptionUtils.getRootCauseMessage(e));
+//        }
     }
 
 
@@ -88,7 +119,7 @@ public class ChallengeService {
         long startTime = System.nanoTime();
         String query = request.getQuery();
         String dbQuery = prepareQuery(new Search(Challenge.class, query).getDatabaseQuery(), request.getIncDisabled());
-        SearchInfo search = new SearchInfo(query, dbQuery);
+       // SearchInfo search = new SearchInfo(query, dbQuery);
         SearchResponse response = new SearchResponse(request);
 
         logger.debug("Processing search request from " + request.getClient_ip() + ", query: " + (query.isEmpty() ? "[none]" : query));
@@ -97,11 +128,11 @@ public class ChallengeService {
             response.setRowCount(execCountSearch(dbQuery));
             response.setResultsList(execPagedSearch(dbQuery, request.getPageable()));
             response.setSearchTime((System.nanoTime() - startTime) * 1.0e-9);
-            searchInfoRepository.save(search);
+        //    searchInfoRepository.save(search);
             return response;
         } catch (Exception e) {
-            search.setErrors(ExceptionUtils.getRootCauseMessage(e));
-            searchInfoRepository.save(search);
+       //     search.setErrors(ExceptionUtils.getRootCauseMessage(e));
+       //     searchInfoRepository.save(search);
             throw new SearchFailedException(ExceptionUtils.getRootCauseMessage(e));
         }
     }

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+
+
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -31,8 +33,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new TeamQueryError(INVALID_ENTITY_ID, HttpStatus.BAD_REQUEST, e).toResponse();
     }
 
-    @ExceptionHandler(EntityNotFoundForIdException.class)
-    protected ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundForIdException e) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    protected ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException e) {
         return new TeamQueryError(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND, e).toResponse();
     }
 

@@ -2,21 +2,28 @@ package com.dm.teamquery;
 
 
 import com.dm.teamquery.data.ChallengeService;
+import com.dm.teamquery.data.repository.ChallengeRepository;
 import com.dm.teamquery.entity.Challenge;
+import com.dm.teamquery.execption.EntityNotFoundException;
 import com.dm.teamquery.execption.EntityUpdateException;
 import com.dm.teamquery.execption.SearchFailedException;
+import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
+import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
@@ -27,6 +34,9 @@ public class TestChallenges {
 
     @Inject
     ChallengeService challengeService;
+
+    @Inject
+    ChallengeRepository cr;
 
     @Test
     public void TestUpdate() throws EntityUpdateException, SearchFailedException, Exception {
@@ -89,28 +99,17 @@ public class TestChallenges {
 //        }
 //    }
 //
-//    @Test
-//    public void TestDelete() throws BadEntityException, EntityUpdateException, SearchFailedException {
-//
-//        Challenge c = challengeService.basicSearch("").get(0);
-//        challengeService.deleteChallengeById(c.getChallengeId().toString());
-//
-//        List<Challenge> results = challengeService.basicSearch(c.getChallengeId().toString());
-//        assertEquals(0, results.size());
-//
-//        Challenge d = challengeService.updateChallenge(c);
-//        assertEquals(d.getChallengeId(), c.getChallengeId());
-//
-//    }
-//
-//    @Test
-//    public void TestDeleteNull(){
-//        try {
-//            challengeService.deleteChallengeById("abc");
-//            fail("Should have failed due to nonexistent ID");
-//        } catch (BadEntityException e){
-//            // pass
-//        }
-//    }
+    @Test
+    public void TestDelete() throws  Exception {
+
+        UUID id  = challengeService.basicSearch("").get(0).getChallengeId();
+        cr.deleteEntityById(id);
+        assertFalse(cr.existsEntity(id));
+
+        Assertions.assertThrows(EntityNotFoundException.class, () -> challengeService.deleteChallengeById(id));
+        Assertions.assertThrows(EntityNotFoundException.class, () -> challengeService.deleteChallengeById(UUID.randomUUID()));
+        Assertions.assertThrows(EntityNotFoundException.class, () -> challengeService.deleteChallengeById(null));
+    }
+
 
 }
