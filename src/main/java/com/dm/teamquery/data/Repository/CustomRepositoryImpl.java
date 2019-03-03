@@ -1,18 +1,17 @@
 package com.dm.teamquery.data.repository;
 
-import com.dm.teamquery.execption.DeleteFailedException;
-import com.dm.teamquery.execption.EntityLookupException;
-import com.dm.teamquery.execption.EntityNotFoundException;
-import com.dm.teamquery.execption.InvalidEntityIdException;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import com.dm.teamquery.data.SearchRequest;
+import com.dm.teamquery.data.SearchResponse;
+import com.dm.teamquery.entity.Challenge;
+import com.dm.teamquery.execption.*;
+import com.dm.teamquery.search.Search;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.validation.ConstraintViolationException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,15 +30,9 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
 
     @Override
     @Transactional
-    public <S extends T> S saveAndFlush(S entity) {
-        try {
-            if (existsEntity(entity)) entityManager.refresh(super.saveAndFlush(entity));
-            else super.saveAndFlush(entity);
-        } catch (ConstraintViolationException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new PersistenceException(ExceptionUtils.getRootCauseMessage(e));
-        }
+    public <S extends T> S saveEntity(S entity) {
+        if (existsEntity(entity)) entityManager.refresh(super.saveAndFlush(entity));
+        else super.saveAndFlush(entity);
         return entity;
     }
 
@@ -48,12 +41,11 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
         try {
             return findById(id).get();
         } catch (NoSuchElementException e) {
-            throw new EntityNotFoundException("No entity was found for id: " + id.toString());
+            throw new EntityNotFoundException(e.getStackTrace(), "No entity was found for id: " + id.toString());
         } catch (IllegalArgumentException e) {
-            throw new InvalidEntityIdException(ExceptionUtils.getRootCauseMessage(e));
+            throw new InvalidEntityIdException(e);
         } catch (Exception e) {
-            throw new EntityLookupException(e.getClass().getSimpleName()
-                    + " - " + ExceptionUtils.getRootCauseMessage(e));
+            throw new EntityLookupException(e);
         }
     }
 
@@ -63,11 +55,9 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
         try {
             deleteById(id);
         } catch (EmptyResultDataAccessException | IllegalArgumentException e) {
-            throw new EntityNotFoundException(e.getStackTrace(),
-                    "No entity was found for id: " + id, ExceptionUtils.getRootCauseMessage(e));
+            throw new EntityNotFoundException(e, "No entity was found for id: " + id);
         } catch (Exception e) {
-            throw new DeleteFailedException(
-                    e.getClass().getSimpleName() + " - " + ExceptionUtils.getRootCauseMessage(e));
+            throw new DeleteFailedException(e);
         }
     }
 
@@ -80,6 +70,20 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
     public boolean existsEntity(T entity) {
         ID id = (ID) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
         return (id != null) && existsEntity(id);
+    }
+
+    @Override
+    public List<T> search(String query, Pageable p) {
+        return entityManager
+                .createQuery(query)
+                .setMaxResults(p.getPageSize())
+                .setFirstResult(p.getPageNumber() * p.getPageSize())
+                .getResultList();
+    }
+
+    @Override
+    public long count (String query) {
+        return (long) entityManager.createQuery("select count(*) " + query).getResultList().get(0);
     }
 
 }

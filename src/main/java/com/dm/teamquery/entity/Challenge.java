@@ -1,17 +1,14 @@
 package com.dm.teamquery.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.core.Relation;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -47,21 +44,6 @@ public class Challenge extends Auditable<String>  {
     @NotNull
     @Column(name = "lastauthor")
     private String lastAuthor = "anonymous";
-
-    @NotNull
-    @Column(name = "enabled")
-    private Boolean enabled = true;
-
-
-//    @NotNull
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-//    @Column(name = "datecreated", updatable = false)
-//    private LocalDateTime dateCreated = LocalDateTime.now();
-//
-//    @NotNull
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-//    @Column(name = "datelastmodified")
-//    private LocalDateTime dateLastModified = LocalDateTime.now();
 
 
 }

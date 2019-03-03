@@ -3,11 +3,13 @@ package com.dm.teamquery.controller;
 import com.dm.teamquery.entity.Challenge;
 import lombok.Getter;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.core.Relation;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Getter
+@Relation(collectionRelation = "data")
 public class ChallengeResource extends ResourceSupport {
 
     private com.dm.teamquery.entity.Challenge challenge;

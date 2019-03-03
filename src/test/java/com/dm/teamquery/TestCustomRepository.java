@@ -35,7 +35,7 @@ public class TestCustomRepository {
 
         Challenge c = cr.findAll().iterator().next();
         c.setQuestion("A new question");
-        cr.saveAndFlush(c);
+        cr.saveEntity(c);
         Challenge b = cr.findEntityById(c.getChallengeId());
         Assert.assertEquals(b, c);
 
@@ -54,13 +54,13 @@ public class TestCustomRepository {
         String original = c.getAuthor();
 
         c.setAuthor("A new author");
-        cr.saveAndFlush(c);
+        cr.saveEntity(c);
         Challenge b = cr.findEntityById(c.getChallengeId());
         Assert.assertEquals(b.getAuthor(), original);
 
         LocalDateTime createdOriginal = b.getCreatedDate();
         b.setCreatedDate(LocalDateTime.MIN);
-        cr.saveAndFlush(b);
+        cr.saveEntity(b);
         b = cr.findEntityById(c.getChallengeId());
         Assert.assertEquals(b.getCreatedDate(), createdOriginal);
 
@@ -68,7 +68,7 @@ public class TestCustomRepository {
         int cursize = cr.findAllEntities().size();
         b.setChallengeId(UUID.randomUUID());
         b.setQuestion("Different");
-        cr.saveAndFlush(b);
+        cr.saveEntity(b);
 
         assertTrue(cr.existsEntity(oldID));
         Assert.assertEquals(cursize + 1, cr.findAllEntities().size());
@@ -80,10 +80,10 @@ public class TestCustomRepository {
         Challenge c = cr.findAllEntities().get(3);
 
         c.setQuestion("");
-        Assertions.assertThrows(ConstraintViolationException.class, () -> cr.saveAndFlush(c));
+        Assertions.assertThrows(ConstraintViolationException.class, () -> cr.saveEntity(c));
 
         c.setQuestion(null);
-        Assertions.assertThrows(ConstraintViolationException.class, () -> cr.saveAndFlush(c));
+        Assertions.assertThrows(ConstraintViolationException.class, () -> cr.saveEntity(c));
 
         try {
             cr.save(new Challenge());
@@ -102,11 +102,11 @@ public class TestCustomRepository {
         c.setAuthor("Carag");
         c.setAnswer("What is the question");
         c.setQuestion("What is the answer");
-        c = cr.saveAndFlush(c);
+        c = cr.saveEntity(c);
 
         c.setQuestion("An update!");
         Thread.sleep(500);
-        c = cr.saveAndFlush(c);
+        c = cr.saveEntity(c);
 
         Challenge cur = cr.findEntityById(c.getChallengeId());
         assertNotEquals(cur.getLastModifiedDate(), cur.getCreatedDate());
@@ -118,7 +118,7 @@ public class TestCustomRepository {
         c.setAuthor("Carag");
         c.setAnswer("What is the question");
         c.setQuestion("What is the answer");
-        c = cr.saveAndFlush(c);
+        c = cr.saveEntity(c);
         Assertions.assertNotNull(c.getChallengeId());
         Assertions.assertNotNull(c.getLastAuthor());
         Assertions.assertNotNull(c.getEnabled());

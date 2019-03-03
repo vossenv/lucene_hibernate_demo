@@ -44,9 +44,9 @@ public class SearchResponse {
         int pageCount = (int) Math.ceil((double) this.getRowCount() / (double) request.getSize());
 
         headers.add("Page-Size", request.getSize().toString());
-        headers.add("Current-Page", request.getPage().toString());
-        headers.add("Previous-Page", String.valueOf( Integer.max(request.getPage() - 1, 0)));
-        headers.add("Next-Page", String.valueOf((request.getPage() + 1)));
+        headers.add("Current-Page", String.valueOf(1 + request.getPage()));
+        headers.add("Previous-Page", String.valueOf( Integer.max(request.getPage(), 0) + 1));
+        headers.add("Next-Page", String.valueOf((request.getPage() + 2)));
         headers.add("Result-Count", String.valueOf(this.rowCount));
         headers.add("Search-Time-Seconds", String.valueOf(this.searchTime));
         headers.add("Total-Time-Seconds", String.valueOf((System.nanoTime() - request.getRequestTime())*1.0e-9));

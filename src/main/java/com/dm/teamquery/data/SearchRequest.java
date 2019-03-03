@@ -51,10 +51,10 @@ public class SearchRequest {
         String page = requestMap.containsKey("page") ? requestMap.get("page") : this.page.toString();
         String size = requestMap.containsKey("size") ? requestMap.get("size") : this.size.toString();
         this.size = validateParameter("size", size, 1, 1000);
-        this.page = validateParameter("page", page, 0, Integer.MAX_VALUE);
+        this.page = validateParameter("page", page, 1, Integer.MAX_VALUE) - 1;
 
         if (errors.size() > 0) {
-            throw new InvalidParameterException((String []) errors.toArray());
+            //throw new InvalidParameterException( errors.toArray());
         }
 
         this.pageable = PageRequest.of(this.page, this.size);

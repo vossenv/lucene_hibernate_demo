@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class SearchFailedException extends TeamQueryException {
-    public SearchFailedException(String... errors) {
+    public SearchFailedException(Object... errors) {
         super(errors);
     }
-    public SearchFailedException(StackTraceElement [] trace, String... errors) {
+    public SearchFailedException(StackTraceElement [] trace, Object... errors) {
         super(trace, errors);
     }
 }

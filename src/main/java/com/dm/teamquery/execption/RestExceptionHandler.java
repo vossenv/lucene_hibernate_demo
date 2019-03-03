@@ -26,6 +26,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private final static String UNSUPPORTED_MESSAGE = "The request method is not supported";
     private final static String UNKNOWN_FAILURE = "Request failed for unknown reason";
 
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<Object> handleInvalidEntityIdException(Exception e) {
+        return new TeamQueryError(INVALID_ENTITY_ID, HttpStatus.BAD_REQUEST, e).toResponse();
+    }
 
     // Entity CRUD
     @ExceptionHandler(InvalidEntityIdException.class)

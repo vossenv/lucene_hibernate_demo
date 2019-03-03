@@ -34,7 +34,7 @@ public class TeamQueryError {
         this.errorMessage = errorMessage;
         setStatus(status);
         if (e instanceof TeamQueryException) {
-            this.errorList = ((TeamQueryException) e).getErrorList();
+            //this.errorList = (List<String>) ((TeamQueryException) e).getErrorList();
         } else if (e instanceof MethodArgumentNotValidException) {
             this.errorList = getBindingErrors((MethodArgumentNotValidException) e);
         } else {

@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class EntityLookupException extends TeamQueryException {
-    public EntityLookupException(String message) {  super(message); }
-    public EntityLookupException(StackTraceElement [] trace, String... errors) {
+    public EntityLookupException(Object... errors) {
+        super(errors);
+    }
+    public EntityLookupException(StackTraceElement [] trace, Object... errors) {
         super(trace, errors);
     }
 }

@@ -14,7 +14,6 @@ import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
-
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/challenges", produces = "application/hal+json")
@@ -24,22 +23,19 @@ public class ChallengeController {
     private ChallengeService challengeService;
 
     @GetMapping("/{id}")
-    public Object get(@PathVariable final String id) throws EntityNotFoundException,
+    public Object get(@PathVariable String id) throws EntityNotFoundException,
             InvalidEntityIdException, EntityLookupException {
         return ResponseEntity.ok(new ChallengeResource(challengeService.getChallengeById(UUID.fromString(id))));
     }
 
     @PostMapping(value = {"/update"})
     public Object addUpdateChallenge(@Valid @RequestBody Challenge challenge) throws Exception {
-        challengeService.updateChallenge(challenge);
-        Challenge z = challengeService.getChallengeById(challenge.getChallengeId());
-        return ResponseEntity.ok(new ChallengeResource(challengeService.getChallengeById(challenge.getChallengeId())));
+        return ResponseEntity.ok(new ChallengeResource(challengeService.updateChallenge(challenge)));
     }
 
     @DeleteMapping(value = {"/{id}"})
-    public Object deleteChallenge(@PathVariable("id") String id) throws EntityNotFoundException, DeleteFailedException {
-        challengeService.deleteChallengeById(UUID.fromString(id));
-
+    public Object deleteChallenge(@PathVariable("id") UUID id) throws EntityNotFoundException, DeleteFailedException {
+        challengeService.deleteChallengeById(id);
         return ResponseEntity.ok("Success");
     }
 

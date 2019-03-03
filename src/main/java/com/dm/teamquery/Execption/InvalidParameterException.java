@@ -8,8 +8,10 @@ import java.util.List;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class InvalidParameterException extends TeamQueryException {
-    public InvalidParameterException(String... errors) { super(errors); }
-    public InvalidParameterException(StackTraceElement [] trace, String... errors) {
+    public InvalidParameterException(Object... errors) {
+        super(errors);
+    }
+    public InvalidParameterException(StackTraceElement [] trace, Object... errors) {
         super(trace, errors);
     }
 }
