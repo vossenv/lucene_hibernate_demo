@@ -1,7 +1,8 @@
 package com.dm.teamquery.controller;
 
 
-import com.dm.teamquery.data.ChallengeService;
+
+import com.dm.teamquery.data.GenericService;
 import com.dm.teamquery.data.generic.SearchRequest;
 import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.*;
@@ -19,23 +20,26 @@ import java.util.UUID;
 @RequestMapping(value = "/challenges", produces = "application/hal+json")
 public class ChallengeController {
 
+    //@Inject
+    //private ChallengeService challengeService;
+
     @Inject
-    private ChallengeService challengeService;
+    private GenericService<Challenge> challengeService;
 
     @GetMapping("/{id}")
     public Object get(@PathVariable String id) throws EntityNotFoundException,
             InvalidEntityIdException, EntityLookupException {
-        return ResponseEntity.ok(new ChallengeResource(challengeService.getChallengeById(UUID.fromString(id))));
+        return ResponseEntity.ok(new ChallengeResource(challengeService.getById(UUID.fromString(id))));
     }
 
     @PostMapping(value = {"/update"})
     public Object addUpdateChallenge(@Valid @RequestBody Challenge challenge) throws Exception {
-        return ResponseEntity.ok(new ChallengeResource(challengeService.updateChallenge(challenge)));
+        return ResponseEntity.ok(new ChallengeResource(challengeService.update(challenge)));
     }
 
     @DeleteMapping(value = {"/{id}"})
     public Object deleteChallenge(@PathVariable("id") UUID id) throws EntityNotFoundException, DeleteFailedException {
-        challengeService.deleteChallengeById(id);
+        challengeService.deleteById(id);
         return ResponseEntity.ok("Success");
     }
 

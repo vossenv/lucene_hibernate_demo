@@ -10,7 +10,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import java.util.UUID;
 
 
-public interface SearchInfoRepository extends PagingAndSortingRepository<Challenge, UUID>, CrudRepository<Challenge, UUID>, CustomRepository<Challenge, UUID> {
+public interface SearchInfoRepository extends PagingAndSortingRepository<SearchInfo, UUID>, CrudRepository<SearchInfo, UUID>, CustomRepository<SearchInfo, UUID> {
 
 
 }

@@ -1,20 +1,17 @@
 package com.dm.teamquery.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @Entity
 @Table(name = "searchinfo")
-public class SearchInfo {
+public class SearchInfo extends Auditable<String> {
 
     @Id
     @Type(type="uuid-char")
@@ -34,11 +31,6 @@ public class SearchInfo {
 
     @Column(name = "errors", columnDefinition = "VARCHAR(3000)")
     String errors;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    @Column(name = "searchdate")
-    private LocalDateTime searchDate = LocalDateTime.now();
 
     public SearchInfo(String query, String databaseQuery){
         this.initialQuery = query;
