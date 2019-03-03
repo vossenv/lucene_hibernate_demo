@@ -1,5 +1,6 @@
-package com.dm.teamquery.data;
+package com.dm.teamquery.data.generic;
 
+import com.dm.teamquery.execption.EntityNotFoundException;
 import io.vavr.API;
 import lombok.Data;
 import org.springframework.hateoas.Link;
@@ -11,6 +12,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.min;
 
 
 @Data
@@ -25,7 +28,7 @@ public class SearchResponse {
         this.request = request;
     }
 
-    public ResponseEntity getResponse (Class type, Class dest){
+    public ResponseEntity getResponse (Class type, Class dest) throws EntityNotFoundException{
 
         Resources responseBody = new Resources(
                 resultsList.stream()
@@ -34,24 +37,35 @@ public class SearchResponse {
                                         .newInstance(type.cast(o))))
                                             .collect(Collectors.toList()));
 
-        responseBody.add(new Link(ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString(), "this"));
         return prepareResponse(responseBody);
     }
 
-    private ResponseEntity prepareResponse (Object body) {
+    private ResponseEntity prepareResponse (Resources body) throws EntityNotFoundException{
 
         HttpHeaders headers = new HttpHeaders();
         int pageCount = (int) Math.ceil((double) this.getRowCount() / (double) request.getSize());
+        int next = min((request.getPage() + 2),pageCount);
+        int prev = Integer.max(request.getPage(), 1);
+
+        if (request.getPage() + 1 > pageCount)
+            throw new EntityNotFoundException(String.format("Requested page (%d) does not exist", request.getPage()));
 
         headers.add("Page-Size", request.getSize().toString());
         headers.add("Current-Page", String.valueOf(1 + request.getPage()));
-        headers.add("Previous-Page", String.valueOf( Integer.max(request.getPage(), 0) + 1));
-        headers.add("Next-Page", String.valueOf((request.getPage() + 2)));
+        headers.add("Previous-Page", String.valueOf(prev));
+        headers.add("Next-Page", String.valueOf(next));
         headers.add("Result-Count", String.valueOf(this.rowCount));
         headers.add("Search-Time-Seconds", String.valueOf(this.searchTime));
         headers.add("Total-Time-Seconds", String.valueOf((System.nanoTime() - request.getRequestTime())*1.0e-9));
         headers.add("Original-Query", request.getQuery());
         headers.add("Page-Count", String.valueOf(pageCount));
+
+        String lastCall = ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString();
+
+        body.add(new Link(lastCall, "self"));
+        body.add(new Link(lastCall.replaceAll("(page=)\\d*","page="+String.valueOf(next)), "next"));
+        body.add(new Link(lastCall.replaceAll("(page=)\\d*","page="+String.valueOf(prev)), "previous"));
+
         return new ResponseEntity<>(body,headers, HttpStatus.OK);
     }
 }

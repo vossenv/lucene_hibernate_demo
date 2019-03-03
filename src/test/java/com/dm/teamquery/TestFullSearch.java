@@ -1,7 +1,7 @@
 package com.dm.teamquery;
 
 import com.dm.teamquery.data.ChallengeService;
-import com.dm.teamquery.data.SearchRequest;
+import com.dm.teamquery.data.generic.SearchRequest;
 import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.SearchFailedException;
 import org.junit.Test;

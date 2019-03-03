@@ -1,6 +1,8 @@
 package com.dm.teamquery.data;
 
 
+import com.dm.teamquery.data.generic.SearchRequest;
+import com.dm.teamquery.data.generic.SearchResponse;
 import com.dm.teamquery.data.repository.ChallengeRepository;
 import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.*;

@@ -3,8 +3,6 @@ package com.dm.teamquery.execption;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +32,7 @@ public class TeamQueryError {
         this.errorMessage = errorMessage;
         setStatus(status);
         if (e instanceof TeamQueryException) {
-            //this.errorList = (List<String>) ((TeamQueryException) e).getErrorList();
+            this.errorList = (List<String>) ((TeamQueryException) e).getErrorList();
         } else if (e instanceof MethodArgumentNotValidException) {
             this.errorList = getBindingErrors((MethodArgumentNotValidException) e);
         } else {

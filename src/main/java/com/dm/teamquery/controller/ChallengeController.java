@@ -2,7 +2,7 @@ package com.dm.teamquery.controller;
 
 
 import com.dm.teamquery.data.ChallengeService;
-import com.dm.teamquery.data.SearchRequest;
+import com.dm.teamquery.data.generic.SearchRequest;
 import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.*;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +41,7 @@ public class ChallengeController {
 
     @GetMapping(value = {"/search"})
     public Object searchChallenge(HttpServletRequest request)
-            throws InvalidParameterException, SearchFailedException, UnsupportedEncodingException {
+            throws InvalidParameterException, SearchFailedException, UnsupportedEncodingException, EntityNotFoundException {
         return  challengeService.search(new SearchRequest(request))
                 .getResponse(Challenge.class, ChallengeResource.class);
 

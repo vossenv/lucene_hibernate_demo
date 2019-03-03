@@ -1,4 +1,4 @@
-package com.dm.teamquery.data.repository;
+package com.dm.teamquery.data.repository.Base;
 
 import com.dm.teamquery.execption.DeleteFailedException;
 import com.dm.teamquery.execption.EntityLookupException;

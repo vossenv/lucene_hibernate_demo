@@ -1,10 +1,6 @@
-package com.dm.teamquery.data.repository;
+package com.dm.teamquery.data.repository.Base;
 
-import com.dm.teamquery.data.SearchRequest;
-import com.dm.teamquery.data.SearchResponse;
-import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.*;
-import com.dm.teamquery.search.Search;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;

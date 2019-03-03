@@ -1,4 +1,4 @@
-package com.dm.teamquery.data;
+package com.dm.teamquery.data.generic;
 
 
 import com.dm.teamquery.execption.InvalidParameterException;
@@ -19,7 +19,6 @@ import static java.net.URLDecoder.decode;
 
 @Data
 @NoArgsConstructor
-@SuppressWarnings({"OptionalUsedAsFieldOrParameterType"})
 public class SearchRequest {
 
     private Integer size = 100;
@@ -48,13 +47,13 @@ public class SearchRequest {
         this.URL = request.getRequestURL().toString();
         this.incDisabled = requestMap.containsKey("disabled");
         this.query = requestMap.containsKey("query") ? decode(requestMap.get("query"), "UTF-8") : this.query;
-        String page = requestMap.containsKey("page") ? requestMap.get("page") : this.page.toString();
-        String size = requestMap.containsKey("size") ? requestMap.get("size") : this.size.toString();
+        String page = requestMap.containsKey("page") ? requestMap.get("page") : String.valueOf(this.page + 1);
+        String size = requestMap.containsKey("size") ? requestMap.get("size") : String.valueOf(this.size);
         this.size = validateParameter("size", size, 1, 1000);
         this.page = validateParameter("page", page, 1, Integer.MAX_VALUE) - 1;
 
         if (errors.size() > 0) {
-            //throw new InvalidParameterException( errors.toArray());
+            throw new InvalidParameterException(errors);
         }
 
         this.pageable = PageRequest.of(this.page, this.size);
@@ -64,7 +63,7 @@ public class SearchRequest {
         try {
             int p = Integer.parseInt(param);
             if (p < min || p > max){
-                errors.add("Valid range exceeded for " + type + ". Must be between " + min + " and " + max);
+                errors.add("Valid range exceeded for " + type + ".  Expected range: " + min + " and " + max + ", Got: " + p);
                 return 0;
             } else return p;
         }
