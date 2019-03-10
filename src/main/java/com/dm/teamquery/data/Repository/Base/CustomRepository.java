@@ -26,5 +26,5 @@ public interface CustomRepository<T, ID extends Serializable> extends PagingAndS
    List<T> search(String query, Pageable p);
    long count (String query);
 
-
+   T svr(T t)throws Exception;
 }

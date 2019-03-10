@@ -19,6 +19,7 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
     public CustomRepositoryImpl(JpaEntityInformation entityInformation, EntityManager entityManager) {
         super(entityInformation, entityManager);
         this.entityManager = entityManager;
+
     }
 
     @Override
@@ -28,7 +29,9 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
     @Transactional
     public <S extends T> S saveEntity(S entity) {
         if (existsEntity(entity)) entityManager.refresh(super.saveAndFlush(entity));
-        else super.saveAndFlush(entity);
+        else
+            super.saveAndFlush(entity);
+
         return entity;
     }
 
@@ -80,6 +83,16 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
     @Override
     public long count (String query) {
         return (long) entityManager.createQuery("select count(*) " + query).getResultList().get(0);
+    }
+
+    @Override
+    public T svr(T t)throws Exception{
+        saveEntity(t);
+        return findEntityById(getEntityId(t));
+    }
+
+    public ID getEntityId(T t) {
+        return (ID) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(t);
     }
 
 }

@@ -18,8 +18,8 @@ public class ChallengeResource extends ResourceSupport {
         this.challenge = challenge;
 
         try {
-            add(linkTo(methodOn(ChallengeController.class).searchChallenge(null)).withRel("search"));
-            add(linkTo(methodOn(ChallengeController.class).get(challenge.getChallengeId().toString())).withSelfRel());
+//            add(linkTo(methodOn(ChallengeController.class).searchChallenge(null)).withRel("search"));
+//            add(linkTo(methodOn(ChallengeController.class).get(challenge.getChallengeId().toString())).withSelfRel());
 
         } catch (Exception e) {
             System.out.println();

@@ -54,7 +54,7 @@ public class TestCustomRepository {
         String original = c.getAuthor();
 
         c.setAuthor("A new author");
-        cr.saveEntity(c);
+        Challenge y = cr.svr(c);
         Challenge b = cr.findEntityById(c.getChallengeId());
         Assert.assertEquals(b.getAuthor(), original);
 
