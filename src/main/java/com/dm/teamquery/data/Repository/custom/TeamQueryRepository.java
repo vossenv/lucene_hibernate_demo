@@ -11,7 +11,7 @@ import java.util.List;
 @NoRepositoryBean
 public interface TeamQueryRepository<T, ID extends Serializable> {
 
-    T findByIdThrows(ID id) throws TeamQueryException;
+    T findByIdThrows(ID id);
 
     List<T> findAll();
 

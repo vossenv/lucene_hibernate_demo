@@ -1,12 +1,11 @@
 package com.dm.teamquery.data.repository.custom;
 
-import com.dm.teamquery.execption.EntityNotFoundException;
-import com.dm.teamquery.execption.TeamQueryException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -26,11 +25,11 @@ public class TeamQueryRepositoryImpl<T, ID extends Serializable> extends SimpleJ
     }
 
     @Override
-    public T findByIdThrows(ID id) throws TeamQueryException {
+    public T findByIdThrows(ID id){
         try {
             return super.findById(id).get();
         } catch (NoSuchElementException e) {
-            throw new EntityNotFoundException(e.getStackTrace(), "No entity was found for id: " + id.toString());
+            throw new EntityNotFoundException("No entity was found for id: " + id.toString());
         }
     }
 

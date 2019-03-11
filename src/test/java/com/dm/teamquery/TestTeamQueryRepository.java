@@ -3,8 +3,6 @@ package com.dm.teamquery;
 
 import com.dm.teamquery.data.repository.ChallengeRepository;
 import com.dm.teamquery.entity.Challenge;
-import com.dm.teamquery.execption.EntityNotFoundException;
-import com.dm.teamquery.execption.InvalidEntityIdException;
 import com.dm.teamquery.execption.TeamQueryException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Assert;
@@ -17,6 +15,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -34,7 +33,6 @@ public class TestTeamQueryRepository {
         void execute(T t) throws TeamQueryException;
     }
 
-
     private void MatchException(ExceptionCheck ec, Object o, Class c) {
         try {
             ec.execute(o);
@@ -46,9 +44,10 @@ public class TestTeamQueryRepository {
 
     @Test
     public void TestFind() {
+        ExceptionCheck<UUID> ec = (e) -> gd.findByIdThrows(e);
         Assertions.assertEquals(17, gd.findAll().size());
-        Assertions.assertThrows(EntityNotFoundException.class, () -> gd.findByIdThrows(UUID.randomUUID()));
-        Assertions.assertThrows(InvalidEntityIdException.class, () -> gd.findByIdThrows(null));
+        MatchException(ec, UUID.randomUUID(), EntityNotFoundException.class);
+        MatchException(ec, null, IllegalArgumentException.class);
     }
 
     @Test
@@ -77,7 +76,7 @@ public class TestTeamQueryRepository {
     }
 
     @Test
-    public void TestUpdate() throws Exception {
+    public void TestUpdate(){
         Challenge c = gd.findAll().get(0);
         c.setQuestion("A new one");
         gd.save(c);
@@ -86,7 +85,7 @@ public class TestTeamQueryRepository {
     }
 
     @Test
-    public void TestImmutableUpdate() throws Exception {
+    public void TestImmutableUpdate() {
 
         Challenge c = gd.findAll().get(0);
         String original = c.getAuthor();
