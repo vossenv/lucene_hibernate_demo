@@ -3,7 +3,7 @@
 //
 //import com.dm.teamquery.data.generic.SearchRequest;
 //import com.dm.teamquery.data.generic.SearchResponse;
-//import com.dm.teamquery.data.repository.Base.CustomRepository;
+//import com.dm.teamquery.data.repository.custom.TeamQueryRepository;
 //import com.dm.teamquery.data.repository.SearchInfoRepository;
 //import com.dm.teamquery.entity.Challenge;
 //import com.dm.teamquery.entity.SearchInfo;
@@ -30,7 +30,7 @@
 //    private final static Logger logger = LogManager.getLogger("ServiceLog");
 //
 //    @Inject
-//    private CustomRepository<T, UUID> repository;
+//    private TeamQueryRepository<T, UUID> repository;
 //
 //    @Inject
 //    private SearchInfoRepository searchInfoRepository;

@@ -1,39 +1,23 @@
 package com.dm.teamquery;
 
 
-import com.dm.teamquery.data.ChallengeService;
 import com.dm.teamquery.data.repository.ChallengeRepository;
-import com.dm.teamquery.entity.Challenge;
-import com.dm.teamquery.execption.EntityNotFoundException;
 import com.dm.teamquery.execption.EntityUpdateException;
 import com.dm.teamquery.execption.SearchFailedException;
-import org.junit.Assert;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
-import java.sql.SQLOutput;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test.properties")
 public class TestChallenges {
 
-    @Inject
-    ChallengeService challengeService;
+
 
     @Inject
     ChallengeRepository cr;

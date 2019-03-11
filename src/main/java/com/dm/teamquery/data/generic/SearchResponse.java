@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,6 @@ public class SearchResponse {
     private long rowCount;
     private Double searchTime;
     private List<?> resultsList;
-
 
     public SearchResponse(SearchRequest request){
         this.request = request;
@@ -38,6 +38,7 @@ public class SearchResponse {
                                             .collect(Collectors.toList()));
 
         return prepareResponse(responseBody);
+
     }
 
     private ResponseEntity prepareResponse (Resources body) throws EntityNotFoundException{
