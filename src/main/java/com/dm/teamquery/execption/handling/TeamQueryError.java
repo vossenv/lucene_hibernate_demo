@@ -1,5 +1,6 @@
-package com.dm.teamquery.execption;
+package com.dm.teamquery.execption.handling;
 
+import com.dm.teamquery.execption.customexception.TeamQueryException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -32,7 +33,7 @@ public class TeamQueryError {
         this.errorMessage = errorMessage;
         setStatus(status);
         if (e instanceof TeamQueryException) {
-            this.errorList = (List<String>) ((TeamQueryException) e).getErrorList();
+            this.errorList = ((TeamQueryException) e).getErrorList();
         } else if (e instanceof MethodArgumentNotValidException) {
             this.errorList = getBindingErrors((MethodArgumentNotValidException) e);
         } else {

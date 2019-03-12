@@ -1,4 +1,4 @@
-package com.dm.teamquery.execption;
+package com.dm.teamquery.execption.customexception;
 
 
 import org.springframework.http.HttpStatus;

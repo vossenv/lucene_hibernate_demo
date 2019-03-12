@@ -42,9 +42,10 @@ public class Search {
     public Search(Class entityType, String query) {
         this.query = query;
         this.entityType = entityType;
-        this.queryGenerator = new QueryGenerator(entityType);
-        this.queryGenerator.setOR_HOLDER(OR_HOLDER);
         this.fieldNames = stream(entityType.getDeclaredFields()).map(Field::getName).collect(Collectors.toCollection(LinkedHashSet::new));
+        stream(entityType.getSuperclass().getDeclaredFields()).map(Field::getName).forEach(fieldNames::add);
+        this.queryGenerator = new QueryGenerator(entityType.getSimpleName(), this.fieldNames);
+        this.queryGenerator.setOR_HOLDER(OR_HOLDER);
         indexTerms();
     }
 

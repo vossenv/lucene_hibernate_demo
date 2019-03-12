@@ -3,7 +3,7 @@
 //
 //
 //import com.dm.teamquery.data.GenericService;
-//import com.dm.teamquery.data.generic.SearchRequest;
+//import com.dm.teamquery.search.SearchRequest;
 //import com.dm.teamquery.entity.Challenge;
 //import com.dm.teamquery.execption.*;
 //import org.springframework.http.ResponseEntity;

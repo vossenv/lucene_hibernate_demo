@@ -1,16 +1,15 @@
 package com.dm.teamquery;
 
 
-import com.dm.teamquery.data.repository.ChallengeRepository;
+import com.dm.teamquery.data.service.ChallengeService;
 import com.dm.teamquery.entity.Challenge;
-import com.dm.teamquery.execption.TeamQueryException;
+import com.dm.teamquery.execption.customexception.TeamQueryException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -23,10 +22,10 @@ import java.util.UUID;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test.properties")
-public class TestTeamQueryRepository {
+public class TestGenericServiceLayer {
 
     @Inject
-    private ChallengeRepository gd;
+    private ChallengeService gd;
 
     @FunctionalInterface
     interface ExceptionCheck<T> {
@@ -44,7 +43,7 @@ public class TestTeamQueryRepository {
 
     @Test
     public void TestFind() {
-        ExceptionCheck<UUID> ec = (e) -> gd.findByIdThrows(e);
+        ExceptionCheck<UUID> ec = (e) -> gd.findById(e);
         Assertions.assertEquals(17, gd.findAll().size());
         MatchException(ec, UUID.randomUUID(), EntityNotFoundException.class);
         MatchException(ec, null, IllegalArgumentException.class);
@@ -80,33 +79,28 @@ public class TestTeamQueryRepository {
         Challenge c = gd.findAll().get(0);
         c.setQuestion("A new one");
         gd.save(c);
-        Assertions.assertEquals(c, gd.findByIdThrows(c.getChallengeId()));
-
+        Assertions.assertEquals(c, gd.findById(c.getChallengeId()));
     }
 
     @Test
     public void TestImmutableUpdate() {
 
         Challenge c = gd.findAll().get(0);
-        String original = c.getAuthor();
+        String authorOriginal = c.getAuthor();
+        LocalDateTime createdOriginal = c.getCreatedDate();
 
         c.setAuthor("A new author");
-        c = gd.save(c);
-        Challenge b = gd.findByIdThrows(c.getChallengeId());
-        Assert.assertEquals(b.getAuthor(), original);
+        Assert.assertEquals(gd.save(c).getAuthor(), authorOriginal);
 
-        LocalDateTime gseatedOriginal = b.getCreatedDate();
-        b.setCreatedDate(LocalDateTime.MIN);
-        gd.save(b);
-        b = gd.findByIdThrows(c.getChallengeId());
-        Assert.assertEquals(b.getCreatedDate(), gseatedOriginal);
+        c.setCreatedDate(LocalDateTime.MIN);
+        Assert.assertEquals(gd.save(c).getCreatedDate(), createdOriginal);
 
         int cursize = gd.findAll().size();
-        b.setChallengeId(UUID.randomUUID());
-        b.setQuestion("Different");
-        b = gd.save(b);
+        c.setChallengeId(UUID.randomUUID());
+        c.setQuestion("Different");
+        c = gd.save(c);
 
-        Assert.assertTrue(gd.existsById(b.getChallengeId()));
+        Assert.assertTrue(gd.existsById(c.getChallengeId()));
         Assert.assertEquals(cursize + 1, gd.findAll().size());
     }
 
@@ -123,7 +117,7 @@ public class TestTeamQueryRepository {
         Thread.sleep(500);
         c = gd.save(c);
 
-        Challenge cur = gd.findByIdThrows(c.getChallengeId());
+        Challenge cur = gd.findById(c.getChallengeId());
         Assert.assertNotEquals(cur.getLastModifiedDate(), cur.getCreatedDate());
     }
 
@@ -135,8 +129,8 @@ public class TestTeamQueryRepository {
         Assert.assertFalse(gd.existsById(id));
 
         ExceptionCheck<UUID> ec = (e) -> gd.deleteById(e);
-        MatchException(ec, id, EmptyResultDataAccessException.class);
-        MatchException(ec, UUID.randomUUID(), EmptyResultDataAccessException.class);
+        MatchException(ec, id, EntityNotFoundException.class);
+        MatchException(ec, UUID.randomUUID(), EntityNotFoundException.class);
         MatchException(ec, null, IllegalArgumentException.class);
 
     }

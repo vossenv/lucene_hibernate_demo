@@ -1,6 +1,6 @@
-package com.dm.teamquery.data.generic;
+package com.dm.teamquery.search;
 
-import com.dm.teamquery.execption.EntityNotFoundException;
+
 import io.vavr.API;
 import lombok.Data;
 import org.springframework.hateoas.Link;
@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +28,7 @@ public class SearchResponse {
         this.request = request;
     }
 
-    public ResponseEntity getResponse (Class type, Class dest) throws EntityNotFoundException{
+    public ResponseEntity getResponse (Class type, Class dest) throws EntityNotFoundException {
 
         Resources responseBody = new Resources(
                 resultsList.stream()

@@ -1,7 +1,7 @@
-package com.dm.teamquery.data.generic;
+package com.dm.teamquery.search;
 
 
-import com.dm.teamquery.execption.InvalidParameterException;
+import com.dm.teamquery.execption.customexception.InvalidParameterException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;

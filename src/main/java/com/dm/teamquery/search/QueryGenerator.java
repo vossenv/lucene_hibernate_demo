@@ -21,17 +21,16 @@ import static org.hibernate.validator.internal.util.CollectionHelper.asSet;
 public class QueryGenerator {
 
     private Set<String> fieldNames;
-    private Class entityType;
+    private String entityName;
     private String colQuery;
     private String AND_HOLDER = ";+@!&@";
     private String OR_HOLDER = ";=@!&@";
     private String OR_OPERATOR = "OR";
     private String AND_OPERATOR = "AND";
 
-    public QueryGenerator(Class entityType) {
-        this.entityType = entityType;
-        this.fieldNames = stream(entityType.getDeclaredFields())
-                .map(Field::getName).collect(Collectors.toCollection(LinkedHashSet::new));
+    public QueryGenerator(String entityName, Set<String> fieldNames) {
+        this.entityName = entityName;
+        this.fieldNames = fieldNames;
         this.colQuery = String.join(" like ? or ", this.fieldNames) + " like ?";
     }
 
@@ -39,7 +38,7 @@ public class QueryGenerator {
 
         searchTerms = validateSearchTerms(searchTerms);
         return trimConjunctions( "from "
-                + entityType.getSimpleName() + " where "
+                + entityName + " where "
                 + searchTerms.stream()
                 .map(this::getFieldString)
                 .collect(Collectors.joining(" and ")));

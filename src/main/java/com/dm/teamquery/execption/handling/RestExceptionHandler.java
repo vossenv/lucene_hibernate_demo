@@ -1,6 +1,9 @@
-package com.dm.teamquery.execption;
+package com.dm.teamquery.execption.handling;
 
 
+import com.dm.teamquery.execption.customexception.InvalidParameterException;
+import com.dm.teamquery.execption.customexception.SearchFailedException;
+import com.dm.teamquery.execption.customexception.TeamQueryException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -32,17 +35,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     // Entity CRUD
-    @ExceptionHandler(InvalidEntityIdException.class)
-    protected ResponseEntity<Object> handleInvalidEntityIdException(InvalidEntityIdException e) {
-        return new TeamQueryError(INVALID_ENTITY_ID, HttpStatus.BAD_REQUEST, e).toResponse();
-    }
+//    @ExceptionHandler(InvalidEntityIdException.class)
+//    protected ResponseEntity<Object> handleInvalidEntityIdException(InvalidEntityIdException e) {
+//        return new TeamQueryError(INVALID_ENTITY_ID, HttpStatus.BAD_REQUEST, e).toResponse();
+//    }
+//
+//    @ExceptionHandler(EntityNotFoundException.class)
+//    protected ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException e) {
+//        return new TeamQueryError(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND, e).toResponse();
+//    }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    protected ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException e) {
-        return new TeamQueryError(ENTITY_NOT_FOUND, HttpStatus.NOT_FOUND, e).toResponse();
-    }
-
-    @ExceptionHandler({DeleteFailedException.class, SearchFailedException.class})
+    @ExceptionHandler({ SearchFailedException.class})
     protected ResponseEntity<Object> handleFailedException(TeamQueryException e) {
         return new TeamQueryError(UNKNOWN_FAILURE, HttpStatus.INTERNAL_SERVER_ERROR, e).toResponse();
     }
