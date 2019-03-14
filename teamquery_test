@@ -1,0 +1,314 @@
+{
+	"info": {
+		"_postman_id": "fb1f5f5a-60eb-479d-b018-5366581668f8",
+		"name": "TeamQuery Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Basic Search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea5e0f13-84cc-457d-907d-f5ca09c6c160",
+						"exec": [
+							"pm.test(\"response is ok\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "query",
+						"value": "e",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "page",
+						"value": "0",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:9002/challenges/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9002",
+					"path": [
+						"challenges",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "No results",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea5e0f13-84cc-457d-907d-f5ca09c6c160",
+						"exec": [
+							"pm.test(\"response is ok\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var data = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(data.length).to.equals(0)\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "query",
+						"type": "text",
+						"value": "0000000000000000000000000000000000000000000000"
+					},
+					{
+						"key": "page",
+						"type": "text",
+						"value": "0",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:9002/challenges/search",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9002",
+					"path": [
+						"challenges",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea5e0f13-84cc-457d-907d-f5ca09c6c160",
+						"exec": [
+							"pm.test(\"Test Delete\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.response.to.have.body(\"Successfully deleted 08693c3e-d251-4cf5-98bc-1fd234b44f2e\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "query",
+						"type": "text",
+						"value": "0000000000000000000000000000000000000000000000",
+						"disabled": true
+					},
+					{
+						"key": "page",
+						"type": "text",
+						"value": "0",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{target}}/challenges/08693c3e-d251-4cf5-98bc-1fd234b44f2e/delete",
+					"host": [
+						"{{target}}"
+					],
+					"path": [
+						"challenges",
+						"08693c3e-d251-4cf5-98bc-1fd234b44f2e",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Again",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea5e0f13-84cc-457d-907d-f5ca09c6c160",
+						"exec": [
+							"pm.test(\"Test Delete\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    var data = pm.response.json()\r",
+							"    pm.expect(data.message).to.include(\"No class com.dm.teamquery.model.Challenge entity with id 08693c3e-d251-4cf5-98bc-1fd234b44f2e exists!\")\r",
+							"    \r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "query",
+						"type": "text",
+						"value": "0000000000000000000000000000000000000000000000",
+						"disabled": true
+					},
+					{
+						"key": "page",
+						"type": "text",
+						"value": "0",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{target}}/challenges/08693c3e-d251-4cf5-98bc-1fd234b44f2e/delete",
+					"host": [
+						"{{target}}"
+					],
+					"path": [
+						"challenges",
+						"08693c3e-d251-4cf5-98bc-1fd234b44f2e",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Challenge",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea5e0f13-84cc-457d-907d-f5ca09c6c160",
+						"exec": [
+							"pm.test(\"response is ok\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var data = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(data.question).to.equal(\"Test Question\")\r",
+							"    pm.expect(data.answer).to.equal(\"Test Answer\")\r",
+							"    pm.expect(data.author).to.equal(\"Danimae\")\r",
+							"    pm.expect(data.lastAuthor).to.equal(\"Danimae\")\r",
+							"    pm.expect(data.enabled).to.equal(true)\r",
+							"    pm.expect(data).to.have.property('dateCreated')\r",
+							"    pm.expect(data).to.have.property('dateLastModified')\r",
+							"    pm.expect(data).to.have.property('challengeId')\r",
+							"    \r",
+							"\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "page",
+						"type": "text",
+						"value": "0",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\r\n        \"question\": \"Test Question\",\r\n        \"answer\": \"Test Answer\",\r\n        \"author\": \"Danimae\",\r\n        \"lastAuthor\": \"Danimae\"\r\n    }"
+				},
+				"url": {
+					"raw": "http://localhost:9002/challenges/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9002",
+					"path": [
+						"challenges",
+						"update"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "6ef1ee32-661c-4742-8102-3e1d5efe7e9b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "0c488813-4ef2-4769-a3e2-f4ed905d5629",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "8bef6828-357a-4d0f-abfc-3c203308550b",
+			"key": "target",
+			"value": "http://localhost:9002",
+			"type": "string"
+		}
+	]
+}

@@ -1,19 +1,17 @@
 package com.dm.teamquery.search;
 
 
-import com.dm.teamquery.execption.customexception.TeamQueryException;
+import com.dm.teamquery.search.SearchTerm.Types;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import static java.util.Arrays.stream;
 import static org.hibernate.validator.internal.util.CollectionHelper.asSet;
 
@@ -31,15 +29,22 @@ public class Search2 {
     private final String TAB_HOLDER = "@&%*";
     private final String TERM_SEPARATOR = "#`]//:";
 
-    private final String QUOTE_SEARCH = "\".*\"";
+    private final String QUOTE_SEARCH = "(?<=^|\\s)\".*?\"(?=$|\\s)";
+    private final String KEYWORD_SEARCH = "\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*";
+
     private final String badKeyTerms = "(\\S*\\s*=\\s*$|^\\s*=\\S*)";
-    private final String specialTerms = "(\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*|\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
+    //private final String specialTerms = "(\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*|\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
+
+
+
+
     private final String andSearchPattern = "(?<=\\S)\\s+" + AND_OPERATOR + "\\s+(?=\\S)";
     private final String orSearchPattern = "(?<=\\S)\\s+" + OR_OPERATOR + "\\s+(?=\\S)";
 
     private Class entityType;
     @Getter private String query;
     @Getter private Set<String> searchTerms = new HashSet<>();
+    @Getter @Setter Map<String, SearchTerm> mappedTerms = new HashMap<>();
     @Getter @Setter private QueryGenerator queryGenerator;
 
     public Search2(Class entityType, String query) {
@@ -56,25 +61,15 @@ public class Search2 {
 
     private void indexTerms() {
 
-        query = "this \"and a\" also OR \"a str\\\"ing\"";
+        query = "\"abc\\\"def\" and then some \"other a=b =cquotes\" xyz = 3 author= test";
         encode(query);
-        //String unquote = query.replaceAll(QUOTE_SEARCH,);
+
 
         searchTerms = decode(encode(query));
         searchTerms = refine(searchTerms);
     }
 
 
-
-    private String encodeSpecial(String t) {
-
-        t = t
-                .replaceAll("\\t", TAB_HOLDER)
-                .replaceAll("\\s", SPACE_HOLDER);
-
-        return trimEnds("\"", t);
-
-    }
 
     private Set<String> refine (Set<String> initial) {
         return initial.stream()
@@ -86,20 +81,23 @@ public class Search2 {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private String encodeTerm(String term){
-        return Base64.getEncoder().encodeToString(term.getBytes());
+    private String filterTerms(String qstring, String regex, SearchTerm.Types targetType){
+
+        for (String t : match(regex, qstring)) {
+            if (targetType == Types.KEYWORD && !fieldNames.contains(t.split("=")[0].trim())) break;
+            SearchTerm term = new SearchTerm(targetType, trimEnds("\"", t));
+            mappedTerms.put(term.getId(), term);
+            qstring = qstring.replace(t, term.getId());
+        }
+        return qstring;
     }
 
-    private String decodeTerm(String encTerm){
-        return new String(Base64.getDecoder().decode(encTerm));
-    }
 
     private String encode(String qstring) {
-        qstring = qstring.replaceAll("\\\\\"","***");
-        for (String t : match(specialTerms, qstring)) {
-            qstring = qstring.replace(t, encodeSpecial(t));
 
-        }
+        qstring = filterTerms(qstring, QUOTE_SEARCH, Types.QUOTED);
+        qstring = filterTerms(qstring, KEYWORD_SEARCH, Types.KEYWORD);
+
         return qstring
                 .replaceAll(orSearchPattern, OR_HOLDER)
                 .replaceAll(" " + AND_OPERATOR + " ", " ")
