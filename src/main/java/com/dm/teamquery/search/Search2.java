@@ -12,40 +12,49 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import static java.util.Arrays.stream;
-import static org.hibernate.validator.internal.util.CollectionHelper.asSet;
 
 @EqualsAndHashCode
 @NoArgsConstructor
 public class Search2 {
 
-    @Getter private final String AND_OPERATOR = "AND";
-    @Getter private final String OR_OPERATOR = "OR";
-    @Getter @Setter private Set<String> fieldNames;
+    @Getter
+    private final String AND_OPERATOR = "AND";
+    @Getter
+    private final String OR_OPERATOR = "OR";
+    @Getter
+    @Setter
+    private Set<String> fieldNames;
 
     @Getter
     private final String OR_HOLDER = ";=@!&@";
     private final String SPACE_HOLDER = "!a#!%";
     private final String TAB_HOLDER = "@&%*";
     private final String TERM_SEPARATOR = "#`]//:";
+    private final String WHITESPACE = "(?<=\\S)\\s+(?=\\S)";
 
+    private final String SPACE_SEARCH = "(?<=\\S)[\\t\\f ]+?(?=\\S)";
     private final String QUOTE_SEARCH = "(?<=^|\\s)\".*?\"(?=$|\\s)";
+    private final String GROUP_SEARCH = "(?<=\\().*?(?=\\))";
     private final String KEYWORD_SEARCH = "\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*";
-
+    private final String PAREN_SEARCH = "(?<=\\(|\\s|^)\\(|\\)(?=\\)|\\s|$)";
     private final String badKeyTerms = "(\\S*\\s*=\\s*$|^\\s*=\\S*)";
-    //private final String specialTerms = "(\\S*\\s*=\\s*\".*?\"|\\S*\\s*=\\s*\\S*|\".*?\"|\\S*\\s*=\\s*\".*\"|\\S*\\s*=\\s*.*?(?=\\s))";
 
-
-
-
-    private final String andSearchPattern = "(?<=\\S)\\s+" + AND_OPERATOR + "\\s+(?=\\S)";
-    private final String orSearchPattern = "(?<=\\S)\\s+" + OR_OPERATOR + "\\s+(?=\\S)";
+    private final String AND_SEARCH = WHITESPACE + AND_OPERATOR + WHITESPACE; //+ "|" + SPACE_SEARCH;
+    private final String OR_SEARCH = WHITESPACE + OR_OPERATOR + WHITESPACE;
 
     private Class entityType;
-    @Getter private String query;
-    @Getter private Set<String> searchTerms = new HashSet<>();
-    @Getter @Setter Map<String, SearchTerm> mappedTerms = new HashMap<>();
-    @Getter @Setter private QueryGenerator queryGenerator;
+    @Getter
+    private String query;
+    @Getter
+    private Set<String> searchTerms = new HashSet<>();
+    @Getter
+    @Setter
+    Map<String, SearchTerm> mappedTerms = new HashMap<>();
+    @Getter
+    @Setter
+    private QueryGenerator queryGenerator;
 
     public Search2(Class entityType, String query) {
         this.query = query;
@@ -57,78 +66,48 @@ public class Search2 {
         indexTerms();
     }
 
-    public Search2(Class entityType){this(entityType,"");}
+    public Search2(Class entityType) {
+        this(entityType, "");
+    }
 
     private void indexTerms() {
 
-        query = "\"abc\\\"def\" and then some \"other a=b =cquotes\" xyz = 3 author= test";
-        encode(query);
-
-
-        searchTerms = decode(encode(query));
-        searchTerms = refine(searchTerms);
+        query = "this AND \"a orb\" author=hello th(at (plus OR this)";
+        query = encode(query);
+        System.out.println();
     }
 
-
-
-    private Set<String> refine (Set<String> initial) {
-        return initial.stream()
-                .map(t -> t = match(badKeyTerms, t).size() == 0 ?
-                        stream(t.split("="))
-                                .map(String::trim).collect(Collectors.joining("=")) : t)
-                .map(String::trim)
-                .filter(t -> !t.isEmpty() )
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+    private void filterSpecialTerms(String regex, SearchTerm.Types type, SearchGroup g) {
+        match(regex, g.getCurrentQuery()).forEach(t -> g.encodeTerm(type, t));
     }
-
-    private String filterTerms(String qstring, String regex, SearchTerm.Types targetType){
-
-        for (String t : match(regex, qstring)) {
-            if (targetType == Types.KEYWORD && !fieldNames.contains(t.split("=")[0].trim())) break;
-            SearchTerm term = new SearchTerm(targetType, trimEnds("\"", t));
-            mappedTerms.put(term.getId(), term);
-            qstring = qstring.replace(t, term.getId());
-        }
-        return qstring;
-    }
-
 
     private String encode(String qstring) {
 
-        qstring = filterTerms(qstring, QUOTE_SEARCH, Types.QUOTED);
-        qstring = filterTerms(qstring, KEYWORD_SEARCH, Types.KEYWORD);
+        SearchGroup group = new SearchGroup(qstring);
+        filterSpecialTerms(QUOTE_SEARCH, Types.QUOTED, group);
+        filterSpecialTerms(KEYWORD_SEARCH, Types.KEYWORD, group);
+        filterSpecialTerms(OR_SEARCH, Types.OR, group);
+        filterSpecialTerms(AND_SEARCH, Types.AND, group);
+        filterSpecialTerms(WHITESPACE, Types.AND, group);
 
-        return qstring
-                .replaceAll(orSearchPattern, OR_HOLDER)
-                .replaceAll(" " + AND_OPERATOR + " ", " ")
-                .replaceAll("\\s+", TERM_SEPARATOR);
-    }
+        group.encodeRemainingTerms();
 
-    private Set<String> decode(String toDecode) {
-        return asSet(toDecode.split(TERM_SEPARATOR))
-                .stream()
-                .map(t -> t = t
-                        .replaceAll(TAB_HOLDER, "\\t")
-                        .replaceAll(SPACE_HOLDER, " "))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
+        String q = group.getCurrentQuery();
+        String t = group.getNormalizedQuery();
+        String gh = group.getDecodedQuery();
+        String gg = group.getLabeledTerms();
 
-    public String getDatabaseQuery(){
-        return this.queryGenerator.generateQuery(searchTerms);
+        return qstring;
+
     }
 
     private List<String> match(String pattern, String text) {
-        Set<String> termList = new HashSet<>();
+        List<String> termList = new LinkedList<>();
         Matcher m = Pattern.compile(pattern).matcher(text);
-        while (m.find()) termList.add(m.group().trim());
+        while (m.find()) termList.add(m.group());
         return new LinkedList<>(termList);
     }
 
-    private String trimEnds(String rem, String target){
-        if (target.startsWith(rem)) target = target.substring(1);
-        if (target.endsWith(rem)) target = target.substring(0, target.length()-1);
-        return target;
-    }
 
     public Search2 setQuery(String query) {
         this.query = query;
@@ -136,3 +115,8 @@ public class Search2 {
         return this;
     }
 }
+
+//    private boolean isKeyword(String s) {
+//        return !fieldNames.contains(s.split("=")[0].trim());
+//    }
+
