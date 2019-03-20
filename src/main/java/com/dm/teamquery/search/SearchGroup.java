@@ -2,6 +2,8 @@ package com.dm.teamquery.search;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,7 +16,7 @@ import static java.util.Arrays.stream;
 @Setter
 public class SearchGroup {
 
-    private Map<String, SearchTerm> termList = new HashMap<>();
+    private Map<String, SearchTerm> mappedTerms = new HashMap<>();
     private String currentQuery;
     private String originalQuery;
 
@@ -23,42 +25,42 @@ public class SearchGroup {
         this.originalQuery = currentQuery;
     }
 
-    public void encodeTerm(SearchTerm.Types type, String s){
+    public void encodeTerm(TermTypes type, String s){
         SearchTerm st = new SearchTerm(type, s);
-        termList.put(st.getId(), st);
+        mappedTerms.put(st.getId(), st);
         currentQuery = currentQuery.replaceFirst(Pattern.quote(s), st.getId());
     }
 
     public String getNormalizedQuery(){
         StringBuilder sb = new StringBuilder(currentQuery);
-        termList.keySet().forEach(k -> sb.replace(sb.indexOf(k), sb.indexOf(k) + k.length(), " " + k + " "));
+        mappedTerms.keySet().forEach(k -> sb.replace(sb.indexOf(k), sb.indexOf(k) + k.length(), " " + k + " "));
         return sb.toString().trim().replaceAll("\\s+", " ");
     }
 
     public String getDecodedQuery(){
-        return termList.values().stream()
+        return mappedTerms.values().stream()
                 .sorted(Comparator.comparing(SearchTerm::getIndex))
-                .map(SearchTerm::getQuotedValue)
+                .map(t -> StringUtils.wrap(t.getValue(), t.getType() == TermTypes.QUOTED ? "\"" : ""))
                 .collect(Collectors.joining(" "));
     }
 
     public String getLabeledTerms(){
-        return termList.values().stream()
+        return mappedTerms.values().stream()
                 .sorted(Comparator.comparing(SearchTerm::getIndex))
-                .map(t -> t.getIndex() + "{" + t.getQuotedValue() + "}")
+                .map(t -> "(" + t.getIndex() + ")" + t.getType().toString() +  "-{" + t.getValue() + "}")
                 .collect(Collectors.joining(" "));
     }
 
-    public void encodeRemainingTerms(){
+    public SearchGroup encodeRemainingTerms(){
         stream(getNormalizedQuery().split(" "))
-                .filter(k -> !termList.containsKey(k) && !k.isEmpty())
-                .forEach(t -> encodeTerm(SearchTerm.Types.TEXT,t));
+                .filter(k -> !mappedTerms.containsKey(k) && !k.isEmpty())
+                .forEach(t -> encodeTerm(TermTypes.TEXT,t));
         indexAllTerms();
+        return this;
     }
 
     private void indexAllTerms(){
         final AtomicInteger count = new AtomicInteger();
-        stream(getNormalizedQuery().split(" ")).forEach(t -> termList.get(t).setIndex(count.getAndIncrement()));
+        stream(getNormalizedQuery().split(" ")).forEach(t -> mappedTerms.get(t).setIndex(count.getAndIncrement()));
     }
-
 }
