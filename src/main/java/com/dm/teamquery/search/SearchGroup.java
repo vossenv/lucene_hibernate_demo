@@ -55,8 +55,23 @@ public class SearchGroup {
         stream(getNormalizedQuery().split(" "))
                 .filter(k -> !mappedTerms.containsKey(k) && !k.isEmpty())
                 .forEach(t -> encodeTerm(TermTypes.TEXT,t));
+        //filterDuplicateBooleans();
         indexAllTerms();
         return this;
+    }
+
+    private void filterDuplicateBooleans(){
+        Map<String, SearchTerm> filteredMap = new HashMap<>();
+
+        boolean trigger = false;
+        for (SearchTerm t : mappedTerms.values()){
+            if (t.getType().isBoolean() && trigger) continue;
+            if (!t.getType().isBoolean() && trigger) trigger = false;
+            else if (t.getType().isBoolean()) trigger = true;
+            filteredMap.put(t.getId(), t);       }
+
+        this.mappedTerms = filteredMap;
+
     }
 
     private void indexAllTerms(){

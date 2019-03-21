@@ -15,22 +15,26 @@ public class SearchTerm {
     private Integer index;
     public static final Integer termLength = 7;
 
-    public SearchTerm(TermTypes type, String value){
+    public SearchTerm(TermTypes type, String value) {
         this.type = type;
         this.value = normalize(value);
-        this.id = UUID.randomUUID().toString().replaceAll("-","").substring(0, termLength);
+        this.id = UUID.randomUUID().toString().replaceAll("-", "").substring(0, termLength);
     }
 
-    private String normalize(String target){
-        return type == TermTypes.OR || type == TermTypes.AND
-                ? type.name
-                : trimEndQuote(target).replaceAll("\\\\\"","\"");
+    private String normalize(String s) {
+        switch (type){
+            case OR:
+            case AND: return type.name;
+            case QUOTED: return trimQuotes(s);
+            default: return s.trim();
+        }
     }
 
-    private String trimEndQuote(String s){
+    private String trimQuotes(String s) {
         s = s.startsWith("\"") ? s.substring(1) : s;
         s = s.endsWith("\"") ? s.substring(0, s.length() - 1) : s;
-        return s.trim();
+        s = s.trim().isEmpty() ? s : s.trim();
+        return s.replaceAll("\\\\\"", "\"");
     }
 }
 

@@ -11,4 +11,8 @@ public enum TermTypes {
     TermTypes(String name){
         this.name = name;
     }
+
+    public boolean isBoolean(){
+        return this == AND || this == OR;
+    }
 }

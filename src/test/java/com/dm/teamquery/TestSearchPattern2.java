@@ -19,7 +19,8 @@ public class TestSearchPattern2 {
     @Test
     public void TestSimple() throws Exception {
 
-        String query = "this AND \"a new \\\"day\\\"\" author=hello th(a plus OR this";
+        String query = "this \" \\\"day\\\"\" author=hello \" \" th(a plus OR this";
+        //String query = "\\\"";
         SearchBuilder s = new SearchBuilder(Challenge.class, query);
 
         SearchGroup group = s.getSearchGroup();
@@ -28,7 +29,7 @@ public class TestSearchPattern2 {
         String gh = group.getDecodedQuery();
         String gg = group.getLabeledTerms();
 
-        System.out.println();
+         System.out.println();
 
         String query0 = "a \" hello \"";
         String query2 = "a \" hel\" lo \"";
