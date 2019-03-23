@@ -9,11 +9,11 @@ import java.util.UUID;
 @Setter
 public class SearchTerm {
 
-    private TermTypes type;
     private String id;
     private String value;
-    private Integer index;
-    public static final Integer termLength = 7;
+    private TermTypes type;
+    private Integer index = -1;
+    public static final Integer termLength = 10;
 
     public SearchTerm(TermTypes type, String value) {
         this.type = type;

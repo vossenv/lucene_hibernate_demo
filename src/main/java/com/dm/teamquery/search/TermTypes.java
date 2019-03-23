@@ -5,7 +5,8 @@ public enum TermTypes {
     QUOTED("QUOTE"),
     KEYWORD("KEYWORD"),
     AND("AND"),
-    OR("OR");
+    OR("OR"),
+    VOID("VOID");
 
     public final String name;
     TermTypes(String name){

@@ -1,9 +1,7 @@
 package com.dm.teamquery;
 
 
-import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.search.SearchBuilder;
-import com.dm.teamquery.search.SearchGroup;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,30 +17,27 @@ public class TestSearchPattern2 {
     @Test
     public void TestSimple() throws Exception {
 
-        String query = "this \" \\\"day\\\"\" author=hello \" \" th(a plus OR this";
-        //String query = "\\\"";
-        SearchBuilder s = new SearchBuilder(Challenge.class, query);
+        //String q = "this \" \\\"day\\\"\" author=hello \" \" th(a plus OR this";
 
-        SearchGroup group = s.getSearchGroup();
-        String q = group.getCurrentQuery();
-        String t = group.getNormalizedQuery();
-        String gh = group.getDecodedQuery();
-        String gg = group.getLabeledTerms();
+      //  String q = "a df f as";
+        SearchBuilder s = new SearchBuilder();
 
-         System.out.println();
-
-        String query0 = "a \" hello \"";
-        String query2 = "a \" hel\" lo \"";
-        String query3 = "a \" ";
-
-        s.setQuery(query0);
-        s.setQuery(query2);
-        s.setQuery(query3);
-
-        //query = URLEncoder.encode(query,"UTF-8");
+//        SearchGroup d = s.getSearchGroup();
+//
+//        String a = d.getDecodedQuery();
 
 
-//        String q1 = s.setQuery("a").getSearchTerms().toString();
+
+
+
+        String q0 = s.setQuery("").getSearchGroup().getDebugQuery();
+        String q1 = s.setQuery("a b").getSearchGroup().getDecodedQuery();
+        String q2 = s.setQuery("a b c c").getSearchGroup().getDecodedQuery();
+        String q3 = s.setQuery("c a b c").getSearchGroup().getDebugQuery();
+        String q4 = s.setQuery("a   b     c").getSearchGroup().getDebugQuery();
+
+
+
 //        String q2 = s.setQuery("a b").getSearchTerms().toString();
 //        String q3 = s.setQuery("\"a b\"").getSearchTerms().toString();
 //        String q4 = s.setQuery("\"a b\" c d").getSearchTerms().toString();

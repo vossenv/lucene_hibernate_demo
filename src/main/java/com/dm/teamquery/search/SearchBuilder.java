@@ -1,6 +1,5 @@
 package com.dm.teamquery.search;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,10 +7,11 @@ import org.springframework.util.Assert;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@EqualsAndHashCode
 @NoArgsConstructor
 public class SearchBuilder {
 
@@ -22,13 +22,13 @@ public class SearchBuilder {
     private static final String OR_SEARCH = WHITESPACE + TermTypes.OR.name + WHITESPACE;
 
     @Getter
-    private String query;
+    private String query = "";
 
     @Getter
     private SearchGroup searchGroup;
 
     @Getter @Setter
-    private Class entityType;
+    private Class entityType = Object.class;
 
     @Getter @Setter
     private QueryGenerator queryGenerator;
@@ -37,13 +37,17 @@ public class SearchBuilder {
         init(entityType, query);
     }
 
-    public SearchBuilder setQuery(String query) {
-        init(this.entityType, query);
-        return this;
+    public SearchBuilder(String query) {
+        init(Object.class, query);
     }
 
     public SearchBuilder(Class entityType) {
         init(entityType, "");
+    }
+
+    public SearchBuilder setQuery(String query) {
+        init(this.entityType, query);
+        return this;
     }
 
     private void init(Class entityType, String query){
@@ -61,7 +65,11 @@ public class SearchBuilder {
         encodeTerms(OR_SEARCH, TermTypes.OR, group);
         encodeTerms(AND_SEARCH, TermTypes.AND, group);
         encodeTerms(WHITESPACE, TermTypes.AND, group);
-        return group.encodeRemainingTerms();
+
+//        String x = group.getCurrentQuery();
+//        String y = group.splitNonIndexedQuery();
+        group.encodeRemainingTermsAndIndex();
+        return group;
     }
 
     private List<String> match(String pattern, String text) {
