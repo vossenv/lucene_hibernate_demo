@@ -33,7 +33,8 @@ public class QueryGenerator {
         this.fieldNames = fieldNames;
         this.colQuery = String.join(" like ? or ", this.fieldNames) + " like ?";
     }
-
+    //        this.fieldNames = stream(entityType.getDeclaredFields()).map(Field::getName).collect(Collectors.toCollection(LinkedHashSet::new));
+//                stream(entityType.getSuperclass().getDeclaredFields()).map(Field::getName).forEach(fieldNames::add);
     public String generateQuery(Set<String> searchTerms){
 
         searchTerms = validateSearchTerms(searchTerms);

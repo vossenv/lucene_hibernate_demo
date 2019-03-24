@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test.properties")
-public class TestSearchPattern2 {
+public class TestSearchBuilder {
 
 
     @Test
@@ -34,7 +34,7 @@ public class TestSearchPattern2 {
         String q1 = s.setQuery("a b").getSearchGroup().getDecodedQuery();
         String q2 = s.setQuery("a b c c").getSearchGroup().getDecodedQuery();
         String q3 = s.setQuery("c a b c").getSearchGroup().getDebugQuery();
-        String q4 = s.setQuery("a   b     c").getSearchGroup().getDebugQuery();
+        String q4 = s.setQuery("a   b     c").getSearchGroup().getSplitQuery();
 
 
 
