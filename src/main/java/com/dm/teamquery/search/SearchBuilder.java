@@ -29,9 +29,7 @@ public class SearchBuilder {
     @Setter
     private Class entityType = Object.class;
 
-    @Getter
-    @Setter
-    private QueryGenerator queryGenerator;
+
 
     public SearchBuilder(Class entityType, String query) {
         init(entityType, query);
@@ -54,18 +52,8 @@ public class SearchBuilder {
         Assert.notNull(entityType, "Invalid entity type: null");
         Assert.notNull(query, "Invalid query: null");
         this.entityType = entityType;
-        this.SLProcessor = parseQuery(query);
+
     }
 
-    private SLProcessor parseQuery(String queryString) {
-        SLProcessor group = new SLProcessor(queryString.replaceAll(SKIP_BOOL, ""));
-        group.findAndEncode(QUOTE_SEARCH, TermTypes.QUOTED);
-        group.findAndEncode(KEYWORD_SEARCH, TermTypes.KEYWORD);
-        group.findAndEncode(OR_SEARCH, TermTypes.OR);
-        group.findAndEncode(AND_SEARCH, AND);
-        group.findAndEncode(WHITESPACE, AND);
-        group.encodeRemainingTermsAndIndex();
-        return group;
-    }
 }
 

@@ -1,7 +1,10 @@
 package com.dm.teamquery.search;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -10,12 +13,13 @@ import static com.dm.teamquery.search.TermTypes.KEYWORD;
 import static com.dm.teamquery.search.TermTypes.QUOTED;
 import static org.apache.commons.lang3.StringUtils.wrap;
 
+@Getter
+@Setter
+@AllArgsConstructor
 public class Query {
 
-
     private String originalQuery;
-    private Map<String, SearchTerm> mappedTerms = new HashMap<>();
-
+    private Map<String, SearchTerm> mappedTerms;
 
     public String getUpdatedQuery() {
         return constructQuery(SearchTerm::getId, "");

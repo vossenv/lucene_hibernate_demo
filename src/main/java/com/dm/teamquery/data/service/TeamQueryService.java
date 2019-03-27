@@ -4,7 +4,6 @@ package com.dm.teamquery.data.service;
 import com.dm.teamquery.data.repository.SearchInfoRepository;
 import com.dm.teamquery.entity.SearchInfo;
 import com.dm.teamquery.execption.customexception.SearchFailedException;
-import com.dm.teamquery.search.Search;
 import com.dm.teamquery.data.SearchRequest;
 import com.dm.teamquery.data.SearchResponse;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -109,23 +108,25 @@ public abstract class TeamQueryService<T, ID> {
 
     public SearchResponse search(SearchRequest request) throws SearchFailedException {
 
-        long startTime = System.nanoTime();
-        String query = request.getQuery();
-        String dbQuery = prepareQuery(new Search(persistentClass, query).getDatabaseQuery(), request.getIncDisabled());
-        SearchInfo search = new SearchInfo(query, dbQuery);
-        SearchResponse response = new SearchResponse(request);
+        return null;
 
-        try {
-            response.setRowCount(count(dbQuery));
-            response.setResultsList(search(dbQuery, request.getPageable()));
-            response.setSearchTime((System.nanoTime() - startTime) * 1.0e-9);
-            infoRepository.save(search);
-            return response;
-        } catch (Exception e) {
-            search.setErrors(ExceptionUtils.getRootCauseMessage(e));
-            infoRepository.save(search);
-            throw new SearchFailedException(ExceptionUtils.getRootCauseMessage(e));
-        }
+//        long startTime = System.nanoTime();
+//        String query = request.getQuery();
+//        String dbQuery = prepareQuery(new Search(persistentClass, query).getDatabaseQuery(), request.getIncDisabled());
+//        SearchInfo search = new SearchInfo(query, dbQuery);
+//        SearchResponse response = new SearchResponse(request);
+//
+//        try {
+//            response.setRowCount(count(dbQuery));
+//            response.setResultsList(search(dbQuery, request.getPageable()));
+//            response.setSearchTime((System.nanoTime() - startTime) * 1.0e-9);
+//            infoRepository.save(search);
+//            return response;
+//        } catch (Exception e) {
+//            search.setErrors(ExceptionUtils.getRootCauseMessage(e));
+//            infoRepository.save(search);
+//            throw new SearchFailedException(ExceptionUtils.getRootCauseMessage(e));
+//        }
     }
 
     private String prepareQuery(String query, boolean disabled) {
