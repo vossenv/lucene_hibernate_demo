@@ -3,7 +3,7 @@ package com.dm.teamquery;
 import com.dm.teamquery.data.service.ChallengeService;
 import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.customexception.SearchFailedException;
-import com.dm.teamquery.search.SearchRequest;
+import com.dm.teamquery.data.SearchRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

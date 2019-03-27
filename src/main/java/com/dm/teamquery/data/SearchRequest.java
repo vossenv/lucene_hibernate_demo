@@ -1,4 +1,4 @@
-package com.dm.teamquery.search;
+package com.dm.teamquery.data;
 
 
 import com.dm.teamquery.execption.customexception.InvalidParameterException;
