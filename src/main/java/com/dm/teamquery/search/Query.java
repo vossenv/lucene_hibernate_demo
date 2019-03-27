@@ -2,19 +2,16 @@ package com.dm.teamquery.search;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.dm.teamquery.search.TermTypes.KEYWORD;
-import static com.dm.teamquery.search.TermTypes.QUOTED;
+import static com.dm.teamquery.search.SearchTerm.Types.*;
 import static org.apache.commons.lang3.StringUtils.wrap;
 
 @Getter
-@Setter
 @AllArgsConstructor
 public class Query {
 
@@ -30,13 +27,13 @@ public class Query {
     }
 
     public String getDecodedQuery() {
-        return constructQuery(t -> wrap(t.getValue(), t.getType() == QUOTED ? "\"" : ""), " ");
+        return constructQuery(t -> wrap(t.getValue(), t.getType().is(QUOTED) ? "\"" : ""), " ");
     }
 
     public String getDebugQuery() {
         return constructQuery(t ->
                 "(" + t.getIndex() + ")" + t.getType().toString() + "-{"
-                        + (t.getType() == KEYWORD ? "key: " + t.getKey()  + ", val: ": "")
+                        + (t.getType().is(KEYWORD) ? "key: " + t.getKey()  + ", val: ": "")
                         + t.getValue() + "}", " ");
     }
 
@@ -46,6 +43,4 @@ public class Query {
                 .map(mapper)
                 .collect(Collectors.joining(delimiter));
     }
-
-
 }

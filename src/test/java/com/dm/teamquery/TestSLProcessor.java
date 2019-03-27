@@ -2,6 +2,8 @@ package com.dm.teamquery;
 
 
 import com.dm.teamquery.search.SLProcessor;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +35,14 @@ public class TestSLProcessor {
         String q5 = slp.analyze("    a   b     c ").getDebugQuery();
         String q6 = slp.analyze("    ").getDebugQuery();
 
-        System.out.println();
+        Assert.assertEquals(q0, "");
+        Assert.assertEquals(q1, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b}");
+        Assert.assertEquals(q2, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c} (5)AND-{AND} (6)TEXT-{c}");
+        Assert.assertEquals(q3, "(0)TEXT-{c} (1)AND-{AND} (2)TEXT-{a} (3)AND-{AND} (4)TEXT-{b} (5)AND-{AND} (6)TEXT-{c}");
+        Assert.assertEquals(q4, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
+        Assert.assertEquals(q5, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
+        Assert.assertEquals(q6, "");
+
     }
 
     @Test
@@ -54,7 +63,22 @@ public class TestSLProcessor {
         String q12 = slp.analyze("\\\" \\\" \\\"").getDebugQuery();
         String q13 = slp.analyze("\\\" \\\" \" \\\"").getDebugQuery();
 
-        System.out.println();
+        Assert.assertEquals(q0, "");
+        Assert.assertEquals(q1, "(0)QUOTED-{a b}");
+        Assert.assertEquals(q2, "(0)QUOTED-{a b} (1)AND-{AND} (2)TEXT-{c} (3)AND-{AND} (4)TEXT-{d}");
+        Assert.assertEquals(q3, "(0)QUOTED-{\" test quoted term in quotes \"}");
+        Assert.assertEquals(q4, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{\"}");
+        Assert.assertEquals(q5, "(0)QUOTED-{a and b} (1)AND-{AND} (2)QUOTED-{c and d}");
+        Assert.assertEquals(q6, "(0)QUOTED-{a and  \"c and d}");
+        Assert.assertEquals(q7, "(0)QUOTED-{a and} (1)AND-{AND} (2)TEXT-{c} (3)AND-{AND} (4)TEXT-{and} (5)AND-{AND} (6)TEXT-{d}");
+        Assert.assertEquals(q8, "(0)QUOTED-{\"} (1)AND-{AND} (2)QUOTED-{\"\"\"\"} (3)AND-{AND} (4)TEXT-{\"\"}");
+        Assert.assertEquals(q9, "(0)QUOTED-{\"} (1)AND-{AND} (2)QUOTED-{\"\"\"\"} (3)AND-{AND} (4)TEXT-{\"} (5)AND-{AND} (6)TEXT-{\"}");
+        Assert.assertEquals(q10, "(0)QUOTED-{ } (1)AND-{AND} (2)QUOTED-{ }");
+        Assert.assertEquals(q11, "(0)QUOTED-{\" \" \"}");
+        Assert.assertEquals(q12, "(0)TEXT-{\"} (1)AND-{AND} (2)TEXT-{\"} (3)AND-{AND} (4)TEXT-{\"}");
+        Assert.assertEquals(q13, "(0)TEXT-{\"} (1)AND-{AND} (2)TEXT-{\"} (3)AND-{AND} (4)TEXT-{\"}");
+
+
 
     }
 
@@ -69,7 +93,13 @@ public class TestSLProcessor {
         String q5 = slp.analyze("a AND bANDc ANDd").getDebugQuery();
         String q6 = slp.analyze("a ANDb c").getDebugQuery();
 
-        System.out.println();
+        Assert.assertEquals(q0, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b}");
+        Assert.assertEquals(q1, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
+        Assert.assertEquals(q2, "(0)TEXT-{AND} (1)AND-{AND} (2)TEXT-{a} (3)AND-{AND} (4)TEXT-{b} (5)AND-{AND} (6)TEXT-{c}");
+        Assert.assertEquals(q3, "(0)TEXT-{AND} (1)AND-{AND} (2)TEXT-{AND}");
+        Assert.assertEquals(q4, "(0)TEXT-{ANDANDAND}");
+        Assert.assertEquals(q5, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{bANDc} (3)AND-{AND} (4)TEXT-{ANDd}");
+        Assert.assertEquals(q6, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{ANDb} (3)AND-{AND} (4)TEXT-{c}");
 
     }
 
@@ -84,7 +114,14 @@ public class TestSLProcessor {
         String q5 = slp.analyze("a OR bORc OR ORd").getDebugQuery();
         String q6 = slp.analyze("a ORb c").getDebugQuery();
 
-        System.out.println();
+        Assert.assertEquals(q0, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b}");
+        Assert.assertEquals(q1, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b} (3)OR-{OR} (4)TEXT-{c}");
+        Assert.assertEquals(q2, "(0)TEXT-{OR} (1)AND-{AND} (2)TEXT-{a} (3)OR-{OR} (4)TEXT-{b} (5)OR-{OR} (6)TEXT-{c}");
+        Assert.assertEquals(q3, "(0)TEXT-{OR} (1)OR-{OR} (2)TEXT-{OR}");
+        Assert.assertEquals(q4, "(0)TEXT-{OROROR}");
+        Assert.assertEquals(q5, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{bORc} (3)OR-{OR} (4)TEXT-{ORd}");
+        Assert.assertEquals(q6, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{ORb} (3)AND-{AND} (4)TEXT-{c}");
+
 
     }
 
@@ -97,7 +134,11 @@ public class TestSLProcessor {
         String q3 = slp.analyze("OR a AND b c OR d").getDebugQuery();
         String q4 = slp.analyze("c d OR e").getDebugQuery();
 
-        System.out.println();
+        Assert.assertEquals(q0, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
+        Assert.assertEquals(q1, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)OR-{OR} (4)TEXT-{c} (5)AND-{AND} (6)TEXT-{d}");
+        Assert.assertEquals(q2, "(0)TEXT-{OR} (1)AND-{AND} (2)TEXT-{AND} (3)OR-{OR} (4)TEXT-{OR} (5)AND-{AND} (6)TEXT-{OR}");
+        Assert.assertEquals(q3, "(0)TEXT-{OR} (1)AND-{AND} (2)TEXT-{a} (3)AND-{AND} (4)TEXT-{b} (5)AND-{AND} (6)TEXT-{c} (7)OR-{OR} (8)TEXT-{d}");
+        Assert.assertEquals(q4, "(0)TEXT-{c} (1)AND-{AND} (2)TEXT-{d} (3)OR-{OR} (4)TEXT-{e}");
 
     }
 
@@ -122,7 +163,24 @@ public class TestSLProcessor {
         String q15 = slp.analyze("a = b = c = d =").getDebugQuery();
         String q16 = slp.analyze("= a = b = c = d =").getDebugQuery();
 
-        System.out.println();
+        Assert.assertEquals(q0, "(0)KEYWORD-{key: author, val: a}");
+        Assert.assertEquals(q1, "(0)KEYWORD-{key: author, val: a}");
+        Assert.assertEquals(q2, "(0)KEYWORD-{key: author, val: a}");
+        Assert.assertEquals(q3, "(0)KEYWORD-{key: author, val: a}");
+        Assert.assertEquals(q4, "(0)KEYWORD-{key: author, val: }");
+        Assert.assertEquals(q5, "(0)KEYWORD-{key: author, val: content} (1)AND-{AND} (2)TEXT-{=} (3)AND-{AND} (4)TEXT-{a}");
+        Assert.assertEquals(q6, "(0)TEXT-{=}");
+        Assert.assertEquals(q7, "(0)TEXT-{=} (1)AND-{AND} (2)TEXT-{a}");
+        Assert.assertEquals(q8, "(0)KEYWORD-{key: b, val: =} (1)AND-{AND} (2)TEXT-{a}");
+        Assert.assertEquals(q9, "(0)TEXT-{=} (1)AND-{AND} (2)KEYWORD-{key: b, val: a} (3)AND-{AND} (4)TEXT-{=}");
+        Assert.assertEquals(q10, "(0)TEXT-{==== =}");
+        Assert.assertEquals(q11, "(0)KEYWORD-{key: a, val: x y z}");
+        Assert.assertEquals(q12, "(0)KEYWORD-{key: a b c, val: x y z}");
+        Assert.assertEquals(q13, "(0)KEYWORD-{key: a b c, val: x}");
+        Assert.assertEquals(q14, "(0)KEYWORD-{key: a b c, val: 666} (1)AND-{AND} (2)KEYWORD-{key: 5, val: }");
+        Assert.assertEquals(q15, "(0)KEYWORD-{key: a, val: b} (1)AND-{AND} (2)TEXT-{=} (3)AND-{AND} (4)KEYWORD-{key: c, val: d} (5)AND-{AND} (6)TEXT-{=}");
+        Assert.assertEquals(q16, "(0)TEXT-{=} (1)AND-{AND} (2)KEYWORD-{key: a, val: b} (3)AND-{AND} (4)TEXT-{=} (5)AND-{AND} (6)KEYWORD-{key: c, val: d} (7)AND-{AND} (8)TEXT-{=}");
+
 
     }
 
@@ -134,7 +192,10 @@ public class TestSLProcessor {
         String q1 = slp.analyze("\"a a\" AND \"b b\" AND \"c c\"").getDebugQuery();
         String q2 = slp.analyze("OR \"a a\" AND b OR \"c c\"").getDebugQuery();
 
-        System.out.println();
+        Assert.assertEquals(q0, "(0)QUOTED-{a a} (1)AND-{AND} (2)QUOTED-{a a} (3)AND-{AND} (4)QUOTED-{b b}");
+        Assert.assertEquals(q1, "(0)QUOTED-{a a} (1)AND-{AND} (2)QUOTED-{b b} (3)AND-{AND} (4)QUOTED-{c c}");
+        Assert.assertEquals(q2, "(0)TEXT-{OR} (1)AND-{AND} (2)QUOTED-{a a} (3)AND-{AND} (4)TEXT-{b} (5)OR-{OR} (6)QUOTED-{c c}");
+
     }
 
 

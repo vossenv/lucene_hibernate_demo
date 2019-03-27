@@ -3,9 +3,8 @@ package com.dm.teamquery.search;
 import lombok.Getter;
 import lombok.Setter;
 
+import static com.dm.teamquery.search.SearchTerm.Types.*;
 import java.util.UUID;
-
-import static com.dm.teamquery.search.TermTypes.TEXT;
 
 @Getter
 @Setter
@@ -14,28 +13,20 @@ public class SearchTerm {
     private String id;
     private String value;
     private String key;
-    private TermTypes type;
+    private Types type;
     private Integer index = -1;
-    public static final Integer termLength = 10;
+    public static final Integer idLength = 10;
 
-    public SearchTerm(TermTypes type, String value) {
+    public SearchTerm(Types type, String value) {
         this.type = type;
         this.value = normalize(value);
-        this.id = "a" + UUID.randomUUID().toString().replaceAll("-", "").substring(0, termLength);
+        this.id = UUID.randomUUID().toString().replaceAll("-", "").substring(0, idLength);
     }
 
     private String normalize(String s) {
-        switch (type) {
-            case OR:
-            case AND:
-                return type.name;
-            case QUOTED:
-                return formatQuoted(s);
-            case KEYWORD:
-                return formatKeyword(s);
-            default:
-                return s.trim();
-        }
+        if (type.is(BOOLEAN)) return  type.toString();
+        if (type.is(QUOTED)) return formatQuoted(s);
+        return (type.is(KEYWORD)) ? formatKeyword(s) : s.trim();
     }
 
     private String formatQuoted(String s) {
@@ -48,11 +39,17 @@ public class SearchTerm {
     private String formatKeyword(String s) {
         String k = s.split("=")[0].trim();
         if (k.isEmpty() || s.replace("=","").trim().isEmpty()) {
-            this.type = TEXT;
+            this.type = Types.TEXT;
             return s.trim();
         }
         key = k;
         return s.replaceFirst("\\s*" + key + "\\s*=", "").trim();
+    }
+    
+    public enum Types {
+        TEXT, QUOTED, KEYWORD, AND, OR, BOOLEAN;
+        public boolean is(Types type){
+            return type != BOOLEAN ? this == type : (this == AND || this == OR);}
     }
 }
 
