@@ -15,78 +15,142 @@ public class TestSearchBuilder {
 
 
     @Test
-    public void TestSimple() throws Exception {
+    public void TestSimple() {
 
-        //String q = "this \" \\\"day\\\"\" author=hello \" \" th(a plus OR this";
-
-      //  String q = "a df f as";
         SearchBuilder s = new SearchBuilder();
 
-//        SearchGroup d = s.getSearchGroup();
-//
-//        String a = d.getDecodedQuery();
-
-
-
-
-
-        String q0 = s.setQuery("").getSearchGroup().getDebugQuery();
-        String q1 = s.setQuery("a b").getSearchGroup().getDecodedQuery();
-        String q2 = s.setQuery("a b c c").getSearchGroup().getDecodedQuery();
-        String q3 = s.setQuery("c a b c").getSearchGroup().getDebugQuery();
-        String q4 = s.setQuery("a   b     c").getSearchGroup().getSplitQuery();
-
-
-
-//        String q2 = s.setQuery("a b").getSearchTerms().toString();
-//        String q3 = s.setQuery("\"a b\"").getSearchTerms().toString();
-//        String q4 = s.setQuery("\"a b\" c d").getSearchTerms().toString();
-//        String q5 = s.setQuery("a AND    b").getSearchTerms().toString();
-//        String q6 = s.setQuery("a AND c   b").getSearchTerms().toString();
-//        String q7 = s.setQuery("question = adobe OR author = rhianna").getSearchTerms().toString();
+        String q0 = s.setQuery("").getSLProcessor().getDebugQuery();
+        String q1 = s.setQuery("a b").getSLProcessor().getDebugQuery();
+        String q2 = s.setQuery("a b c c").getSLProcessor().getDebugQuery();
+        String q3 = s.setQuery("c a b c").getSLProcessor().getDebugQuery();
+        String q4 = s.setQuery("a   b     c").getSLProcessor().getDebugQuery();
+        String q5 = s.setQuery("    a   b     c ").getSLProcessor().getDebugQuery();
+        String q6 = s.setQuery("    ").getSLProcessor().getDebugQuery();
 
         System.out.println();
+    }
 
-//        assertEquals(q1,"[a]");
-//        assertEquals(q2,"[a, b]");
-//        assertEquals(q3,"[a b]");
-//        assertEquals(q4,"[c, d, a b]");
-//        assertEquals(q5,"[a, b]");
-//        assertEquals(q6,"[a, b, c]");
-//        assertEquals(q7,"[question=adobe;=@!&@author=rhianna]");
+    @Test
+    public void TestQuotes() {
 
+        SearchBuilder s = new SearchBuilder();
+
+        String q0 = s.setQuery("\"").getSLProcessor().getDebugQuery();
+        String q1 = s.setQuery("\"a b\"").getSLProcessor().getDebugQuery();
+        String q2 = s.setQuery("\"a b\" c d").getSLProcessor().getDebugQuery();
+        String q3 = s.setQuery("\" \\\" test quoted term in quotes \\\" \"").getSLProcessor().getDebugQuery();
+        String q4 = s.setQuery("\" a \\\"").getSLProcessor().getDebugQuery();
+        String q5 = s.setQuery("\" a and b \" \"c and d\"").getSLProcessor().getDebugQuery();
+        String q6 = s.setQuery("\" a and  \"c and d\"").getSLProcessor().getDebugQuery();
+        String q7 = s.setQuery("\" a and  \" c and d\"").getSLProcessor().getDebugQuery();
+        String q8 = s.setQuery("    \"\"\" \"\"\"\\\"\"\" \"\" \\\"\\\" ").getSLProcessor().getDebugQuery();
+        String q9 = s.setQuery("\"\" \" \"\"\"\\\"\"\" \"\" \\\" \\\"").getSLProcessor().getDebugQuery();
+        String q10 = s.setQuery("\" \" \" \" \"").getSLProcessor().getDebugQuery();
+        String q11 = s.setQuery("\" \\\" \\\" \\\" \"").getSLProcessor().getDebugQuery();
+        String q12 = s.setQuery("\\\" \\\" \\\"").getSLProcessor().getDebugQuery();
+        String q13 = s.setQuery("\\\" \\\" \" \\\"").getSLProcessor().getDebugQuery();
+
+        System.out.println();
 
     }
 
     @Test
     public void TestAnd() {
 
-//        SearchBuilder s = new SearchBuilder(Challenge.class);
-//        String or = s.getOR_HOLDER();
-//
-//        String r = s.setQuery("a AND b AND e OR c AND d").getSearchTerms().toString();
-//
-//        String q1 = s.setQuery("a OR b").getSearchTerms().toString().replaceAll(or," OR ");
-//        String q2 = s.setQuery("aORa b OR c ").getSearchTerms().toString().replaceAll(or," OR ");
-//        String q3 = s.setQuery("\"a b\" OR e c").getSearchTerms().toString().replaceAll(or," OR ");
-//        String q4 = s.setQuery("a OR b OR e AND c OR d").getSearchTerms().toString().replaceAll(or," OR ");
-//        String q5 = s.setQuery("\"a b\" OR c d OR p").getSearchTerms().toString().replaceAll(or," OR ");
-//        String q6 = s.setQuery("f a OR c AND d OR p").getSearchTerms().toString().replaceAll(or," OR ");
-//        String q7 = s.setQuery("\"x y\" z AND a OR b c OR d hello = someone goodbye = \"a    wonder\" t u e").getSearchTerms().toString().replaceAll(or," OR ");
-//
-//        System.out.println();
-//
-//        assertEquals(q1,"[a OR b]");
-//        assertEquals(q2,"[aORa, b OR c]");
-//        assertEquals(q3,"[a b OR e, c]");
-//        assertEquals(q4,"[a OR b OR e, c OR d]");
-//        assertEquals(q5,"[a b OR c, d OR p]");
-//        assertEquals(q6,"[f, a OR c, d OR p]");
-//        assertEquals(q7,"[t, c OR d, u, e, x y, z, a OR b, hello=someone, goodbye=a    wonder]");
+        SearchBuilder s = new SearchBuilder();
 
+        String q0 = s.setQuery("a AND b").getSLProcessor().getDebugQuery();
+        String q1 = s.setQuery("a AND b AND c").getSLProcessor().getDebugQuery();
+        String q2 = s.setQuery("AND a AND b AND c").getSLProcessor().getDebugQuery();
+        String q3 = s.setQuery("AND AND AND").getSLProcessor().getDebugQuery();
+        String q4 = s.setQuery("ANDANDAND").getSLProcessor().getDebugQuery();
+        String q5 = s.setQuery("a AND bANDc ANDd").getSLProcessor().getDebugQuery();
+        String q6 = s.setQuery("a ANDb c").getSLProcessor().getDebugQuery();
 
+        System.out.println();
 
     }
+
+    @Test
+    public void TestOr() {
+
+        SearchBuilder s = new SearchBuilder();
+
+        String q0 = s.setQuery("a OR b").getSLProcessor().getDebugQuery();
+        String q1 = s.setQuery("a OR b OR c").getSLProcessor().getDebugQuery();
+        String q2 = s.setQuery("OR a OR b OR c").getSLProcessor().getDebugQuery();
+        String q3 = s.setQuery("OR OR OR").getSLProcessor().getDebugQuery();
+        String q4 = s.setQuery("OROROR").getSLProcessor().getDebugQuery();
+        String q5 = s.setQuery("a OR bORc OR ORd").getSLProcessor().getDebugQuery();
+        String q6 = s.setQuery("a ORb c").getSLProcessor().getDebugQuery();
+
+        System.out.println();
+
+    }
+
+    @Test
+    public void TestBoolean() {
+
+        SearchBuilder s = new SearchBuilder();
+
+        String q0 = s.setQuery("a OR b c").getSLProcessor().getDebugQuery();
+        String q1 = s.setQuery("a AND b OR c d").getSLProcessor().getDebugQuery();
+        String q2 = s.setQuery("OR AND OR OR AND OR").getSLProcessor().getDebugQuery();
+        String q3 = s.setQuery("OR a AND b c OR d").getSLProcessor().getDebugQuery();
+        String q4 = s.setQuery("c d OR e").getSLProcessor().getDebugQuery();
+
+        System.out.println();
+
+    }
+
+    @Test
+    public void TestKeyword() {
+
+        SearchBuilder s = new SearchBuilder();
+        //while (true) {
+
+        String q0 = s.setQuery("author = a").getSLProcessor().getDebugQuery();
+        String q1 = s.setQuery("author=a").getSLProcessor().getDebugQuery();
+        String q2 = s.setQuery("author =a").getSLProcessor().getDebugQuery();
+        String q3 = s.setQuery("author =a ").getSLProcessor().getDebugQuery();
+        String q4 = s.setQuery("author = ").getSLProcessor().getDebugQuery();
+        String q5 = s.setQuery("author = content = a").getSLProcessor().getDebugQuery();
+        String q6 = s.setQuery("=").getSLProcessor().getDebugQuery();
+        String q7 = s.setQuery("= a ").getSLProcessor().getDebugQuery();
+        String q8 = s.setQuery("b == a ").getSLProcessor().getDebugQuery();
+        String q9 = s.setQuery("= b = a = ").getSLProcessor().getDebugQuery();
+        String q10 = s.setQuery("==== =").getSLProcessor().getDebugQuery();
+        String q11 = s.setQuery("a = \"x y z\"").getSLProcessor().getDebugQuery();
+        String q12 = s.setQuery("\"a b c\" = \"x y z\"").getSLProcessor().getDebugQuery();
+        String q13 = s.setQuery("\"a b c\" = x").getSLProcessor().getDebugQuery();
+        String q14 = s.setQuery("\"a b c\" = \"666\"  5 =").getSLProcessor().getDebugQuery();
+        String q15 = s.setQuery("a = b = c = d =").getSLProcessor().getDebugQuery();
+
+
+            String q16 = s.setQuery("= a = b = c = d =").getSLProcessor().getDebugQuery();
+            System.out.printf("");
+       // }
+
+
+    //    System.out.println();
+
+    }
+
+
+    @Test
+    public void TestFull() {
+
+        SearchBuilder s = new SearchBuilder();
+
+        String q0 = s.setQuery("\"a a\" \"a a\" \"b b\"").getSLProcessor().getDebugQuery();
+        String q1 = s.setQuery("\"a a\" AND \"b b\" AND \"c c\"").getSLProcessor().getDebugQuery();
+        String q2 = s.setQuery("OR \"a a\" AND b OR \"c c\"").getSLProcessor().getDebugQuery();
+        System.out.println();
+
+    }
+
+
+
 
 
 
