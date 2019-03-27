@@ -85,6 +85,7 @@ public class TestSLProcessor {
     @Test
     public void TestAnd() {
 
+
         String q0 = slp.analyze("a AND b").getDebugQuery();
         String q1 = slp.analyze("a AND b AND c").getDebugQuery();
         String q2 = slp.analyze("AND a AND b AND c").getDebugQuery();
@@ -95,9 +96,9 @@ public class TestSLProcessor {
 
         Assert.assertEquals(q0, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b}");
         Assert.assertEquals(q1, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
-        Assert.assertEquals(q2, "(0)TEXT-{AND} (1)AND-{AND} (2)TEXT-{a} (3)AND-{AND} (4)TEXT-{b} (5)AND-{AND} (6)TEXT-{c}");
-        Assert.assertEquals(q3, "(0)TEXT-{AND} (1)AND-{AND} (2)TEXT-{AND}");
-        Assert.assertEquals(q4, "(0)TEXT-{ANDANDAND}");
+        Assert.assertEquals(q2, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
+        Assert.assertEquals(q3, "");
+        Assert.assertEquals(q4, "");
         Assert.assertEquals(q5, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{bANDc} (3)AND-{AND} (4)TEXT-{ANDd}");
         Assert.assertEquals(q6, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{ANDb} (3)AND-{AND} (4)TEXT-{c}");
 
@@ -116,9 +117,9 @@ public class TestSLProcessor {
 
         Assert.assertEquals(q0, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b}");
         Assert.assertEquals(q1, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b} (3)OR-{OR} (4)TEXT-{c}");
-        Assert.assertEquals(q2, "(0)TEXT-{OR} (1)AND-{AND} (2)TEXT-{a} (3)OR-{OR} (4)TEXT-{b} (5)OR-{OR} (6)TEXT-{c}");
-        Assert.assertEquals(q3, "(0)TEXT-{OR} (1)OR-{OR} (2)TEXT-{OR}");
-        Assert.assertEquals(q4, "(0)TEXT-{OROROR}");
+        Assert.assertEquals(q2, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b} (3)OR-{OR} (4)TEXT-{c}");
+        Assert.assertEquals(q3, "");
+        Assert.assertEquals(q4, "");
         Assert.assertEquals(q5, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{bORc} (3)OR-{OR} (4)TEXT-{ORd}");
         Assert.assertEquals(q6, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{ORb} (3)AND-{AND} (4)TEXT-{c}");
 
@@ -136,8 +137,8 @@ public class TestSLProcessor {
 
         Assert.assertEquals(q0, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
         Assert.assertEquals(q1, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)OR-{OR} (4)TEXT-{c} (5)AND-{AND} (6)TEXT-{d}");
-        Assert.assertEquals(q2, "(0)TEXT-{OR} (1)AND-{AND} (2)TEXT-{AND} (3)OR-{OR} (4)TEXT-{OR} (5)AND-{AND} (6)TEXT-{OR}");
-        Assert.assertEquals(q3, "(0)TEXT-{OR} (1)AND-{AND} (2)TEXT-{a} (3)AND-{AND} (4)TEXT-{b} (5)AND-{AND} (6)TEXT-{c} (7)OR-{OR} (8)TEXT-{d}");
+        Assert.assertEquals(q2, "");
+        Assert.assertEquals(q3, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c} (5)OR-{OR} (6)TEXT-{d}");
         Assert.assertEquals(q4, "(0)TEXT-{c} (1)AND-{AND} (2)TEXT-{d} (3)OR-{OR} (4)TEXT-{e}");
 
     }
@@ -194,7 +195,7 @@ public class TestSLProcessor {
 
         Assert.assertEquals(q0, "(0)QUOTED-{a a} (1)AND-{AND} (2)QUOTED-{a a} (3)AND-{AND} (4)QUOTED-{b b}");
         Assert.assertEquals(q1, "(0)QUOTED-{a a} (1)AND-{AND} (2)QUOTED-{b b} (3)AND-{AND} (4)QUOTED-{c c}");
-        Assert.assertEquals(q2, "(0)TEXT-{OR} (1)AND-{AND} (2)QUOTED-{a a} (3)AND-{AND} (4)TEXT-{b} (5)OR-{OR} (6)QUOTED-{c c}");
+        Assert.assertEquals(q2, "(0)QUOTED-{a a} (1)AND-{AND} (2)TEXT-{b} (3)OR-{OR} (4)QUOTED-{c c}");
 
     }
 

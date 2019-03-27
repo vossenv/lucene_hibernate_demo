@@ -34,7 +34,10 @@ public class SLProcessor {
 
     public Query analyze(String query) {
 
-        this.query = query;
+        String END_BOOL = String.format("(\\s*(%s|%s)\\s*)", AND_VAL, OR_VAL);
+        String SKIP_BOOL = String.format("^%s*|%<s*$", END_BOOL);
+
+        this.query = query.replaceAll(SKIP_BOOL, "");
         this.terms = new HashMap<>();
 
         findAndEncode(QUOTE_SEARCH, QUOTED);
