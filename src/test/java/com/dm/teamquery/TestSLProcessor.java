@@ -18,10 +18,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class TestSLProcessor {
 
     SLProcessor slp;
+    String andFlag;
+    String orFlag;
 
     @Before
     public void setup() {
-        this.slp = new SLProcessor();
+        slp = new SLProcessor();
+        andFlag = slp.getAND_FLAG();
+        orFlag = slp.getOR_FLAG();
     }
 
     @Test
@@ -199,5 +203,18 @@ public class TestSLProcessor {
 
     }
 
+    @Test
+    public void TestSpecialChars() {
+
+        String q0 = slp.analyze("@!# $() @#*&(^ AND &*^%????\\\\\\ ").getDebugQuery();
+        String q1 = slp.analyze("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"").getDebugQuery();
+        String q2 = slp.analyze("~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']").getDebugQuery();
+        String q3 = slp.analyze(TestResources.SPECIAL).getDebugQuery();
+
+        Assert.assertEquals(q0, "(0)TEXT-{@!#} (1)AND-{AND} (2)TEXT-{$()} (3)AND-{AND} (4)TEXT-{@#*&(^} (5)AND-{AND} (6)TEXT-{&*^%????\\\\\\}");
+        Assert.assertEquals(q1, "(0)TEXT-{\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"}");
+        Assert.assertEquals(q2, "(0)TEXT-{~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']}");
+        Assert.assertEquals(q3, TestResources.SPECIAL_MATCH);
+    }
 
 }

@@ -24,17 +24,17 @@ public class SLProcessor {
 
     @Setter
     @Getter
-    private String AND_VAL = "AND";
+    private String AND_FLAG = "AND";
     @Setter
     @Getter
-    private String OR_VAL = "OR";
+    private String OR_FLAG = "OR";
 
     private String query;
     private Map<String, SearchTerm> terms;
 
     public Query analyze(String query) {
 
-        String END_BOOL = String.format("(\\s*(%s|%s)\\s*)", AND_VAL, OR_VAL);
+        String END_BOOL = String.format("(\\s*(%s|%s)\\s*)", AND_FLAG, OR_FLAG);
         String SKIP_BOOL = String.format("^%s*|%<s*$", END_BOOL);
 
         this.query = query.replaceAll(SKIP_BOOL, "");
@@ -42,8 +42,8 @@ public class SLProcessor {
 
         findAndEncode(QUOTE_SEARCH, QUOTED);
         findAndEncode(KEYWORD_SEARCH, KEYWORD);
-        findAndEncode(SPACE + OR_VAL + SPACE, OR);
-        findAndEncode(SPACE + AND_VAL + SPACE, AND);
+        findAndEncode(SPACE + OR_FLAG + SPACE, OR);
+        findAndEncode(SPACE + AND_FLAG + SPACE, AND);
         findAndEncode(SPACE, AND);
         encodeRemaining();
         indexTerms();
@@ -63,7 +63,7 @@ public class SLProcessor {
         query = splitQuery();
         getTermsAsList().stream()
                 .filter(k -> !terms.containsKey(k) && !k.isEmpty())
-                .forEach(t -> findAndEncode("(^|\\s+)" + t + "(\\s+|$)", TEXT));
+                .forEach(t -> findAndEncode("(^|\\s+)" + Pattern.quote(t) + "(\\s+|$)", TEXT));
     }
 
     private String splitQuery() {
