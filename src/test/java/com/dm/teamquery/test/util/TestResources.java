@@ -1,4 +1,4 @@
-package com.dm.teamquery;
+package com.dm.teamquery.test.util;
 
 public class TestResources {
 
