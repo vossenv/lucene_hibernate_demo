@@ -41,12 +41,14 @@ public class SLProcessor {
         this.terms = new HashMap<>();
 
         findAndEncode(QUOTE_SEARCH, QUOTED);
+        reduceQuotes();
         findAndEncode(KEYWORD_SEARCH, KEYWORD);
         findAndEncode(SPACE + OR_FLAG + SPACE, OR);
         findAndEncode(SPACE + AND_FLAG + SPACE, AND);
         findAndEncode(SPACE, AND);
         encodeRemaining();
         indexTerms();
+
         return new Query(query, terms);
     }
 
@@ -72,6 +74,11 @@ public class SLProcessor {
         return cq.trim();
     }
 
+    private void reduceQuotes(){
+        query = query.replaceAll("(?<!\\\\)\"", "")
+                .replaceAll("\\\\\"", "\"");
+    }
+
     private void indexTerms() {
         final AtomicInteger count = new AtomicInteger();
         getTermsAsList().forEach(t -> terms.get(t).setIndex(count.getAndIncrement()));
@@ -84,28 +91,17 @@ public class SLProcessor {
             encodeTerm(type, m.group(), offset + m.start());
             offset = offset + (SearchTerm.idLength - m.group().length());
         }
-
-        if (type.is(QUOTED)) flattenQuotes();
-    }
-
-    private void flattenQuotes() {
-        query = query
-                .replaceAll("(?<!\\\\)\"", "")
-                .replaceAll("\\\\\"", "\"");
-    }
-
-    private void removeKey(String id) {
-        query = query.replace(id, terms.get(id).getValue());
-        terms.remove(id);
     }
 
     private String revertString(String str) {
+
         Set<String> toRevert = terms.keySet().stream()
                 .filter(str::contains)
                 .collect(Collectors.toSet());
         for (String s : toRevert) {
             str = str.replace(s, terms.get(s).getValue());
-            removeKey(s);
+            query = query.replace(s, terms.get(s).getValue());
+            terms.remove(s);
         }
         return str;
     }

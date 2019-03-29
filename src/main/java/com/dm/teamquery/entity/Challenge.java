@@ -4,7 +4,8 @@ package com.dm.teamquery.entity;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.springframework.hateoas.core.Relation;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Indexed
 @Table(name = "challenge")
 public class Challenge extends Auditable<String>  {
 
@@ -27,20 +29,24 @@ public class Challenge extends Auditable<String>  {
     @Column(name = "challengeid")
     private UUID challengeId;
 
+    @Field
     @NotNull(message = "Question cannot be blank")
     @Size(min = 3, message = "Question must be more than 6 characters")
     @Column(name = "question", columnDefinition = "TEXT")
     private String question;
 
+    @Field
     @NotNull(message = "Answer cannot be blank")
     @Size(min = 3, message = "Answer must be more than 6 characters")
     @Column(name = "answer", columnDefinition = "TEXT")
     private String answer;
 
+    @Field
     @NotNull
     @Column(name = "author", updatable = false)
     private String author;
 
+    @Field
     @NotNull
     @Column(name = "lastauthor")
     private String lastAuthor = "anonymous";

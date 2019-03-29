@@ -26,20 +26,25 @@ configurations {
 
 dependencies {
 
-    implementation 'org.springframework.boot:spring-boot-starter'                    // ????
+    implementation 'org.springframework.boot:spring-boot-starter'                   // ????
+    implementation 'org.springframework.boot:spring-boot-starter-parent'            // ????
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'          // Hibernate
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'           // HATEOAS
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'         // Thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-validation'        // 2-4-6-8 VALIDATE
 
+    implementation 'org.hibernate:hibernate-search-orm:5.11.1.Final'                // Hibernate Search
+    implementation 'org.hibernate:hibernate-core:5.4.2.Final'                       // Hibernate Search
+
+
     //implementation 'com.h2database:h2'
-    //implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
     implementation 'org.apache.commons:commons-lang3:3.7'                           // for ExceptionUtils
     implementation 'io.vavr:vavr:0.10.0'                                            // function library
     implementation 'javax.inject:javax.inject:1'                                    // INJECT
-    implementation 'org.projectlombok:lombok:1.18.4'                                // Getter/Setter/Data
-    implementation 'mysql:mysql-connector-java'                                     // MySQL
+    implementation 'org.projectlombok:lombok:1.18.6'                                // Getter/Setter/Data
+    implementation 'mysql:mysql-connector-java:8.0.14'                                     // MySQL
 
     // Logging
     implementation  'org.apache.logging.log4j:log4j-api:2.+'
@@ -47,6 +52,7 @@ dependencies {
     implementation  'org.springframework.boot:spring-boot-starter-log4j2:2.1.1.RELEASE'
     implementation  'com.lmax:disruptor:3.4.2'
 
+    // Test
     testImplementation  'org.springframework.boot:spring-boot-starter-test'
     testImplementation  'org.junit.jupiter:junit-jupiter-api:5.4.1'
     testRuntime  'org.junit.platform:junit-platform-launcher:1.4.1'
