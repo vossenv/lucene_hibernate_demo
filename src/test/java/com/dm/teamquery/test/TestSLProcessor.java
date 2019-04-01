@@ -1,7 +1,6 @@
 package com.dm.teamquery.test;
 
 import com.dm.teamquery.search.SLProcessor;
-import com.dm.teamquery.test.util.TestResources;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,203 +16,164 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestSLProcessor {
 
     SLProcessor slp;
-    String andFlag;
-    String orFlag;
 
     @BeforeEach
     public void setup() {
         slp = new SLProcessor();
-        andFlag = slp.getAND_FLAG();
-        orFlag = slp.getOR_FLAG();
     }
 
     @Test
     public void TestSimple() {
 
-        String q0 = slp.analyze("").getDebugQuery();
-        String q1 = slp.analyze("a b").getDebugQuery();
-        String q2 = slp.analyze("a b c c").getDebugQuery();
-        String q3 = slp.analyze("c a b c").getDebugQuery();
-        String q4 = slp.analyze("a   b     c").getDebugQuery();
-        String q5 = slp.analyze("    a   b     c ").getDebugQuery();
-        String q6 = slp.analyze("    ").getDebugQuery();
+        String q0 = slp.format("");
+        String q1 = slp.format("a b");
+        String q2 = slp.format("a b c c");
+        String q3 = slp.format("c a b c");
+        String q4 = slp.format("a   b     c");
+        String q5 = slp.format("    a   b     c ");
+        String q6 = slp.format("    ");
 
-        assertEquals(q0, "");
-        assertEquals(q1, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b}");
-        assertEquals(q2, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c} (5)AND-{AND} (6)TEXT-{c}");
-        assertEquals(q3, "(0)TEXT-{c} (1)AND-{AND} (2)TEXT-{a} (3)AND-{AND} (4)TEXT-{b} (5)AND-{AND} (6)TEXT-{c}");
-        assertEquals(q4, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
-        assertEquals(q5, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
-        assertEquals(q6, "");
+        assertEquals(q0, "*");
+        assertEquals(q1, "a~ b~");
+        assertEquals(q2, "a~ b~ c~ c~");
+        assertEquals(q3, "c~ a~ b~ c~");
+        assertEquals(q4, "a~ b~ c~");
+        assertEquals(q5, "a~ b~ c~");
+        assertEquals(q6, "*");
 
     }
 
     @Test
     public void TestQuotes() {
 
-        String q0 = slp.analyze("\"").getDebugQuery();
-        String q1 = slp.analyze("\"a b\"").getDebugQuery();
-        String q2 = slp.analyze("\"a b\" c d").getDebugQuery();
-        String q3 = slp.analyze("\" \\\" test quoted term in quotes \\\" \"").getDebugQuery();
-        String q4 = slp.analyze("\" a \\\"").getDebugQuery();
-        String q5 = slp.analyze("\" a and b \" \"c and d\"").getDebugQuery();
-        String q6 = slp.analyze("\" a and  \"c and d\"").getDebugQuery();
-        String q7 = slp.analyze("\" a and  \" c and d\"").getDebugQuery();
-        String q8 = slp.analyze("    \"\"\" \"\"\"\\\"\"\" \"\" \\\"\\\" ").getDebugQuery();
-        String q9 = slp.analyze("\"\" \" \"\"\"\\\"\"\" \"\" \\\" \\\"").getDebugQuery();
-        String q10 = slp.analyze("\" \" \" \" \"").getDebugQuery();
-        String q11 = slp.analyze("\" \\\" \\\" \\\" \"").getDebugQuery();
-        String q12 = slp.analyze("\\\" \\\" \\\"").getDebugQuery();
-        String q13 = slp.analyze("\\\" \\\" \" \\\"").getDebugQuery();
+        String q0 = slp.format("\"");
+        String q1 = slp.format("\"a b\"");
+        String q2 = slp.format("\"a b\" c d");
+        String q3 = slp.format("\" \\\" test quoted term in quotes \\\" \"");
+        String q4 = slp.format("\" a \\\"");
+        String q5 = slp.format("\" a and b \" \"c and d\"");
+        String q6 = slp.format("\" a and  \"c and d\"");
+        String q7 = slp.format("\" a and  \" \" c and d\"");
 
-        assertEquals(q0, "");
-        assertEquals(q1, "(0)QUOTED-{a b}");
-        assertEquals(q2, "(0)QUOTED-{a b} (1)AND-{AND} (2)TEXT-{c} (3)AND-{AND} (4)TEXT-{d}");
-        assertEquals(q3, "(0)QUOTED-{\" test quoted term in quotes \"}");
-        assertEquals(q4, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{\"}");
-        assertEquals(q5, "(0)QUOTED-{a and b} (1)AND-{AND} (2)QUOTED-{c and d}");
-        assertEquals(q6, "(0)QUOTED-{a and  \"c and d}");
-        assertEquals(q7, "(0)QUOTED-{a and} (1)AND-{AND} (2)TEXT-{c} (3)AND-{AND} (4)TEXT-{and} (5)AND-{AND} (6)TEXT-{d}");
-        assertEquals(q8, "(0)QUOTED-{\"} (1)AND-{AND} (2)QUOTED-{\"\"\"\"} (3)AND-{AND} (4)TEXT-{\"\"}");
-        assertEquals(q9, "(0)QUOTED-{\"} (1)AND-{AND} (2)QUOTED-{\"\"\"\"} (3)AND-{AND} (4)TEXT-{\"} (5)AND-{AND} (6)TEXT-{\"}");
-        assertEquals(q10, "(0)QUOTED-{ } (1)AND-{AND} (2)QUOTED-{ }");
-        assertEquals(q11, "(0)QUOTED-{\" \" \"}");
-        assertEquals(q12, "(0)TEXT-{\"} (1)AND-{AND} (2)TEXT-{\"} (3)AND-{AND} (4)TEXT-{\"}");
-        assertEquals(q13, "(0)TEXT-{\"} (1)AND-{AND} (2)TEXT-{\"} (3)AND-{AND} (4)TEXT-{\"}");
-
-
-
+        assertEquals(q0, "\"~");
+        assertEquals(q1, "\"a b\"~");
+        assertEquals(q2, "\"a b\"~ c~ d~");
+        assertEquals(q3, "\" \\\" test quoted term in quotes \\\" \"~");
+        assertEquals(q4, "\"~ a~ \\\\\"~");
+        assertEquals(q5, "\" a and b \"~ \"c and d\"~");
+        assertEquals(q6, "\" a and  \"c and d\"~");
+        assertEquals(q7, "\" a and  \"~ \" c and d\"~");
     }
 
     @Test
-    public void TestAnd() {
+    public void TestAndOrOr() {
 
+        String q0 = slp.format("a AND b");
+        String q1 = slp.format("a AND b AND c");
+        String q2 = slp.format("AND a AND b AND c");
+        String q3 = slp.format("AND AND AND");
+        String q4 = slp.format("ANDANDAND");
+        String q5 = slp.format("a AND bANDc ANDd");
+        String q6 = slp.format("a ANDb c");
+        String q7 = slp.format("OR a OR b OR c OR");
 
-        String q0 = slp.analyze("a AND b").getDebugQuery();
-        String q1 = slp.analyze("a AND b AND c").getDebugQuery();
-        String q2 = slp.analyze("AND a AND b AND c").getDebugQuery();
-        String q3 = slp.analyze("AND AND AND").getDebugQuery();
-        String q4 = slp.analyze("ANDANDAND").getDebugQuery();
-        String q5 = slp.analyze("a AND bANDc ANDd").getDebugQuery();
-        String q6 = slp.analyze("a ANDb c").getDebugQuery();
-
-        assertEquals(q0, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b}");
-        assertEquals(q1, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
-        assertEquals(q2, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
+        assertEquals(q0, "a~ AND b~");
+        assertEquals(q1, "a~ AND b~ AND c~");
+        assertEquals(q2, "a~ AND b~ AND c~");
         assertEquals(q3, "");
         assertEquals(q4, "");
-        assertEquals(q5, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{bANDc} (3)AND-{AND} (4)TEXT-{ANDd}");
-        assertEquals(q6, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{ANDb} (3)AND-{AND} (4)TEXT-{c}");
+        assertEquals(q5, "a~ AND bANDc~ ANDd~");
+        assertEquals(q5, "a~ AND bANDc~ ANDd~");
+        assertEquals(q7, "a~ OR b~ OR c~");
 
     }
 
-    @Test
-    public void TestOr() {
-
-        String q0 = slp.analyze("a OR b").getDebugQuery();
-        String q1 = slp.analyze("a OR b OR c").getDebugQuery();
-        String q2 = slp.analyze("OR a OR b OR c").getDebugQuery();
-        String q3 = slp.analyze("OR OR OR").getDebugQuery();
-        String q4 = slp.analyze("OROROR").getDebugQuery();
-        String q5 = slp.analyze("a OR bORc OR ORd").getDebugQuery();
-        String q6 = slp.analyze("a ORb c").getDebugQuery();
-
-        assertEquals(q0, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b}");
-        assertEquals(q1, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b} (3)OR-{OR} (4)TEXT-{c}");
-        assertEquals(q2, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b} (3)OR-{OR} (4)TEXT-{c}");
-        assertEquals(q3, "");
-        assertEquals(q4, "");
-        assertEquals(q5, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{bORc} (3)OR-{OR} (4)TEXT-{ORd}");
-        assertEquals(q6, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{ORb} (3)AND-{AND} (4)TEXT-{c}");
-
-
-    }
-
-    @Test
-    public void TestBoolean() {
-
-        String q0 = slp.analyze("a OR b c").getDebugQuery();
-        String q1 = slp.analyze("a AND b OR c d").getDebugQuery();
-        String q2 = slp.analyze("OR AND OR OR AND OR").getDebugQuery();
-        String q3 = slp.analyze("OR a AND b c OR d").getDebugQuery();
-        String q4 = slp.analyze("c d OR e").getDebugQuery();
-
-        assertEquals(q0, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
-        assertEquals(q1, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)OR-{OR} (4)TEXT-{c} (5)AND-{AND} (6)TEXT-{d}");
-        assertEquals(q2, "");
-        assertEquals(q3, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c} (5)OR-{OR} (6)TEXT-{d}");
-        assertEquals(q4, "(0)TEXT-{c} (1)AND-{AND} (2)TEXT-{d} (3)OR-{OR} (4)TEXT-{e}");
-
-    }
-
-    @Test
-    public void TestKeyword() {
-
-        String q0 = slp.analyze("author = a").getDebugQuery();
-        String q1 = slp.analyze("author=a").getDebugQuery();
-        String q2 = slp.analyze("author =a").getDebugQuery();
-        String q3 = slp.analyze("author =a ").getDebugQuery();
-        String q4 = slp.analyze("author = ").getDebugQuery();
-        String q5 = slp.analyze("author = content = a").getDebugQuery();
-        String q6 = slp.analyze("=").getDebugQuery();
-        String q7 = slp.analyze("= a ").getDebugQuery();
-        String q8 = slp.analyze("b == a ").getDebugQuery();
-        String q9 = slp.analyze("= b = a = ").getDebugQuery();
-        String q10 = slp.analyze("==== =").getDebugQuery();
-        String q11 = slp.analyze("a = \"x y z\"").getDebugQuery();
-        String q12 = slp.analyze("\"a b c\" = \"x y z\"").getDebugQuery();
-        String q13 = slp.analyze("\"a b c\" = x").getDebugQuery();
-        String q14 = slp.analyze("\"a b c\" = \"666\"  5 =").getDebugQuery();
-        String q15 = slp.analyze("a = b = c = d =").getDebugQuery();
-        String q16 = slp.analyze("= a = b = c = d =").getDebugQuery();
-
-        assertEquals(q0, "(0)KEYWORD-{key: author, val: a}");
-        assertEquals(q1, "(0)KEYWORD-{key: author, val: a}");
-        assertEquals(q2, "(0)KEYWORD-{key: author, val: a}");
-        assertEquals(q3, "(0)KEYWORD-{key: author, val: a}");
-        assertEquals(q4, "(0)KEYWORD-{key: author, val: }");
-        assertEquals(q5, "(0)KEYWORD-{key: author, val: content} (1)AND-{AND} (2)TEXT-{=} (3)AND-{AND} (4)TEXT-{a}");
-        assertEquals(q6, "(0)TEXT-{=}");
-        assertEquals(q7, "(0)TEXT-{=} (1)AND-{AND} (2)TEXT-{a}");
-        assertEquals(q8, "(0)KEYWORD-{key: b, val: =} (1)AND-{AND} (2)TEXT-{a}");
-        assertEquals(q9, "(0)TEXT-{=} (1)AND-{AND} (2)KEYWORD-{key: b, val: a} (3)AND-{AND} (4)TEXT-{=}");
-        assertEquals(q10, "(0)TEXT-{==== =}");
-        assertEquals(q11, "(0)KEYWORD-{key: a, val: x y z}");
-        assertEquals(q12, "(0)KEYWORD-{key: a b c, val: x y z}");
-        assertEquals(q13, "(0)KEYWORD-{key: a b c, val: x}");
-        assertEquals(q14, "(0)KEYWORD-{key: a b c, val: 666} (1)AND-{AND} (2)KEYWORD-{key: 5, val: }");
-        assertEquals(q15, "(0)KEYWORD-{key: a, val: b} (1)AND-{AND} (2)TEXT-{=} (3)AND-{AND} (4)KEYWORD-{key: c, val: d} (5)AND-{AND} (6)TEXT-{=}");
-        assertEquals(q16, "(0)TEXT-{=} (1)AND-{AND} (2)KEYWORD-{key: a, val: b} (3)AND-{AND} (4)TEXT-{=} (5)AND-{AND} (6)KEYWORD-{key: c, val: d} (7)AND-{AND} (8)TEXT-{=}");
-
-
-    }
-
-
-    @Test
-    public void TestFull() {
-
-        String q0 = slp.analyze("\"a a\" \"a a\" \"b b\"").getDebugQuery();
-        String q1 = slp.analyze("\"a a\" AND \"b b\" AND \"c c\"").getDebugQuery();
-        String q2 = slp.analyze("OR \"a a\" AND b OR \"c c\"").getDebugQuery();
-
-        assertEquals(q0, "(0)QUOTED-{a a} (1)AND-{AND} (2)QUOTED-{a a} (3)AND-{AND} (4)QUOTED-{b b}");
-        assertEquals(q1, "(0)QUOTED-{a a} (1)AND-{AND} (2)QUOTED-{b b} (3)AND-{AND} (4)QUOTED-{c c}");
-        assertEquals(q2, "(0)QUOTED-{a a} (1)AND-{AND} (2)TEXT-{b} (3)OR-{OR} (4)QUOTED-{c c}");
-
-    }
-
-    @Test
-    public void TestSpecialChars() {
-
-        String q0 = slp.analyze("@!# $() @#*&(^ AND &*^%????\\\\\\ ").getDebugQuery();
-        String q1 = slp.analyze("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"").getDebugQuery();
-        String q2 = slp.analyze("~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']").getDebugQuery();
-        String q3 = slp.analyze(TestResources.SPECIAL).getDebugQuery();
-
-        assertEquals(q0, "(0)TEXT-{@!#} (1)AND-{AND} (2)TEXT-{$()} (3)AND-{AND} (4)TEXT-{@#*&(^} (5)AND-{AND} (6)TEXT-{&*^%????\\\\\\}");
-        assertEquals(q1, "(0)TEXT-{\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"}");
-        assertEquals(q2, "(0)TEXT-{~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']}");
-        assertEquals(q3, TestResources.SPECIAL_MATCH);
-    }
-
+//
+//    @Test
+//    public void TestBoolean() {
+//
+//        String q0 = slp.format("a OR b c");
+//        String q1 = slp.format("a AND b OR c d");
+//        String q2 = slp.format("OR AND OR OR AND OR");
+//        String q3 = slp.format("OR a AND b c OR d");
+//        String q4 = slp.format("c d OR e");
+//
+//        assertEquals(q0, "(0)TEXT-{a} (1)OR-{OR} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c}");
+//        assertEquals(q1, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)OR-{OR} (4)TEXT-{c} (5)AND-{AND} (6)TEXT-{d}");
+//        assertEquals(q2, "");
+//        assertEquals(q3, "(0)TEXT-{a} (1)AND-{AND} (2)TEXT-{b} (3)AND-{AND} (4)TEXT-{c} (5)OR-{OR} (6)TEXT-{d}");
+//        assertEquals(q4, "(0)TEXT-{c} (1)AND-{AND} (2)TEXT-{d} (3)OR-{OR} (4)TEXT-{e}");
+//
+//    }
+//
+//    @Test
+//    public void TestKeyword() {
+//
+//        String q0 = slp.format("author = a");
+//        String q1 = slp.format("author=a");
+//        String q2 = slp.format("author =a");
+//        String q3 = slp.format("author =a ");
+//        String q4 = slp.format("author = ");
+//        String q5 = slp.format("author = content = a");
+//        String q6 = slp.format("=");
+//        String q7 = slp.format("= a ");
+//        String q8 = slp.format("b == a ");
+//        String q9 = slp.format("= b = a = ");
+//        String q10 = slp.format("==== =");
+//        String q11 = slp.format("a = \"x y z\"");
+//        String q12 = slp.format("\"a b c\" = \"x y z\"");
+//        String q13 = slp.format("\"a b c\" = x");
+//        String q14 = slp.format("\"a b c\" = \"666\"  5 =");
+//        String q15 = slp.format("a = b = c = d =");
+//        String q16 = slp.format("= a = b = c = d =");
+//
+//        assertEquals(q0, "(0)KEYWORD-{key: author, val: a}");
+//        assertEquals(q1, "(0)KEYWORD-{key: author, val: a}");
+//        assertEquals(q2, "(0)KEYWORD-{key: author, val: a}");
+//        assertEquals(q3, "(0)KEYWORD-{key: author, val: a}");
+//        assertEquals(q4, "(0)KEYWORD-{key: author, val: }");
+//        assertEquals(q5, "(0)KEYWORD-{key: author, val: content} (1)AND-{AND} (2)TEXT-{=} (3)AND-{AND} (4)TEXT-{a}");
+//        assertEquals(q6, "(0)TEXT-{=}");
+//        assertEquals(q7, "(0)TEXT-{=} (1)AND-{AND} (2)TEXT-{a}");
+//        assertEquals(q8, "(0)KEYWORD-{key: b, val: =} (1)AND-{AND} (2)TEXT-{a}");
+//        assertEquals(q9, "(0)TEXT-{=} (1)AND-{AND} (2)KEYWORD-{key: b, val: a} (3)AND-{AND} (4)TEXT-{=}");
+//        assertEquals(q10, "(0)TEXT-{==== =}");
+//        assertEquals(q11, "(0)KEYWORD-{key: a, val: x y z}");
+//        assertEquals(q12, "(0)KEYWORD-{key: a b c, val: x y z}");
+//        assertEquals(q13, "(0)KEYWORD-{key: a b c, val: x}");
+//        assertEquals(q14, "(0)KEYWORD-{key: a b c, val: 666} (1)AND-{AND} (2)KEYWORD-{key: 5, val: }");
+//        assertEquals(q15, "(0)KEYWORD-{key: a, val: b} (1)AND-{AND} (2)TEXT-{=} (3)AND-{AND} (4)KEYWORD-{key: c, val: d} (5)AND-{AND} (6)TEXT-{=}");
+//        assertEquals(q16, "(0)TEXT-{=} (1)AND-{AND} (2)KEYWORD-{key: a, val: b} (3)AND-{AND} (4)TEXT-{=} (5)AND-{AND} (6)KEYWORD-{key: c, val: d} (7)AND-{AND} (8)TEXT-{=}");
+//
+//
+//    }
+//
+//
+//    @Test
+//    public void TestFull() {
+//
+//        String q0 = slp.format("\"a a\" \"a a\" \"b b\"");
+//        String q1 = slp.format("\"a a\" AND \"b b\" AND \"c c\"");
+//        String q2 = slp.format("OR \"a a\" AND b OR \"c c\"");
+//
+//        assertEquals(q0, "(0)QUOTED-{a a} (1)AND-{AND} (2)QUOTED-{a a} (3)AND-{AND} (4)QUOTED-{b b}");
+//        assertEquals(q1, "(0)QUOTED-{a a} (1)AND-{AND} (2)QUOTED-{b b} (3)AND-{AND} (4)QUOTED-{c c}");
+//        assertEquals(q2, "(0)QUOTED-{a a} (1)AND-{AND} (2)TEXT-{b} (3)OR-{OR} (4)QUOTED-{c c}");
+//
+//    }
+//
+//    @Test
+//    public void TestSpecialChars() {
+//
+//        String q0 = slp.format("@!# $() @#*&(^ AND &*^%????\\\\\\ ");
+//        String q1 = slp.format("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"");
+//        String q2 = slp.format("~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']");
+//        String q3 = slp.format(TestResources.SPECIAL);
+//
+//        assertEquals(q0, "(0)TEXT-{@!#} (1)AND-{AND} (2)TEXT-{$()} (3)AND-{AND} (4)TEXT-{@#*&(^} (5)AND-{AND} (6)TEXT-{&*^%????\\\\\\}");
+//        assertEquals(q1, "(0)TEXT-{\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"}");
+//        assertEquals(q2, "(0)TEXT-{~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']}");
+//        assertEquals(q3, TestResources.SPECIAL_MATCH);
+//    }
+//
 }

@@ -22,11 +22,17 @@ public class TestLuceneSearch {
     @Test
     public void notests() throws Exception{
 
-    //    Thread.sleep(1000);
 
-        List<Challenge> l = searchService.search("");
+        List<Challenge> l = searchService.search("", Challenge.class);
 
         System.out.println();
+
+
+    }
+
+    @Test
+    public void TestSLProcessor(){
+
 
 
     }

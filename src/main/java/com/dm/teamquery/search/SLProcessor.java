@@ -1,55 +1,54 @@
 package com.dm.teamquery.search;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.dm.teamquery.search.SearchTerm.Types.*;
 import static com.dm.teamquery.search.SearchTerm.Types;
-
-import static java.util.Arrays.asList;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.wrap;
+import static com.dm.teamquery.search.SearchTerm.Types.KEYWORD;
+import static com.dm.teamquery.search.SearchTerm.Types.QUOTED;
+import static java.util.Arrays.stream;
 
 public class SLProcessor {
 
-    private static final String SPACE = "(?<=\\S)\\s+(?=\\S)";
+    private static final String KEYWORD_SEARCH = "\\S+\\s*:\\s*\".*?\"|\\S+\\s*:\\s*\\S*";
     private static final String QUOTE_SEARCH = "(?<=^|\\s)((?<!\\\\)\").+?((?<!\\\\)\")(?=$|\\s)";
-    private static final String KEYWORD_SEARCH = "\\S+\\s*=\\s*\".*?\"|\\S+\\s*=\\s*\\S*";
+    private static final String ESCAPED_CHARS = "\\ + - ! { } [ ] ^ ~ ? /";
 
-    @Setter
-    @Getter
-    private String AND_FLAG = "AND";
-    @Setter
-    @Getter
-    private String OR_FLAG = "OR";
+    private static final String END_BOOL = "(\\s*(AND|OR)\\s*)" ;
+    private static final String SKIP_BOOL = String.format("^%s*|%<s*$", END_BOOL);
 
     private String query;
     private Map<String, SearchTerm> terms;
 
-    public Query analyze(String query) {
+    public String format(String originalQuery) {
 
-        String END_BOOL = String.format("(\\s*(%s|%s)\\s*)", AND_FLAG, OR_FLAG);
-        String SKIP_BOOL = String.format("^%s*|%<s*$", END_BOOL);
+        query = originalQuery.trim();
+        terms = new HashMap<>();
+        if (query.isEmpty()) return "*";
 
-        this.query = query.replaceAll(SKIP_BOOL, "");
-        this.terms = new HashMap<>();
+        query = query.replaceAll(SKIP_BOOL, "");
 
         findAndEncode(QUOTE_SEARCH, QUOTED);
-        reduceQuotes();
         findAndEncode(KEYWORD_SEARCH, KEYWORD);
-        findAndEncode(SPACE + OR_FLAG + SPACE, OR);
-        findAndEncode(SPACE + AND_FLAG + SPACE, AND);
-        findAndEncode(SPACE, AND);
-        encodeRemaining();
-        indexTerms();
 
-        return new Query(query, terms);
+        for (String c : ESCAPED_CHARS.split(" ")) {
+            query = query.replace(c, "\\" + c);
+        }
+        return decode();
+    }
+
+    private String decode(){
+        StringBuilder sb = new StringBuilder();
+        stream(query.split("\\s+")).map(s -> isBool(s) || s.isEmpty() ? s + " " : s + "~ ").forEach(sb::append);
+        return revertString(sb.toString());
+    }
+
+    private boolean isBool(String s) {
+        return s.equals("AND") || s.equals("OR") || s.equals("NOT");
     }
 
     public void encodeTerm(Types type, String s, int loc) {
@@ -61,29 +60,6 @@ public class SLProcessor {
                 .toString();
     }
 
-    public void encodeRemaining() {
-        query = splitQuery();
-        getTermsAsList().stream()
-                .filter(k -> !terms.containsKey(k) && !k.isEmpty())
-                .forEach(t -> findAndEncode("(^|\\s+)" + Pattern.quote(t) + "(\\s+|$)", TEXT));
-    }
-
-    private String splitQuery() {
-        String cq = query;
-        for (String t : terms.keySet()) cq = cq.replace(t, wrap(t, " "));
-        return cq.trim();
-    }
-
-    private void reduceQuotes(){
-        query = query.replaceAll("(?<!\\\\)\"", "")
-                .replaceAll("\\\\\"", "\"");
-    }
-
-    private void indexTerms() {
-        final AtomicInteger count = new AtomicInteger();
-        getTermsAsList().forEach(t -> terms.get(t).setIndex(count.getAndIncrement()));
-    }
-
     public void findAndEncode(String regex, Types type) {
         int offset = 0;
         Matcher m = Pattern.compile(regex).matcher(query);
@@ -93,21 +69,21 @@ public class SLProcessor {
         }
     }
 
-    private String revertString(String str) {
+    private void removeKey(String id) {
+        query = query.replace(id, terms.get(id).getValue());
+        terms.remove(id);
+    }
 
+    private String revertString(String str) {
         Set<String> toRevert = terms.keySet().stream()
                 .filter(str::contains)
                 .collect(Collectors.toSet());
         for (String s : toRevert) {
             str = str.replace(s, terms.get(s).getValue());
-            query = query.replace(s, terms.get(s).getValue());
-            terms.remove(s);
+            removeKey(s);
         }
-        return str;
+        return str.trim();
     }
 
-    private List<String> getTermsAsList() {
-        return isEmpty(query) ? new ArrayList<>() : asList(splitQuery().split("\\s+"));
-    }
 
 }

@@ -3,34 +3,17 @@ package com.dm.teamquery.entity;
 
 import com.dm.teamquery.search.UUIDFieldBridge;
 import lombok.Data;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.core.StopFilterFactory;
-import org.apache.lucene.analysis.ngram.NGramFilterFactory;
-import org.apache.lucene.analysis.standard.StandardFilterFactory;
-import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.*;
-import org.hibernate.search.annotations.Parameter;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.*;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
-//@AnalyzerDef(name = "ngram",
-//        tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class ),
-//        filters = {
-//                @TokenFilterDef(factory = StandardFilterFactory.class),
-//                @TokenFilterDef(factory = LowerCaseFilterFactory.class),
-//                @TokenFilterDef(factory = StopFilterFactory.class),
-//                @TokenFilterDef(factory = NGramFilterFactory.class,
-//                        params = {
-//                                @Parameter(name = "minGramSize", value = "3"),
-//                                @Parameter(name = "maxGramSize", value = "3") } )
-//        }
-//)
 
 @Data
 @Entity
