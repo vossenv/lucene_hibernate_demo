@@ -43,8 +43,14 @@ public class SLProcessor {
 
     private String decode(){
         StringBuilder sb = new StringBuilder();
-        stream(query.split("\\s+")).map(s -> isBool(s) || s.isEmpty() ? s + " " : s + "~ ").forEach(sb::append);
+        stream(query.split("\\s+")).map(this::addTermSuffix).forEach(sb::append);
         return revertString(sb.toString());
+    }
+
+    private String addTermSuffix(String term){
+        String s = (terms.containsKey(term)) ? terms.get(term).getValue() : term;
+        Matcher m = Pattern.compile("[A-Za-z0-9](?=$)").matcher(s);
+        return (!isBool(s) && m.find()) ? term + "~ " : term + " ";
     }
 
     private boolean isBool(String s) {
