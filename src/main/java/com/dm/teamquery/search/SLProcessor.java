@@ -16,7 +16,7 @@ public class SLProcessor {
 
     private static final String KEYWORD_SEARCH = "\\S+\\s*:\\s*\".*?\"|\\S+\\s*:\\s*\\S*";
     private static final String QUOTE_SEARCH = "(?<=^|\\s)((?<!\\\\)\").+?((?<!\\\\)\")(?=$|\\s)";
-    private static final String ESCAPED_CHARS = "\\ + - ! { } [ ] ^ ~ ? /";
+    private static final String ESCAPED_CHARS = "\\ + - ! { } [ ] ^ ? /";
 
     private static final String END_BOOL = "(\\s*(AND|OR)\\s*)" ;
     private static final String SKIP_BOOL = String.format("^%s*|%<s*$", END_BOOL);
@@ -35,10 +35,14 @@ public class SLProcessor {
         findAndEncode(QUOTE_SEARCH, QUOTED);
         findAndEncode(KEYWORD_SEARCH, KEYWORD);
 
+        query = decode();
+
         for (String c : ESCAPED_CHARS.split(" ")) {
             query = query.replace(c, "\\" + c);
         }
-        return decode();
+
+        query = query.replaceAll("\\\\\"", "\\\"");
+        return query;
     }
 
     private String decode(){
@@ -49,7 +53,7 @@ public class SLProcessor {
 
     private String addTermSuffix(String term){
         String s = (terms.containsKey(term)) ? terms.get(term).getValue() : term;
-        Matcher m = Pattern.compile("[A-Za-z0-9](?=$)").matcher(s);
+        Matcher m = Pattern.compile("[A-Za-z0-9\"&%#@<>;`_,.](?=$)").matcher(s);
         return (!isBool(s) && m.find()) ? term + "~ " : term + " ";
     }
 
