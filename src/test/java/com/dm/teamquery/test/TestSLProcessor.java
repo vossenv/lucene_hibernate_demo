@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:application-test.properties")
-public class TestSLProcessor {
+class TestSLProcessor {
 
-    SLProcessor slp = new SLProcessor();
+    private SLProcessor slp = new SLProcessor();
 
     @Test
-    public void TestSimple() {
+    void TestSimple() {
 
         String q0 = slp.format("");
         String q1 = slp.format("a b");
@@ -39,7 +39,7 @@ public class TestSLProcessor {
     }
 
     @Test
-    public void TestQuotes() {
+    void TestQuotes() {
 
         String q0 = slp.format("\"");
         String q1 = slp.format("\"a b\"");
@@ -61,7 +61,7 @@ public class TestSLProcessor {
     }
 
     @Test
-    public void TestAndOrOr() {
+    void TestAndOrOr() {
 
         String q0 = slp.format("a AND b");
         String q1 = slp.format("a AND b AND c");
@@ -85,7 +85,7 @@ public class TestSLProcessor {
 
 
     @Test
-    public void TestKeyword() {
+    void TestKeyword() {
 
         String q0 = slp.format("author : a");
         String q1 = slp.format("author:a");
@@ -128,7 +128,7 @@ public class TestSLProcessor {
 
 
     @Test
-    public void TestFull() {
+    void TestFull() {
 
         String q0 = slp.format("\"a a\" \"a a\" \"b b\"");
         String q1 = slp.format("\"a a\" AND \"b b\" AND \"c c\"");
@@ -153,7 +153,7 @@ public class TestSLProcessor {
     }
 
     @Test
-    public void TestSpecialChars() {
+    void TestSpecialChars() {
         slp.format("~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']");
         String q0 = slp.format("@!# $() @#*&(^ AND &*^%????\\\\\\ ");
         String q1 = slp.format("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"");

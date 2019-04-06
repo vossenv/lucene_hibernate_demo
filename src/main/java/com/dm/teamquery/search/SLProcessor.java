@@ -1,5 +1,7 @@
 package com.dm.teamquery.search;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +31,7 @@ public class SLProcessor {
         query = originalQuery.trim();
         terms = new HashMap<>();
         if (query.isEmpty()) return "*";
+        if (!validateInitialQuery(query)) return "";
 
         query = query.replaceAll(SKIP_BOOL, "");
         findAndEncode(QUOTE_SEARCH, QUOTED);
@@ -42,6 +45,12 @@ public class SLProcessor {
 
         query = query.replaceAll("\\\\\"", "\\\"");
         return query;
+    }
+
+    private boolean validateInitialQuery(String s) {
+        s = query.replaceAll("[^A-Za-z0-9]*","");
+        s = s.replaceAll("AND|OR|NOT","").trim();
+        return !s.isEmpty();
     }
 
     private String decode() {
