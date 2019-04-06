@@ -1,6 +1,7 @@
 package com.dm.teamquery.search;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,38 +27,41 @@ public class SLProcessor {
     private String query;
     private Map<String, SearchTerm> terms;
 
-    public String format(String originalQuery) {
-
-        query = originalQuery.trim();
+    public String format(String originalQuery) throws ParseException {
+        Assert.notNull(originalQuery, "Query must not be null");
         terms = new HashMap<>();
+        query = originalQuery.trim();
         if (query.isEmpty()) return "*";
-        if (!validateInitialQuery(query)) return "";
 
-        query = query.replaceAll(SKIP_BOOL, "");
-        findAndEncode(QUOTE_SEARCH, QUOTED);
-        findAndEncode(KEYWORD_SEARCH, KEYWORD);
+        validateQuery();
+        process();
 
-        query = decode();
-
-        for (String c : ESCAPED_CHARS.split(" ")) {
-            query = query.replace(c, "\\" + c);
-        }
-
-        query = query.replaceAll("\\\\\"", "\\\"");
         return query;
     }
 
-    private boolean validateInitialQuery(String s) {
-        s = query.replaceAll("[^A-Za-z0-9]*","");
+    private void validateQuery() throws ParseException {
+        String s = query.replaceAll("[^A-Za-z0-9*]*","");
         s = s.replaceAll("AND|OR|NOT","").trim();
-        return !s.isEmpty();
+        if (s.isEmpty()) throw new ParseException("Invalid query syntax: '" + query + "'");
     }
 
-    private String decode() {
+    private void process() throws ParseException{
+        query = query.replaceAll(SKIP_BOOL, "");
+        findAndEncode(QUOTE_SEARCH, QUOTED);
+        findAndEncode(KEYWORD_SEARCH, KEYWORD);
+        decode();
+        validateQuery();
+    }
+
+    private void decode() {
         query = query.replaceAll("\\)", " )");
         StringBuilder sb = new StringBuilder();
         stream(query.split("\\s+")).map(this::addTermSuffix).forEach(sb::append);
-        return revertString(sb.toString().replaceAll(" \\)", ")"));
+        query = revertString(sb.toString().replaceAll(" \\)", ")"));
+        for (String c : ESCAPED_CHARS.split(" ")) {
+            query = query.replace(c, "\\" + c);
+        }
+        query = query.replaceAll("\\\\\"", "\\\"");
     }
 
     private String addTermSuffix(String term) {

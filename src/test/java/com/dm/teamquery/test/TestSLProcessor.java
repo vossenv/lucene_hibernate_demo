@@ -1,14 +1,14 @@
 package com.dm.teamquery.test;
 
 import com.dm.teamquery.search.SLProcessor;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -18,7 +18,7 @@ class TestSLProcessor {
     private SLProcessor slp = new SLProcessor();
 
     @Test
-    void TestSimple() {
+    void TestSimple() throws Exception {
 
         String q0 = slp.format("");
         String q1 = slp.format("a b");
@@ -39,9 +39,8 @@ class TestSLProcessor {
     }
 
     @Test
-    void TestQuotes() {
+    void TestQuotes() throws Exception  {
 
-        String q0 = slp.format("\"");
         String q1 = slp.format("\"a b\"");
         String q2 = slp.format("\"a b\" c d");
         String q3 = slp.format("\" \\\" test quoted term in quotes \\\" \"");
@@ -50,7 +49,6 @@ class TestSLProcessor {
         String q6 = slp.format("\" a and  \"c and d\"");
         String q7 = slp.format("\" a and  \" \" c and d\"");
 
-        assertEquals(q0, "\"~");
         assertEquals(q1, "\"a b\"~");
         assertEquals(q2, "\"a b\"~ c~ d~");
         assertEquals(q3, "\" \\\" test quoted term in quotes \\\" \"~");
@@ -61,22 +59,21 @@ class TestSLProcessor {
     }
 
     @Test
-    void TestAndOrOr() {
+    void TestAndOrOr() throws Exception {
 
         String q0 = slp.format("a AND b");
         String q1 = slp.format("a AND b AND c");
         String q2 = slp.format("AND a AND b AND c");
-        String q3 = slp.format("AND AND AND");
-        String q4 = slp.format("ANDANDAND");
         String q5 = slp.format("a AND bANDc ANDd");
         String q6 = slp.format("a ANDb c");
         String q7 = slp.format("OR a OR b OR c OR");
 
+        assertThrows(ParseException.class, () -> slp.format("AND AND AND"));
+        assertThrows(ParseException.class, () -> slp.format("ANDANDAND"));
+
         assertEquals(q0, "a~ AND b~");
         assertEquals(q1, "a~ AND b~ AND c~");
         assertEquals(q2, "a~ AND b~ AND c~");
-        assertEquals(q3, "");
-        assertEquals(q4, "");
         assertEquals(q5, "a~ AND bANDc~ ANDd~");
         assertEquals(q5, "a~ AND bANDc~ ANDd~");
         assertEquals(q7, "a~ OR b~ OR c~");
@@ -85,7 +82,7 @@ class TestSLProcessor {
 
 
     @Test
-    void TestKeyword() {
+    void TestKeyword() throws Exception {
 
         String q0 = slp.format("author : a");
         String q1 = slp.format("author:a");
@@ -93,11 +90,9 @@ class TestSLProcessor {
         String q3 = slp.format("author :a ");
         String q4 = slp.format("author : ");
         String q5 = slp.format("author : content : a");
-        String q6 = slp.format(":");
         String q7 = slp.format(": a ");
         String q8 = slp.format("b :: a ");
         String q9 = slp.format(": b : a : ");
-        String q10 = slp.format(":::: :");
         String q11 = slp.format("a : \"x y z\"");
         String q12 = slp.format("\"a b c\" : \"x y z\"");
         String q13 = slp.format("\"a b c\" : x");
@@ -111,11 +106,9 @@ class TestSLProcessor {
         assertEquals(q3, "author:a~");
         assertEquals(q4, "author:");
         assertEquals(q5, "author:content~ : a~");
-        assertEquals(q6, ":");
         assertEquals(q7, ": a~");
         assertEquals(q8, "b:: a~");
         assertEquals(q9, ": b:a~ :");
-        assertEquals(q10, ":::: :");
         assertEquals(q11, "a:\"x y z\"~");
         assertEquals(q12, "\"a b c\":\"x y z\"~");
         assertEquals(q13, "\"a b c\":x~");
@@ -128,7 +121,7 @@ class TestSLProcessor {
 
 
     @Test
-    void TestFull() {
+    void TestFull() throws Exception {
 
         String q0 = slp.format("\"a a\" \"a a\" \"b b\"");
         String q1 = slp.format("\"a a\" AND \"b b\" AND \"c c\"");
@@ -154,18 +147,14 @@ class TestSLProcessor {
 
     @Test
     void TestSpecialChars() {
-        slp.format("~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']");
-        String q0 = slp.format("@!# $() @#*&(^ AND &*^%????\\\\\\ ");
-        String q1 = slp.format("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"");
-        String q2 = slp.format("~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']");
-        String q3 = slp.format("\\");
-        String q4 = slp.format("(a AND b) OR c");
 
-        assertEquals(q0, "@\\!#~ $() @#*&(\\^ AND &*\\^%\\?\\?\\?\\?\\\\\\\\\\\\");
-        assertEquals(q1, "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"~");
-        assertEquals(q2, "~\\!@#$%\\^&*()_\\+\\-\\/*\\-\\+<>\\?:\\{\\}|\\\\\\]`\\[';\\/.,'\\]");
-        assertEquals(q3, "\\\\");
-        assertEquals(q4, "(a~ AND b~) OR c~");
+        assertThrows(ParseException.class, () -> slp.format("@!# $() @#&(^ AND &^%????\\\\\\ "));
+        assertThrows(ParseException.class, () -> slp.format("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\""));
+        assertThrows(ParseException.class, () -> slp.format("~!@#$%^&()_+-/-+<>?:{}|\\]`[';/.,']"));
+        assertThrows(ParseException.class, () -> slp.format("\"\\\\\""));
+        assertThrows(ParseException.class, () -> slp.format("\""));
+        assertThrows(ParseException.class, () -> slp.format(":"));
+        assertThrows(ParseException.class, () -> slp.format(":::: :"));
 
     }
 

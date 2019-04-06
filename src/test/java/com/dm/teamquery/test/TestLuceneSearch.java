@@ -10,7 +10,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -20,20 +22,33 @@ class TestLuceneSearch {
     SearchService searchService;
 
     @Test
-    void testSearchFailure() {
-        Arrays.asList(queries).forEach(s -> searchService.search(s, Challenge.class));
+    void testNormalQueries() {
+        Arrays.stream(queries).forEach(s -> {
+            try {
+                searchService.search(s, Challenge.class);
+            } catch (Exception e){
+                fail();
+            }
+        });
     }
 
-    @Test
-    void TestSLProcessor() {
 
+    @Test
+    void testSearchExceptions() throws Exception{
+
+        List<Challenge> l = searchService.search("adoebe", Challenge.class);
+
+        try {
+            searchService.search("aaaaa \"", Challenge.class);
+        } catch (Exception e) {
+            String g = e.getMessage();
+            System.out.println();
+        }
 
     }
 
     private static final String[] queries = {
             "",
-            "?",
-            "*",
             "a b",
             "a b c c",
             "c a b c",
@@ -47,8 +62,6 @@ class TestLuceneSearch {
             "a AND b",
             "a AND b AND c",
             "AND a AND b AND c",
-            "AND AND AND",
-            "ANDANDAND",
             "a AND bANDc ANDd",
             "a ANDb c",
             "OR a OR b OR c OR",
@@ -57,8 +70,6 @@ class TestLuceneSearch {
             "author :a",
             "author :a ",
             "notfield:c",
-            ":",
-            ":::: :",
             "a : \"x y z\"",
             "\"a a\" \"a a\" \"b b\"",
             "\"a a\" AND \"b b\" AND \"c c\"",
@@ -69,10 +80,6 @@ class TestLuceneSearch {
             "this OR (a:keyword in)",
             "this OR (a : keyword in)",
             "this OR (a : \"keyword in\" here)",
-            "@!# $() @#*&(^ AND &*^%????\\\\\\ ",
-            "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"",
-            "~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']",
-            "\\",
             "(a AND b) OR c",
     };
 }
