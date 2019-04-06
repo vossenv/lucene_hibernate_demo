@@ -88,7 +88,6 @@ class TestSLProcessor {
         String q1 = slp.format("author:a");
         String q2 = slp.format("author :a");
         String q3 = slp.format("author :a ");
-        String q4 = slp.format("author : ");
         String q5 = slp.format("author : content : a");
         String q7 = slp.format(": a ");
         String q8 = slp.format("b :: a ");
@@ -96,7 +95,6 @@ class TestSLProcessor {
         String q11 = slp.format("a : \"x y z\"");
         String q12 = slp.format("\"a b c\" : \"x y z\"");
         String q13 = slp.format("\"a b c\" : x");
-        String q14 = slp.format("\"a b c\" : \"666\"  5 :");
         String q15 = slp.format("a : b : c : d :");
         String q16 = slp.format(": a : b : c : d :");
 
@@ -104,7 +102,6 @@ class TestSLProcessor {
         assertEquals(q1, "author:a~");
         assertEquals(q2, "author:a~");
         assertEquals(q3, "author:a~");
-        assertEquals(q4, "author:");
         assertEquals(q5, "author:content~ : a~");
         assertEquals(q7, ": a~");
         assertEquals(q8, "b:: a~");
@@ -112,7 +109,6 @@ class TestSLProcessor {
         assertEquals(q11, "a:\"x y z\"~");
         assertEquals(q12, "\"a b c\":\"x y z\"~");
         assertEquals(q13, "\"a b c\":x~");
-        assertEquals(q14, "\"a b c\":\"666\"~ 5:");
         assertEquals(q15, "a:b~ : c:d~ :");
         assertEquals(q16, ": a:b~ : c:d~ :");
 

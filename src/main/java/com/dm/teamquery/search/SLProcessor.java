@@ -21,7 +21,7 @@ public class SLProcessor {
     private static final String QUOTE_SEARCH = "(?<=\\(|^|\\s)((?<!\\\\)\").+?((?<!\\\\)\")(?=$|\\s|\\))";
     private static final String ESCAPED_CHARS = "\\ + - ! { } [ ] ^ ? /";
 
-    private static final String END_BOOL = "(\\s*(AND|OR)\\s*)";
+    private static final String END_BOOL = "(\\s*(AND|OR|NOT)\\s*)";
     private static final String SKIP_BOOL = String.format("^%s*|%<s*$", END_BOOL);
 
     private String query;
@@ -74,7 +74,7 @@ public class SLProcessor {
         return s.equals("AND") || s.equals("OR") || s.equals("NOT");
     }
 
-    public void encodeTerm(Types type, String s, int loc) {
+    public void encodeTerm(Types type, String s, int loc) throws ParseException{
         if (type == KEYWORD) s = revertString(s);
         SearchTerm st = new SearchTerm(type, s);
         terms.put(st.getId(), st);
@@ -83,7 +83,7 @@ public class SLProcessor {
                 .toString();
     }
 
-    public void findAndEncode(String regex, Types type) {
+    public void findAndEncode(String regex, Types type) throws ParseException{
         int offset = 0;
         Matcher m = Pattern.compile(regex).matcher(query);
         while (m.find()) {

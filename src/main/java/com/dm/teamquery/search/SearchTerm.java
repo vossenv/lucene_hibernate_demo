@@ -2,6 +2,7 @@ package com.dm.teamquery.search;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.lucene.queryparser.classic.ParseException;
 
 import static com.dm.teamquery.search.SearchTerm.Types.*;
 import java.util.UUID;
@@ -17,9 +18,11 @@ public class SearchTerm {
     private Types type;
     public static final Integer idLength = 10;
 
-    public SearchTerm(Types type, String value) {
+    public SearchTerm(Types type, String value) throws ParseException{
         this.type = type;
         this.value = normalize(value);
+        if (type.is(KEYWORD) && this.value.trim().isEmpty()) throw new ParseException("Empty value for keyword: " + key);
+        if (type.is(KEYWORD) && this.key.trim().isEmpty()) throw new ParseException("Empty keyword not allowed for value: " + value);
         this.id = UUID.randomUUID().toString().replaceAll("-", "").substring(0, idLength);
     }
 
