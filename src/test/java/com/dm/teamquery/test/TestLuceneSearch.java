@@ -4,17 +4,18 @@ package com.dm.teamquery.test;
 import com.dm.teamquery.data.service.ChallengeService;
 import com.dm.teamquery.data.service.SearchService;
 import com.dm.teamquery.entity.Challenge;
+import com.dm.teamquery.execption.customexception.SearchFailedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -27,48 +28,63 @@ class TestLuceneSearch {
     ChallengeService challengeService;
 
     @PostConstruct
-    private void setType(){
+    private void setType() {
         searchService.setEntityType(Challenge.class);
     }
 
     @Test
     void testNormalQueries() {
-        Arrays.stream(queries).forEach(s -> {
-            try {
-                searchService.search(s);
-            } catch (Exception e){
-                fail();
-            }
-        });
+        Arrays.stream(queries).forEach(s ->
+            assertDoesNotThrow(() -> searchService.search(s))
+        );
     }
 
     @Test
     void testSearchExceptions() {
-        try {
-            searchService.search("aaaaa \"");
-        } catch (Exception e) {
-            String g = e.getMessage();
-            System.out.println();
-        }
+        Arrays.stream(failqueries).forEach(s ->
+           assertThrows(SearchFailedException.class, () -> searchService.search(s)));
     }
 
     @Test
-    void indexNewItem() throws Exception{
+    void indexNewItem() throws Exception {
         Challenge c = new Challenge();
         c.setAuthor("Carag");
         c.setAnswer("What is the question");
         c.setQuestion("What is the answer");
         c = challengeService.save(c);
-        assertEquals(searchService.search(c.getChallengeId().toString()).size(),1);
+        assertEquals(searchService.search(c.getChallengeId().toString()).size(), 1);
+        challengeService.deleteById(c.getChallengeId());
     }
 
     @Test
-    void indexDeletedItem() throws Exception{
+    void indexDeletedItem() throws Exception {
         Challenge c = challengeService.findAll().get(0);
         challengeService.deleteById(c.getChallengeId());
-        assertEquals(searchService.search(c.getChallengeId().toString()).size(),0);
+        assertEquals(searchService.search(c.getChallengeId().toString()).size(), 0);
+        challengeService.save(c);
     }
 
+    @Test
+    void testResultCount() throws Exception {
+        int count = searchService.count("", PageRequest.of(0, 1));
+        assertEquals(count, 17);
+    }
+
+    @Test
+    void testPagedSearch() throws Exception {
+
+        int total = 0;
+        for (int i = 0; i < 15; i++) {
+            int pageSize = searchService.search("", PageRequest.of(i, 5)).size();
+            if (pageSize == 0) {
+                assertEquals(4, i);
+                break;
+            }
+            total += pageSize;
+            if (i < 3) assertEquals(5, pageSize);
+        }
+        assertEquals(total, 17);
+    }
 
     private static final String[] queries = {
             "",
@@ -104,6 +120,19 @@ class TestLuceneSearch {
             "this OR (a : keyword in)",
             "this OR (a : \"keyword in\" here)",
             "(a AND b) OR c",
+    };
+
+    private static final String[] failqueries = {
+            "!#$%&(",
+            ":: : ",
+            "\"",
+            ":",
+            "a:",
+            ":b",
+            "C:D:E:F:G",
+            "() ()()()",
+            "AND AND AND",
+            "ANDANDAND"
     };
 }
 
