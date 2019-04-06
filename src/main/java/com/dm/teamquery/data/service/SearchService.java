@@ -28,51 +28,54 @@ import static java.util.Arrays.stream;
 @Transactional
 public class SearchService {
 
+    private Class entityType;
     private FullTextEntityManager fullTextEm;
+    private MultiFieldQueryParser queryParser;
 
     @Inject
     public SearchService(EntityManagerFactory emf) {
         this.fullTextEm = Search.getFullTextEntityManager(emf.createEntityManager());
     }
 
-    public List<Challenge> search(String query, Class entityType) throws SearchFailedException {
-        return search(query, entityType, PageRequest.of(0, 100));
+    public List<Challenge> search(String query) throws SearchFailedException {
+        return search(query, PageRequest.of(0, 100));
     }
 
-    public List<Challenge> search(String query, Class entityType, Pageable p) throws SearchFailedException {
-            return parseQuery(query, entityType, p).getResultList();
+    public int count(String query) throws SearchFailedException {
+        return count(query, PageRequest.of(0, 100));
     }
 
-    public int count(String query, Class entityType) throws SearchFailedException {
-        return count(query, entityType, PageRequest.of(0, 100));
+    public List<Challenge> search(String query, Pageable p) throws SearchFailedException {
+        return parseQuery(query, p).getResultList();
     }
 
-    public int count(String query, Class entityType, Pageable p) throws SearchFailedException {
-        return parseQuery(query, entityType, p).getResultSize();
+    public int count(String query, Pageable p) throws SearchFailedException {
+        return parseQuery(query, p).getResultSize();
     }
 
-    private FullTextQuery parseQuery (String query, Class entityType, Pageable p) throws SearchFailedException {
+    private FullTextQuery parseQuery(String query, Pageable p) throws SearchFailedException {
 
         Assert.notNull(query, "Query must not be null");
-        Assert.notNull(entityType, "Entity type must not be null");
-
-        MultiFieldQueryParser queryParser =
-                new MultiFieldQueryParser(getEntityFields(entityType),
-                        fullTextEm.getSearchFactory().getAnalyzer(entityType));
-
-        queryParser.setAllowLeadingWildcard(true);
 
         try {
-            query = new SLProcessor().format(query);
-            Query r = queryParser.parse(query);
-            FullTextQuery jpaQuery = fullTextEm.createFullTextQuery(r, entityType);
 
+            Query r = queryParser.parse(new SLProcessor().format(query));
+            FullTextQuery jpaQuery = fullTextEm.createFullTextQuery(r, entityType);
             return jpaQuery.setMaxResults(p.getPageSize()).setFirstResult(p.getPageNumber() * p.getPageSize());
 
         } catch (ParseException e) {
             throw new SearchFailedException(e.getStackTrace(),
                     e.getMessage().split("\\v")[0].replace("~", ""));
         }
+    }
+
+    public void setEntityType(Class entityType) {
+        Assert.notNull(entityType, "Entity type must not be null");
+
+        queryParser = new MultiFieldQueryParser(getEntityFields(entityType),
+                fullTextEm.getSearchFactory().getAnalyzer(entityType));
+        queryParser.setAllowLeadingWildcard(true);
+        this.entityType = entityType;
     }
 
     private String[] getEntityFields(Class c) {

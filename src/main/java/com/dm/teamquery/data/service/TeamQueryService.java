@@ -122,7 +122,7 @@ public abstract class TeamQueryService<T, ID> {
 
         try {
            // response.setRowCount(count(dbQuery));
-            response.setResultsList(searchService.search(query, request.getPageable(), this.persistentClass));
+            response.setResultsList(searchService.search(query, request.getPageable()));
             response.setSearchTime((System.nanoTime() - startTime) * 1.0e-9);
            // infoRepository.save(search);
             return response;
