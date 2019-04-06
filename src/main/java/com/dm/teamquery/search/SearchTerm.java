@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import static com.dm.teamquery.search.SearchTerm.Types.*;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Getter
 @Setter
@@ -33,7 +34,8 @@ public class SearchTerm {
             return s.trim();
         }
         key = k;
-        return s.replaceFirst("\\s*" + key + "\\s*:", "").trim();
+        s = s.replaceFirst("\\s*" + Pattern.quote(key) + "\\s*:", "").trim();
+        return s.replace(Pattern.quote(key),key);
     }
 
     public String getValue() {

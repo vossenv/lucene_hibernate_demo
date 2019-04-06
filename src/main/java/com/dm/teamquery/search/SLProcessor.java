@@ -15,10 +15,10 @@ import static java.util.Arrays.stream;
 public class SLProcessor {
 
     private static final String KEYWORD_SEARCH = "\\S+\\s*:\\s*\".*?\"|\\S+\\s*:\\s*\\S*";
-    private static final String QUOTE_SEARCH = "(?<=^|\\s)((?<!\\\\)\").+?((?<!\\\\)\")(?=$|\\s)";
+    private static final String QUOTE_SEARCH = "(?<=\\(|^|\\s)((?<!\\\\)\").+?((?<!\\\\)\")(?=$|\\s|\\))";
     private static final String ESCAPED_CHARS = "\\ + - ! { } [ ] ^ ? /";
 
-    private static final String END_BOOL = "(\\s*(AND|OR)\\s*)" ;
+    private static final String END_BOOL = "(\\s*(AND|OR)\\s*)";
     private static final String SKIP_BOOL = String.format("^%s*|%<s*$", END_BOOL);
 
     private String query;
@@ -31,7 +31,6 @@ public class SLProcessor {
         if (query.isEmpty()) return "*";
 
         query = query.replaceAll(SKIP_BOOL, "");
-
         findAndEncode(QUOTE_SEARCH, QUOTED);
         findAndEncode(KEYWORD_SEARCH, KEYWORD);
 
@@ -45,13 +44,14 @@ public class SLProcessor {
         return query;
     }
 
-    private String decode(){
+    private String decode() {
+        query = query.replaceAll("\\)", " )");
         StringBuilder sb = new StringBuilder();
         stream(query.split("\\s+")).map(this::addTermSuffix).forEach(sb::append);
-        return revertString(sb.toString());
+        return revertString(sb.toString().replaceAll(" \\)", ")"));
     }
 
-    private String addTermSuffix(String term){
+    private String addTermSuffix(String term) {
         String s = (terms.containsKey(term)) ? terms.get(term).getValue() : term;
         Matcher m = Pattern.compile("[A-Za-z0-9\"&%#@<>;`_,.](?=$)").matcher(s);
         return (!isBool(s) && m.find()) ? term + "~ " : term + " ";

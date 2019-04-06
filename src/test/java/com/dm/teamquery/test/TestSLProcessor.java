@@ -133,25 +133,39 @@ public class TestSLProcessor {
         String q0 = slp.format("\"a a\" \"a a\" \"b b\"");
         String q1 = slp.format("\"a a\" AND \"b b\" AND \"c c\"");
         String q2 = slp.format("OR \"a a\" AND b OR \"c c\"");
+        String q3 = slp.format("(this OR that) (and this) AND abcd");
+        String q4 = slp.format("((a nested) group)");
+        String q5 = slp.format("((\"a nested\" planet) group)");
+        String q6 = slp.format("this OR (a:keyword in)");
+        String q7 = slp.format("this OR (a : keyword in)");
+        String q8 = slp.format("this OR (a : \"keyword in\" here)");
 
         assertEquals(q0, "\"a a\"~ \"a a\"~ \"b b\"~");
         assertEquals(q1, "\"a a\"~ AND \"b b\"~ AND \"c c\"~");
         assertEquals(q2, "\"a a\"~ AND b~ OR \"c c\"~");
+        assertEquals(q3, "(this~ OR that~) (and~ this~) AND abcd~");
+        assertEquals(q4, "((a~ nested~) group~)");
+        assertEquals(q5, "((\"a nested\"~ planet~) group~)");
+        assertEquals(q6, "this~ OR (a:keyword~ in~)");
+        assertEquals(q7, "this~ OR (a:keyword~ in~)");
+        assertEquals(q8, "this~ OR (a:\"keyword in\"~ here~)");
 
     }
 
     @Test
     public void TestSpecialChars() {
-
+        slp.format("~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']");
         String q0 = slp.format("@!# $() @#*&(^ AND &*^%????\\\\\\ ");
         String q1 = slp.format("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"");
         String q2 = slp.format("~!@#$%^&*()_+-/*-+<>?:{}|\\]`[';/.,']");
         String q3 = slp.format("\\");
+        String q4 = slp.format("(a AND b) OR c");
 
         assertEquals(q0, "@\\!#~ $() @#*&(\\^ AND &*\\^%\\?\\?\\?\\?\\\\\\\\\\\\");
         assertEquals(q1, "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"~");
-        assertEquals(q2, "~\\!@#$%\\^&*()_\\+\\-\\/*\\-\\+<>\\?:~\\!@#$%\\^&*()_\\+\\-\\/*\\-\\+<>\\?:\\{\\}|\\\\\\]`\\[';\\/.,'\\]");
+        assertEquals(q2, "~\\!@#$%\\^&*()_\\+\\-\\/*\\-\\+<>\\?:\\{\\}|\\\\\\]`\\[';\\/.,'\\]");
         assertEquals(q3, "\\\\");
+        assertEquals(q4, "(a~ AND b~) OR c~");
 
     }
 
