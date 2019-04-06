@@ -36,7 +36,7 @@ class TestLuceneSearch {
     @Test
     void testSearchExceptions() throws Exception{
 
-        List<Challenge> l = searchService.search("adoebe", Challenge.class);
+        List<Challenge> l = searchService.search("adobe", Challenge.class);
 
         try {
             searchService.search("aaaaa \"", Challenge.class);

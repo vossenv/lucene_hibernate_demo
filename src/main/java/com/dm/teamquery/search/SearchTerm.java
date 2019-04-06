@@ -46,9 +46,13 @@ public class SearchTerm {
     }
 
     public enum Types {
-        TEXT, QUOTED, KEYWORD, AND, OR, BOOLEAN;
+        TEXT, QUOTED, KEYWORD, AND, OR, NOT, BOOLEAN;
         public boolean is(Types type){
-            return type != BOOLEAN ? this == type : (this == AND || this == OR);}
+            return type != BOOLEAN ? this == type : (this == AND || this == OR || this == NOT);}
+
+        public static boolean isBoolean (String s) {
+            return s.equals(AND.toString()) || s.equals(OR.toString()) || s.equals(NOT.toString());
+        }
     }
 }
 

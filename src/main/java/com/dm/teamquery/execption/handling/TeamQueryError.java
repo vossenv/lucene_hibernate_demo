@@ -58,6 +58,6 @@ public class TeamQueryError {
 
     private void setStatus(HttpStatus status) {
         this.status = status;
-        this.statusString = String.valueOf(status.value()) + " " +  status.getReasonPhrase();
+        this.statusString = status.value() + " " +  status.getReasonPhrase();
     }
 }

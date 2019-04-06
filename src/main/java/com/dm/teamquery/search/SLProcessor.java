@@ -11,8 +11,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.dm.teamquery.search.SearchTerm.Types;
-import static com.dm.teamquery.search.SearchTerm.Types.KEYWORD;
-import static com.dm.teamquery.search.SearchTerm.Types.QUOTED;
+import static com.dm.teamquery.search.SearchTerm.Types.*;
 import static java.util.Arrays.stream;
 
 public class SLProcessor {
@@ -67,23 +66,21 @@ public class SLProcessor {
     private String addTermSuffix(String term) {
         String s = (terms.containsKey(term)) ? terms.get(term).getValue() : term;
         Matcher m = Pattern.compile("[A-Za-z0-9\"&%#@<>;`_,.](?=$)").matcher(s);
-        return (!isBool(s) && m.find()) ? term + "~ " : term + " ";
+        return (!SearchTerm.Types.isBoolean(s) && m.find()) ? term + "~ " : term + " ";
     }
 
-    private boolean isBool(String s) {
-        return s.equals("AND") || s.equals("OR") || s.equals("NOT");
-    }
-
-    public void encodeTerm(Types type, String s, int loc) throws ParseException{
+    private void encodeTerm(Types type, String s, int loc) throws ParseException{
         if (type == KEYWORD) s = revertString(s);
         SearchTerm st = new SearchTerm(type, s);
         terms.put(st.getId(), st);
-        query = new StringBuilder(query)
-                .replace(loc, loc + s.length(), st.getId())
-                .toString();
+        try {
+            query = new StringBuilder(query)
+                    .replace(loc, loc + s.length(), st.getId())
+                    .toString();
+        } catch (Exception e) {throw new ParseException("Error encoding term: " + s);}
     }
 
-    public void findAndEncode(String regex, Types type) throws ParseException{
+    private void findAndEncode(String regex, Types type) throws ParseException{
         int offset = 0;
         Matcher m = Pattern.compile(regex).matcher(query);
         while (m.find()) {
@@ -92,10 +89,6 @@ public class SLProcessor {
         }
     }
 
-    private void removeKey(String id) {
-        query = query.replace(id, terms.get(id).getValue());
-        terms.remove(id);
-    }
 
     private String revertString(String str) {
         Set<String> toRevert = terms.keySet().stream()
@@ -103,7 +96,8 @@ public class SLProcessor {
                 .collect(Collectors.toSet());
         for (String s : toRevert) {
             str = str.replace(s, terms.get(s).getValue());
-            removeKey(s);
+            query = query.replace(s, terms.get(s).getValue());
+            terms.remove(s);
         }
         return str.trim();
     }

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.TransactionSystemException;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
@@ -31,8 +32,11 @@ public abstract class TeamQueryService<T, ID> {
     private EntityManager em;
     private PagingAndSortingRepository<T, ID> repository;
 
-    @Autowired
+    @Inject
     private SearchInfoRepository infoRepository;
+
+    @Inject
+    private SearchService searchService;
 
     public TeamQueryService(EntityManager em, PagingAndSortingRepository repository) {
         this.em = em;
@@ -90,52 +94,43 @@ public abstract class TeamQueryService<T, ID> {
     }
 
 
-    public List<T> search(String query, Pageable p) {
-        return em
-                .createQuery(query)
-                .setMaxResults(p.getPageSize())
-                .setFirstResult(p.getPageNumber() * p.getPageSize())
-                .getResultList();
-    }
-
-    public long count(String query) {
-        return (long) em.createQuery("select count(*) " + query).getResultList().get(0);
-    }
-
-    public List<T> basicSearch(String query) throws SearchFailedException {
-        return (List<T>) search(new SearchRequest(query)).getResultsList();
-    }
+//    public List<T> search(String query, Pageable p) {
+//
+//
+//        return em
+//                .createQuery(query)
+//                .setMaxResults(p.getPageSize())
+//                .setFirstResult(p.getPageNumber() * p.getPageSize())
+//                .getResultList();
+//    }
+//
+//    public long count(String query) {
+//        return (long) em.createQuery("select count(*) " + query).getResultList().get(0);
+//    }
+//
+//    public List<T> basicSearch(String query) throws SearchFailedException {
+//        return (List<T>) search(new SearchRequest(query)).getResultsList();
+//    }
 
     public SearchResponse search(SearchRequest request) throws SearchFailedException {
 
-        return null;
+        long startTime = System.nanoTime();
+        String query = request.getQuery();
 
-//        long startTime = System.nanoTime();
-//        String query = request.getQuery();
-//        String dbQuery = prepareQuery(new Search(persistentClass, query).getDatabaseQuery(), request.getIncDisabled());
-//        SearchInfo search = new SearchInfo(query, dbQuery);
-//        SearchResponse response = new SearchResponse(request);
-//
-//        try {
-//            response.setRowCount(count(dbQuery));
-//            response.setResultsList(search(dbQuery, request.getPageable()));
-//            response.setSearchTime((System.nanoTime() - startTime) * 1.0e-9);
-//            infoRepository.save(search);
-//            return response;
-//        } catch (Exception e) {
-//            search.setErrors(ExceptionUtils.getRootCauseMessage(e));
-//            infoRepository.save(search);
-//            throw new SearchFailedException(ExceptionUtils.getRootCauseMessage(e));
-//        }
-    }
+        //SearchInfo search = new SearchInfo(query, dbQuery);
+        SearchResponse response = new SearchResponse(request);
 
-    private String prepareQuery(String query, boolean disabled) {
-        String key = disabled ? "0" : "1";
-        if (query.equals("from " + pClassName))
-            return query + " where enabled = " + key;
-        else {
-            return query.replace("from " + pClassName + " where ",
-                    "from " + pClassName + " where enabled = " + key + " and (") + ")";
+        try {
+           // response.setRowCount(count(dbQuery));
+            response.setResultsList(searchService.search(query, request.getPageable(), this.persistentClass));
+            response.setSearchTime((System.nanoTime() - startTime) * 1.0e-9);
+           // infoRepository.save(search);
+            return response;
+        } catch (Exception e) {
+         //   search.setErrors(ExceptionUtils.getRootCauseMessage(e));
+          //  infoRepository.save(search);
+            if (e instanceof SearchFailedException) throw e;
+            throw new SearchFailedException(ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
