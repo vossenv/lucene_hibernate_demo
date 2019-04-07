@@ -3,6 +3,7 @@ package com.dm.teamquery.data.service;
 import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.customexception.SearchFailedException;
 import com.dm.teamquery.search.SLProcessor;
+import com.dm.teamquery.search.SearchParameters;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
@@ -37,52 +38,32 @@ public class SearchService{
         this.fullTextEm = Search.getFullTextEntityManager(emf.createEntityManager());
     }
 
-    // Entry points with #nofilter
-
     public List<?> search(String query) throws SearchFailedException {
-        return search(query, PageRequest.of(0, 100),"");
+        return search(new SearchParameters.Builder().withQuery(query).build());
     }
 
     public int count(String query) throws SearchFailedException {
-        return count(query, PageRequest.of(0, 100),"");
+        return count(new SearchParameters.Builder().withQuery(query).build());
     }
 
-    public List<?> search(String query, Pageable p) throws SearchFailedException {
-        return parseQuery(query, p, "").getResultList();
+    public List<?> search(SearchParameters sp) throws SearchFailedException {
+        return parseQuery(sp).getResultList();
     }
 
-    public int count(String query, Pageable p) throws SearchFailedException {
-        return parseQuery(query, p, "").getResultSize();
+    public int count(SearchParameters sp) throws SearchFailedException {
+        return parseQuery(sp).getResultSize();
     }
 
-    // Entry points allowing filter
+    private FullTextQuery parseQuery(SearchParameters parameters) throws SearchFailedException {
 
-    public List<?> search(String query, String filter) throws SearchFailedException {
-        return search(query, PageRequest.of(0, 100),filter);
-    }
-
-    public int count(String query, String filter) throws SearchFailedException {
-        return count(query, PageRequest.of(0, 100),filter);
-    }
-    public List<?> search(String query, Pageable p, String filter) throws SearchFailedException {
-        return parseQuery(query, p, filter).getResultList();
-    }
-
-    public int count(String query, Pageable p, String filter) throws SearchFailedException {
-        return parseQuery(query, p, filter).getResultSize();
-    }
-
-    private FullTextQuery parseQuery(String query, Pageable p, String filter) throws SearchFailedException {
-
+        String query = parameters.getQuery();
+        String filter = parameters.getFilter();
+        Pageable p = parameters.getPageable();
         Assert.notNull(query, "Query must not be null");
 
         try {
-            query = new SLProcessor().format(query);
-
-
-            if (!filter.trim().isEmpty()) {
-                query = "(" + query + ") AND " + filter;
-            }
+            query = new SLProcessor(parameters.getFuzziness()).format(query);
+            query = (!filter.trim().isEmpty()) ? "(" + query + ") AND " + filter : query;
 
             Query r = queryParser.parse(query);
             FullTextQuery jpaQuery = fullTextEm.createFullTextQuery(r, entityType);
@@ -96,9 +77,7 @@ public class SearchService{
 
     public void setEntityType(Class entityType) {
         Assert.notNull(entityType, "Entity type must not be null");
-
-        queryParser = new MultiFieldQueryParser(getEntityFields(entityType),
-                fullTextEm.getSearchFactory().getAnalyzer(entityType));
+        queryParser = new MultiFieldQueryParser(getEntityFields(entityType), fullTextEm.getSearchFactory().getAnalyzer(entityType));
         queryParser.setAllowLeadingWildcard(true);
         this.entityType = entityType;
     }

@@ -5,6 +5,7 @@ import com.dm.teamquery.data.service.ChallengeService;
 import com.dm.teamquery.data.service.SearchService;
 import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.customexception.SearchFailedException;
+import com.dm.teamquery.search.SearchParameters;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,8 +30,6 @@ class TestLuceneSearch {
     @Inject
     ChallengeService challengeService;
 
-    String filter = "enabled:true";
-
     @PostConstruct
     private void setType() {
         searchService.setEntityType(Challenge.class);
@@ -39,7 +38,7 @@ class TestLuceneSearch {
     @Test
     void testNormalQueries() {
         Arrays.stream(queries).forEach(s ->
-            assertDoesNotThrow(() -> searchService.search(s, filter))
+            assertDoesNotThrow(() -> searchService.search(s))
         );
     }
 
@@ -52,9 +51,10 @@ class TestLuceneSearch {
     @Test
     void testFilter() throws Exception {
         assertEquals(searchService.count(""), 17);
-        assertEquals(searchService.count("", "enabled:true"),16);
+        assertEquals(searchService.count(new SearchParameters.Builder().enabledOnly().build()),16);
         assertEquals(searchService.count("phonybalogna@yourdomain.com"), 1);
-        assertEquals(searchService.count("phonybalogna@yourdomain.com", "enabled:true"), 0);
+        assertEquals(searchService.count(
+                new SearchParameters.Builder().withQuery("phonybalogna@yourdomain.com").enabledOnly().build()), 0);
     }
 
     @Test
@@ -78,7 +78,7 @@ class TestLuceneSearch {
 
     @Test
     void testResultCount() throws Exception {
-        int count = searchService.count("", PageRequest.of(0, 1));
+        int count = searchService.count(new SearchParameters.Builder().withPageSize(1).build());
         assertEquals(count, 17);
     }
 
@@ -87,7 +87,8 @@ class TestLuceneSearch {
 
         int total = 0;
         for (int i = 0; i < 15; i++) {
-            int pageSize = searchService.search("", PageRequest.of(i, 5)).size();
+            int pageSize = searchService.search(
+                    new SearchParameters.Builder().withPageable(PageRequest.of(i, 5)).build()).size();
             if (pageSize == 0) {
                 assertEquals(4, i);
                 break;

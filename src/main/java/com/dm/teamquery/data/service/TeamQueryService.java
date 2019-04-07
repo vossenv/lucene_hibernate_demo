@@ -7,6 +7,7 @@ import com.dm.teamquery.data.repository.SearchInfoRepository;
 import com.dm.teamquery.entity.EntityBase;
 import com.dm.teamquery.entity.SearchInfo;
 import com.dm.teamquery.execption.customexception.SearchFailedException;
+import com.dm.teamquery.search.SearchParameters;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -97,16 +98,24 @@ public abstract class TeamQueryService<T extends EntityBase, ID> {
     }
 
     public List<T> basicSearch(String query) throws SearchFailedException {
-        return (List<T>) search(new SearchRequest(query)).getResultsList();
+        SearchRequest s = new SearchRequest(query);
+        s.setIncDisabled(true);
+        return (List<T>) search(s).getResultsList();
     }
 
     private SearchResponse search(SearchRequest request) throws SearchFailedException {
         try {
+
             long startTime = System.nanoTime();
-            String filter = request.getIncDisabled() ? "enabled:true" : "";
             SearchResponse response = new SearchResponse(request);
-            response.setRowCount(searchService.count(request.getQuery(), filter));
-            response.setResultsList(searchService.search(request.getQuery(), request.getPageable(), filter));
+            SearchParameters sp = new SearchParameters.Builder()
+                    .withQuery(request.getQuery())
+                    .incDisabled(request.getIncDisabled())
+                    .withPageable(request.getPageable())
+                    .build();
+
+            response.setRowCount(searchService.count(sp));
+            response.setResultsList(searchService.search(sp));
             response.setSearchTime((System.nanoTime() - startTime) * 1.0e-9);
             return response;
         } catch (Exception e) {

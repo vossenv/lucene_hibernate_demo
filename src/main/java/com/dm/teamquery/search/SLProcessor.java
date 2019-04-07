@@ -27,6 +27,12 @@ public class SLProcessor {
     private int minFuzzyLen = 3;
     private Map<String, SearchTerm> terms;
 
+    public SLProcessor (int fuzziness) {
+        this.minFuzzyLen = fuzziness;
+    }
+
+    public SLProcessor(){}
+
     public String format(String originalQuery) throws ParseException {
         Assert.notNull(originalQuery, "Query must not be null");
         terms = new HashMap<>();

@@ -1,6 +1,7 @@
 package com.dm.teamquery.test;
 
 import com.dm.teamquery.search.SLProcessor;
+import com.dm.teamquery.search.SearchParameters;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +41,6 @@ class TestSLProcessor {
         assertEquals(q4, "a~ b~ c~");
         assertEquals(q5, "a~ b~ c~");
         assertEquals(q6, "*");
-
     }
 
     @Test
