@@ -26,7 +26,7 @@ import static java.util.Arrays.stream;
 
 @Repository
 @Transactional
-public class SearchService {
+public class SearchService{
 
     private Class entityType;
     private FullTextEntityManager fullTextEm;
@@ -37,29 +37,54 @@ public class SearchService {
         this.fullTextEm = Search.getFullTextEntityManager(emf.createEntityManager());
     }
 
-    public List<Challenge> search(String query) throws SearchFailedException {
-        return search(query, PageRequest.of(0, 100));
+    // Entry points with #nofilter
+
+    public List<?> search(String query) throws SearchFailedException {
+        return search(query, PageRequest.of(0, 100),"");
     }
 
     public int count(String query) throws SearchFailedException {
-        return count(query, PageRequest.of(0, 100));
+        return count(query, PageRequest.of(0, 100),"");
     }
 
-    public List<Challenge> search(String query, Pageable p) throws SearchFailedException {
-        return parseQuery(query, p).getResultList();
+    public List<?> search(String query, Pageable p) throws SearchFailedException {
+        return parseQuery(query, p, "").getResultList();
     }
 
     public int count(String query, Pageable p) throws SearchFailedException {
-        return parseQuery(query, p).getResultSize();
+        return parseQuery(query, p, "").getResultSize();
     }
 
-    private FullTextQuery parseQuery(String query, Pageable p) throws SearchFailedException {
+    // Entry points allowing filter
+
+    public List<?> search(String query, String filter) throws SearchFailedException {
+        return search(query, PageRequest.of(0, 100),filter);
+    }
+
+    public int count(String query, String filter) throws SearchFailedException {
+        return count(query, PageRequest.of(0, 100),filter);
+    }
+    public List<?> search(String query, Pageable p, String filter) throws SearchFailedException {
+        return parseQuery(query, p, filter).getResultList();
+    }
+
+    public int count(String query, Pageable p, String filter) throws SearchFailedException {
+        return parseQuery(query, p, filter).getResultSize();
+    }
+
+    private FullTextQuery parseQuery(String query, Pageable p, String filter) throws SearchFailedException {
 
         Assert.notNull(query, "Query must not be null");
 
         try {
+            query = new SLProcessor().format(query);
 
-            Query r = queryParser.parse(new SLProcessor().format(query));
+
+            if (!filter.trim().isEmpty()) {
+                query = "(" + query + ") AND " + filter;
+            }
+
+            Query r = queryParser.parse(query);
             FullTextQuery jpaQuery = fullTextEm.createFullTextQuery(r, entityType);
             return jpaQuery.setMaxResults(p.getPageSize()).setFirstResult(p.getPageNumber() * p.getPageSize());
 

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -22,7 +23,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:application-test.properties")
-public class TestGenericServiceLayer {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+class TestGenericServiceLayer {
 
     @Inject
     private ChallengeService gd;
@@ -42,7 +44,7 @@ public class TestGenericServiceLayer {
     }
 
     @Test
-    public void TestFind() {
+    void TestFind() {
         ExceptionCheck<UUID> ec = (e) -> gd.findById(e);
         assertEquals(17, gd.findAll().size());
         MatchException(ec, UUID.randomUUID(), EntityNotFoundException.class);
@@ -50,7 +52,7 @@ public class TestGenericServiceLayer {
     }
 
     @Test
-    public void TestAddSimple() {
+    void TestAddSimple() {
         Challenge c = new Challenge();
         c.setAuthor("Carag");
         c.setAnswer("What is the question");
@@ -64,7 +66,7 @@ public class TestGenericServiceLayer {
     }
 
     @Test
-    public void TestBadData() {
+    void TestBadData() {
         ExceptionCheck<Challenge> ec = (e) -> gd.save(e);
         Challenge c = gd.findAll().get(3);
         c.setQuestion("");
@@ -75,7 +77,7 @@ public class TestGenericServiceLayer {
     }
 
     @Test
-    public void TestUpdate(){
+    void TestUpdate(){
         Challenge c = gd.findAll().get(0);
         c.setQuestion("A new one");
         gd.save(c);
@@ -83,7 +85,7 @@ public class TestGenericServiceLayer {
     }
 
     @Test
-    public void TestImmutableUpdate() {
+    void TestImmutableUpdate() {
 
         Challenge c = gd.findAll().get(0);
         String authorOriginal = c.getAuthor();
@@ -105,7 +107,7 @@ public class TestGenericServiceLayer {
     }
 
     @Test
-    public void TestAudit() throws Exception {
+    void TestAudit() throws Exception {
 
         Challenge c = new Challenge();
         c.setAuthor("Carag");
@@ -122,7 +124,7 @@ public class TestGenericServiceLayer {
     }
 
     @Test
-    public void TestDelete() {
+    void TestDelete() {
 
         UUID id = gd.findAll().get(5).getChallengeId();
         gd.deleteById(id);

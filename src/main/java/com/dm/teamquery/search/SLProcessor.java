@@ -39,7 +39,7 @@ public class SLProcessor {
     }
 
     private void validateQuery() throws ParseException {
-        String s = query.replaceAll("[^A-Za-z0-9*]*","");
+        String s = query.replaceAll("[^A-Za-z0-9@*]*","");
         s = s.replaceAll("AND|OR|NOT","").trim();
         if (s.isEmpty()) throw new ParseException("Invalid query syntax: '" + query + "'");
     }
@@ -66,7 +66,7 @@ public class SLProcessor {
     private String addTermSuffix(String term) {
         String s = (terms.containsKey(term)) ? terms.get(term).getValue() : term;
         Matcher m = Pattern.compile("[A-Za-z0-9\"&%#@<>;`_,.](?=$)").matcher(s);
-        return (!SearchTerm.Types.isBoolean(s) && m.find()) ? term + "~ " : term + " ";
+        return (!SearchTerm.Types.isBoolean(s) && m.find() && term.length() > 3) ? term + "~ " : term + " ";
     }
 
     private void encodeTerm(Types type, String s, int loc) throws ParseException{

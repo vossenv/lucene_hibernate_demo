@@ -3,8 +3,10 @@ package com.dm.teamquery.entity;
 
 import com.dm.teamquery.search.UUIDFieldBridge;
 import lombok.Data;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
@@ -19,10 +21,11 @@ import java.util.UUID;
 @Entity
 @Indexed
 @Table(name = "challenge")
-public class Challenge extends Auditable<String>  {
+
+public class Challenge extends EntityBase<String> {
 
     @Id
-    @Type(type="uuid-char")
+    @Type(type = "uuid-char")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
             name = "UUID",
@@ -30,6 +33,7 @@ public class Challenge extends Auditable<String>  {
     )
     @Column(name = "challengeid")
     @FieldBridge(impl = UUIDFieldBridge.class)
+    @Analyzer(impl = KeywordAnalyzer.class)
     private UUID challengeId;
 
     @Field

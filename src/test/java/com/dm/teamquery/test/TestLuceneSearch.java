@@ -29,6 +29,8 @@ class TestLuceneSearch {
     @Inject
     ChallengeService challengeService;
 
+    String filter = "enabled:true";
+
     @PostConstruct
     private void setType() {
         searchService.setEntityType(Challenge.class);
@@ -37,7 +39,7 @@ class TestLuceneSearch {
     @Test
     void testNormalQueries() {
         Arrays.stream(queries).forEach(s ->
-            assertDoesNotThrow(() -> searchService.search(s))
+            assertDoesNotThrow(() -> searchService.search(s, filter))
         );
     }
 
@@ -45,6 +47,17 @@ class TestLuceneSearch {
     void testSearchExceptions() {
         Arrays.stream(failqueries).forEach(s ->
            assertThrows(SearchFailedException.class, () -> searchService.search(s)));
+    }
+
+    @Test
+    void testFilter() throws Exception {
+//        assertEquals(searchService.count(""), 17);
+//        assertEquals(searchService.count("", "enabled:true"),16);
+
+        assertEquals(searchService.count("*@*"), 1);
+        assertEquals(searchService.count("phonybalogna@yourdomain.com", "enabled:true"), 0);
+
+        System.out.println();
     }
 
     @Test
