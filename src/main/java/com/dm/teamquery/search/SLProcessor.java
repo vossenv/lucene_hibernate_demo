@@ -24,6 +24,7 @@ public class SLProcessor {
     private static final String SKIP_BOOL = String.format("^%s*|%<s*$", END_BOOL);
 
     private String query;
+    private int minFuzzyLen = 3;
     private Map<String, SearchTerm> terms;
 
     public String format(String originalQuery) throws ParseException {
@@ -66,7 +67,8 @@ public class SLProcessor {
     private String addTermSuffix(String term) {
         String s = (terms.containsKey(term)) ? terms.get(term).getValue() : term;
         Matcher m = Pattern.compile("[A-Za-z0-9\"&%#@<>;`_,.](?=$)").matcher(s);
-        return (!SearchTerm.Types.isBoolean(s) && m.find() && term.length() > 3) ? term + "~ " : term + " ";
+        if (!SearchTerm.Types.isBoolean(s) && m.find() && term.length() > minFuzzyLen) term += "~";
+        return term + " ";
     }
 
     private void encodeTerm(Types type, String s, int loc) throws ParseException{
@@ -103,4 +105,11 @@ public class SLProcessor {
     }
 
 
+    public int getMinFuzzyLen() {
+        return minFuzzyLen;
+    }
+
+    public void setMinFuzzyLen(int minFuzzyLen) {
+        this.minFuzzyLen = minFuzzyLen;
+    }
 }

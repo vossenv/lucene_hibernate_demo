@@ -51,13 +51,10 @@ class TestLuceneSearch {
 
     @Test
     void testFilter() throws Exception {
-//        assertEquals(searchService.count(""), 17);
-//        assertEquals(searchService.count("", "enabled:true"),16);
-
-        assertEquals(searchService.count("*@*"), 1);
+        assertEquals(searchService.count(""), 17);
+        assertEquals(searchService.count("", "enabled:true"),16);
+        assertEquals(searchService.count("phonybalogna@yourdomain.com"), 1);
         assertEquals(searchService.count("phonybalogna@yourdomain.com", "enabled:true"), 0);
-
-        System.out.println();
     }
 
     @Test

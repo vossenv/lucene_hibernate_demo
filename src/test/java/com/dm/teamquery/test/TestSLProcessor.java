@@ -15,7 +15,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestPropertySource("classpath:application-test.properties")
 class TestSLProcessor {
 
-    private SLProcessor slp = new SLProcessor();
+    private SLProcessor slp;
+
+    TestSLProcessor (){
+        slp = new SLProcessor();
+        slp.setMinFuzzyLen(0);
+    }
 
     @Test
     void TestSimple() throws Exception {
@@ -143,9 +148,9 @@ class TestSLProcessor {
     @Test
     void TestSpecialChars() {
 
-        assertThrows(ParseException.class, () -> slp.format("@!# $() @#&(^ AND &^%????\\\\\\ "));
+        assertThrows(ParseException.class, () -> slp.format("!# $() #&(^ AND &^%????\\\\\\ "));
         assertThrows(ParseException.class, () -> slp.format("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\""));
-        assertThrows(ParseException.class, () -> slp.format("~!@#$%^&()_+-/-+<>?:{}|\\]`[';/.,']"));
+        assertThrows(ParseException.class, () -> slp.format("~!#$%^&()_+-/-+<>?:{}|\\]`[';/.,']"));
         assertThrows(ParseException.class, () -> slp.format("\"\\\\\""));
         assertThrows(ParseException.class, () -> slp.format("\""));
         assertThrows(ParseException.class, () -> slp.format(":"));

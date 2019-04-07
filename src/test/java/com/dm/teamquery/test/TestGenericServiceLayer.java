@@ -3,6 +3,7 @@ package com.dm.teamquery.test;
 
 import com.dm.teamquery.data.service.ChallengeService;
 import com.dm.teamquery.entity.Challenge;
+import com.dm.teamquery.execption.customexception.SearchFailedException;
 import com.dm.teamquery.execption.customexception.TeamQueryException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -135,6 +137,26 @@ class TestGenericServiceLayer {
         MatchException(ec, UUID.randomUUID(), EntityNotFoundException.class);
         MatchException(ec, null, IllegalArgumentException.class);
 
+    }
+
+    @Test
+    void testSearch() throws SearchFailedException {
+
+        List<Challenge> challengeList0 = gd.basicSearch("sso");
+        List<Challenge> challengeList1 = gd.basicSearch("federated");
+        List<Challenge> challengeList2 = gd.basicSearch("*ID*");
+        List<Challenge> challengeList3 = gd.basicSearch("phonybalogna@yourdomain.com");
+        List<Challenge> challengeList4 = gd.basicSearch("*adobe*");
+        List<Challenge> challengeList5 = gd.basicSearch("");
+        List<Challenge> challengeList6 = gd.basicSearch("*http*");
+        List<Challenge> challengeList7 = gd.basicSearch("ID AND federated");
+        List<Challenge> challengeList8 = gd.basicSearch("\"to the individual\"");
+        List<Challenge> challengeList9 = gd.basicSearch("question:\"users\" AND adobe");
+        List<Challenge> challengeList10 = gd.basicSearch("question:\"my users\"");
+        List<Challenge> challengeList11 = gd.basicSearch("http");
+        List<Challenge> challengeList12 = gd.basicSearch("*@*");
+
+        System.out.println();
     }
 
 
