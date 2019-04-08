@@ -30,7 +30,6 @@ public class SLProcessor {
     public SLProcessor (int fuzziness) {
         this.minFuzzyLen = fuzziness;
     }
-
     public SLProcessor(){}
 
     public String format(String originalQuery) throws ParseException {

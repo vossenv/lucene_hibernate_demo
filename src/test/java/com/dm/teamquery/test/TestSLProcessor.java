@@ -1,15 +1,14 @@
 package com.dm.teamquery.test;
 
+import com.dm.teamquery.search.NewSLProcessor;
 import com.dm.teamquery.search.SLProcessor;
-import com.dm.teamquery.search.SearchParameters;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -25,6 +24,10 @@ class TestSLProcessor {
 
     @Test
     void TestSimple() throws Exception {
+
+        NewSLProcessor sln = new NewSLProcessor();
+
+        sln.format("");
 
         String q0 = slp.format("");
         String q1 = slp.format("a b");
