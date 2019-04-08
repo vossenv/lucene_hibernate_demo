@@ -45,7 +45,6 @@ class TestLuceneSearch {
     @Test
     void testSearchExceptions() {
         Arrays.stream(failqueries).forEach(s ->
-
            assertThrows(SearchFailedException.class, () -> {System.out.println(s); searchService.search(s);}));
     }
 
@@ -137,7 +136,6 @@ class TestLuceneSearch {
     };
 
     private static final String[] failqueries = {
-            "!#$%&(",
             ":: : ",
             "\"",
             ":",
@@ -145,8 +143,6 @@ class TestLuceneSearch {
             ":b",
             "C:D:E:F:G",
             "() ()()()",
-            "AND AND AND",
-            "ANDANDAND",
             "!# $() #&(^ AND &^%????\\\\\\ ",
             "~!#$%^&()_+-/-+<>?:{}|\\]`[';/.,']",
             "\"\\\\\"",

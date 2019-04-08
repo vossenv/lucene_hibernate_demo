@@ -1,6 +1,5 @@
 package com.dm.teamquery.data.service;
 
-import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.customexception.SearchFailedException;
 import com.dm.teamquery.search.SLProcessor;
 import com.dm.teamquery.search.SearchParameters;
@@ -10,7 +9,6 @@ import org.apache.lucene.search.Query;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;

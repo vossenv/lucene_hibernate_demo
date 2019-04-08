@@ -1,6 +1,5 @@
 package com.dm.teamquery.test;
 
-import com.dm.teamquery.search.NewSLProcessor;
 import com.dm.teamquery.search.SLProcessor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,10 +23,6 @@ class TestSLProcessor {
 
     @Test
     void TestSimple() throws Exception {
-
-        NewSLProcessor sln = new NewSLProcessor();
-
-        sln.format("");
 
         String q0 = slp.format("");
         String q1 = slp.format("a b");
@@ -112,14 +107,13 @@ class TestSLProcessor {
         assertEquals(q3, "author:a~");
         assertEquals(q5, "author:content~ : a~");
         assertEquals(q7, ": a~");
-        assertEquals(q8, "b:: a~");
+        assertEquals(q8, "b::~ a~");
         assertEquals(q9, ": b:a~ :");
         assertEquals(q11, "a:\"x y z\"~");
         assertEquals(q12, "\"a b c\":\"x y z\"~");
         assertEquals(q13, "\"a b c\":x~");
         assertEquals(q15, "a:b~ : c:d~ :");
         assertEquals(q16, ": a:b~ : c:d~ :");
-
 
     }
 
