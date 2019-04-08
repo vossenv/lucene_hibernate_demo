@@ -38,17 +38,8 @@ public class SLProcessor {
         terms = new HashMap<>();
         query = originalQuery.trim();
         if (query.isEmpty()) return "*";
-
-        validateQuery();
         process();
-
         return query;
-    }
-
-    private void validateQuery() throws ParseException {
-        String s = query.replaceAll("[^A-Za-z0-9@*]*","");
-        s = s.replaceAll("AND|OR|NOT","").trim();
-        if (s.isEmpty()) throw new ParseException("Invalid query syntax: '" + query + "'");
     }
 
     private void process() throws ParseException{
@@ -56,7 +47,6 @@ public class SLProcessor {
         findAndEncode(QUOTE_SEARCH, QUOTED);
         findAndEncode(KEYWORD_SEARCH, KEYWORD);
         decode();
-        validateQuery();
     }
 
     private void decode() {
@@ -78,10 +68,10 @@ public class SLProcessor {
     }
 
     private void encodeTerm(Types type, String s, int loc) throws ParseException{
-        if (type == KEYWORD) s = revertString(s);
-        SearchTerm st = new SearchTerm(type, s);
-        terms.put(st.getId(), st);
         try {
+            if (type == KEYWORD) s = revertString(s);
+            SearchTerm st = new SearchTerm(type, s);
+            terms.put(st.getId(), st);
             query = new StringBuilder(query)
                     .replace(loc, loc + s.length(), st.getId())
                     .toString();
@@ -97,7 +87,6 @@ public class SLProcessor {
         }
     }
 
-
     private String revertString(String str) {
         Set<String> toRevert = terms.keySet().stream()
                 .filter(str::contains)
@@ -108,11 +97,6 @@ public class SLProcessor {
             terms.remove(s);
         }
         return str.trim();
-    }
-
-
-    public int getMinFuzzyLen() {
-        return minFuzzyLen;
     }
 
     public void setMinFuzzyLen(int minFuzzyLen) {

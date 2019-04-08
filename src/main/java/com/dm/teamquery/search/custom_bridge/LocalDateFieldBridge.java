@@ -1,4 +1,4 @@
-package com.dm.teamquery.search;
+package com.dm.teamquery.search.custom_bridge;
 
 import org.hibernate.search.bridge.TwoWayStringBridge;
 

@@ -1,7 +1,8 @@
 package com.dm.teamquery.entity;
 
 
-import com.dm.teamquery.search.UUIDFieldBridge;
+
+import com.dm.teamquery.search.custom_bridge.UUIDFieldBridge;
 import lombok.Data;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.hibernate.annotations.GenericGenerator;

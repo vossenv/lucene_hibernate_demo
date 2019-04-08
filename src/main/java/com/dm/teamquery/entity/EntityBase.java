@@ -1,7 +1,7 @@
 package com.dm.teamquery.entity;
 
 
-import com.dm.teamquery.search.LocalDateFieldBridge;
+import com.dm.teamquery.search.custom_bridge.LocalDateFieldBridge;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
