@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TestLuceneSearch {
 
     @Inject
-    SearchService searchService;
+    SearchService<Challenge> searchService;
 
     @Inject
     ChallengeService challengeService;

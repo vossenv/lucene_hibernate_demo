@@ -74,10 +74,7 @@ public class SLProcessor {
 
     private String newFindEncode(String regex, String target, boolean isKeyword) throws ParseException {
         Matcher m = Pattern.compile(regex).matcher(target);
-        while (m.find()) {
-            target = newEncodeTerm(m.group(), target, isKeyword);
-        }
-        ;
+        while (m.find()) target = newEncodeTerm(m.group(), target, isKeyword);
         return target;
     }
 

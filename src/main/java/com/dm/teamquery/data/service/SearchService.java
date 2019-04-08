@@ -25,7 +25,7 @@ import static java.util.Arrays.stream;
 
 @Repository
 @Transactional
-public class SearchService{
+public class SearchService<T> {
 
     private Class entityType;
     private FullTextEntityManager fullTextEm;
@@ -36,7 +36,7 @@ public class SearchService{
         this.fullTextEm = Search.getFullTextEntityManager(emf.createEntityManager());
     }
 
-    public List<?> search(String query) throws SearchFailedException {
+    public List<T> search(String query) throws SearchFailedException {
         return search(new SearchParameters.Builder(query).build());
     }
 
@@ -44,7 +44,7 @@ public class SearchService{
         return count(new SearchParameters.Builder(query).build());
     }
 
-    public List<?> search(SearchParameters sp) throws SearchFailedException {
+    public List<T> search(SearchParameters sp) throws SearchFailedException {
         return parseQuery(sp).getResultList();
     }
 

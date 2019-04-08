@@ -36,7 +36,7 @@ public abstract class TeamQueryService<T extends EntityBase, ID> {
     private SearchInfoRepository infoRepository;
 
     @Inject
-    private SearchService searchService;
+    private SearchService<T> searchService;
 
     public TeamQueryService(EntityManager em, PagingAndSortingRepository repository) {
         this.em = em;
