@@ -9,10 +9,10 @@ import org.springframework.data.domain.Pageable;
 @Setter
 public class SearchParameters {
 
-    private String query = "";
-    private Pageable pageable = PageRequest.of(0, 100);
-    private String filter = "";
-    private int fuzziness = 3;
+    private String query;
+    private Pageable pageable;
+    private String filter;
+    private int fuzziness;
 
     private SearchParameters(){}
 
@@ -24,6 +24,10 @@ public class SearchParameters {
 
         public Builder() {
 
+        }
+
+        public Builder (String query) {
+            this.query = query;
         }
 
         public Builder withPageable(Pageable pageable) {

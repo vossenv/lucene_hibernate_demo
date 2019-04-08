@@ -39,11 +39,11 @@ public class SearchService{
     }
 
     public List<?> search(String query) throws SearchFailedException {
-        return search(new SearchParameters.Builder().withQuery(query).build());
+        return search(new SearchParameters.Builder(query).build());
     }
 
     public int count(String query) throws SearchFailedException {
-        return count(new SearchParameters.Builder().withQuery(query).build());
+        return count(new SearchParameters.Builder(query).build());
     }
 
     public List<?> search(SearchParameters sp) throws SearchFailedException {
