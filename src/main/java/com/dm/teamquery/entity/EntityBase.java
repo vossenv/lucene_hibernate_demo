@@ -33,7 +33,6 @@ import java.time.LocalDateTime;
                         @Parameter(name = "ignoreCase", value = "true")})
         }
 )
-
 @Getter
 @Setter
 @MappedSuperclass

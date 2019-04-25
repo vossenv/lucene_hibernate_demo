@@ -38,14 +38,6 @@ public class Movie extends EntityBase<String> {
     @Analyzer(impl = KeywordAnalyzer.class)
     private UUID movieId;
 
-//    @Id
-//    @GeneratedValue(strategy=GenerationType.AUTO)
-//    @Column(name = "movieid")
-//    @FieldBridge(impl = UUIDFieldBridge.class)
-//    @Analyzer(impl = KeywordAnalyzer.class)
-//
-//    private Long movieId;
-
     @Field
     @NotNull(message = "Title cannot be blank")
     @Size(min = 1, message = "Question must be more than 1 characters")
@@ -57,6 +49,38 @@ public class Movie extends EntityBase<String> {
     @Size(min = 3, message = "Description must be more than 3 characters")
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Field
+    @Column(name = "url", columnDefinition = "VARCHAR(500)")
+    private String url;
+
+    @Field
+    @Column(name = "cover", columnDefinition = "VARCHAR(500)")
+    private String cover;
+
+    @Field
+    @Column(name = "catchphrase", columnDefinition = "VARCHAR(500)")
+    private String catchPhrase;
+
+    @Field
+    @Column(name = "producer", columnDefinition = "VARCHAR(500)")
+    private String producer;
+
+    @Field
+    @Column(name = "genre", columnDefinition = "VARCHAR(500)")
+    private String genre;
+
+    @Field
+    @Column(name = "country", columnDefinition = "VARCHAR(500)")
+    private String country;
+
+    @Field
+    @Column(name = "avatar", columnDefinition = "VARCHAR(500)")
+    private String avatar;
+
+    @Field
+    @Column(name = "rating", columnDefinition = "TINYINT(2)")
+    private String rating;
 
 
 }
