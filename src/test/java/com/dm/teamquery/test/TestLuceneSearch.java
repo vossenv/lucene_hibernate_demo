@@ -2,7 +2,7 @@ package com.dm.teamquery.test;
 
 
 import com.dm.teamquery.data.service.ChallengeService;
-import com.dm.teamquery.data.service.SearchService;
+import com.dm.teamquery.search.FullTextSearch;
 import com.dm.teamquery.entity.Challenge;
 import com.dm.teamquery.execption.customexception.SearchFailedException;
 import com.dm.teamquery.search.SearchParameters;
@@ -25,35 +25,35 @@ import static org.junit.jupiter.api.Assertions.*;
 class TestLuceneSearch {
 
     @Inject
-    SearchService<Challenge> searchService;
+    FullTextSearch<Challenge> fullTextSearch;
 
     @Inject
     ChallengeService challengeService;
 
     @PostConstruct
     private void setType() {
-        searchService.setEntityType(Challenge.class);
+        fullTextSearch.setEntityType(Challenge.class);
     }
 
     @Test
     void testNormalQueries() {
         Arrays.stream(queries).forEach(s ->
-            assertDoesNotThrow(() -> searchService.search(s))
+            assertDoesNotThrow(() -> fullTextSearch.search(s))
         );
     }
 
     @Test
     void testSearchExceptions() {
         Arrays.stream(failqueries).forEach(s ->
-           assertThrows(SearchFailedException.class, () -> {System.out.println(s); searchService.search(s);}));
+           assertThrows(SearchFailedException.class, () -> {System.out.println(s); fullTextSearch.search(s);}));
     }
 
     @Test
     void testFilter() throws Exception {
-        assertEquals(searchService.count(""), 17);
-        assertEquals(searchService.count(new SearchParameters.Builder().enabledOnly().build()),16);
-        assertEquals(searchService.count("phonybalogna@yourdomain.com"), 1);
-        assertEquals(searchService.count(
+        assertEquals(fullTextSearch.count(""), 17);
+        assertEquals(fullTextSearch.count(new SearchParameters.Builder().enabledOnly().build()),16);
+        assertEquals(fullTextSearch.count("phonybalogna@yourdomain.com"), 1);
+        assertEquals(fullTextSearch.count(
                 new SearchParameters.Builder().withQuery("phonybalogna@yourdomain.com").enabledOnly().build()), 0);
     }
 
@@ -64,7 +64,7 @@ class TestLuceneSearch {
         c.setAnswer("What is the question");
         c.setQuestion("What is the answer");
         c = challengeService.save(c);
-        assertEquals(searchService.search(c.getChallengeId().toString()).size(), 1);
+        assertEquals(fullTextSearch.search(c.getChallengeId().toString()).size(), 1);
         challengeService.deleteById(c.getChallengeId());
     }
 
@@ -72,13 +72,13 @@ class TestLuceneSearch {
     void indexDeletedItem() throws Exception {
         Challenge c = challengeService.findAll().get(0);
         challengeService.deleteById(c.getChallengeId());
-        assertEquals(searchService.search(c.getChallengeId().toString()).size(), 0);
+        assertEquals(fullTextSearch.search(c.getChallengeId().toString()).size(), 0);
         challengeService.save(c);
     }
 
     @Test
     void testResultCount() throws Exception {
-        int count = searchService.count(new SearchParameters.Builder().withPageSize(1).build());
+        int count = fullTextSearch.count(new SearchParameters.Builder().withPageSize(1).build());
         assertEquals(count, 17);
     }
 
@@ -87,7 +87,7 @@ class TestLuceneSearch {
 
         int total = 0;
         for (int i = 0; i < 15; i++) {
-            int pageSize = searchService.search(
+            int pageSize = fullTextSearch.search(
                     new SearchParameters.Builder().withPageable(PageRequest.of(i, 5)).build()).size();
             if (pageSize == 0) {
                 assertEquals(4, i);

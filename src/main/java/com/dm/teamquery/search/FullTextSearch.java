@@ -1,4 +1,4 @@
-package com.dm.teamquery.data.service;
+package com.dm.teamquery.search;
 
 import com.dm.teamquery.execption.customexception.SearchFailedException;
 import com.dm.teamquery.search.SLProcessor;
@@ -25,14 +25,14 @@ import static java.util.Arrays.stream;
 
 @Repository
 @Transactional
-public class SearchService<T> {
+public class FullTextSearch<T> {
 
     private Class entityType;
     private FullTextEntityManager fullTextEm;
     private MultiFieldQueryParser queryParser;
 
     @Inject
-    public SearchService(EntityManagerFactory emf) {
+    public FullTextSearch(EntityManagerFactory emf) {
         this.fullTextEm = Search.getFullTextEntityManager(emf.createEntityManager());
     }
 

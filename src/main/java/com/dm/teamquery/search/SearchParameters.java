@@ -1,12 +1,16 @@
 package com.dm.teamquery.search;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class SearchParameters {
 
     private String query;
@@ -14,17 +18,13 @@ public class SearchParameters {
     private String filter;
     private int fuzziness;
 
-    private SearchParameters(){}
-
     public static class Builder {
         private String query = "";
         private Pageable pageable = PageRequest.of(0, 100);
         private String filter = "";
         private int fuzziness = 3;
 
-        public Builder() {
-
-        }
+        public Builder() {}
 
         public Builder (String query) {
             this.query = query;

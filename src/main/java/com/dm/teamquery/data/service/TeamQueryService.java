@@ -8,6 +8,7 @@ import com.dm.teamquery.entity.EntityBase;
 import com.dm.teamquery.entity.SearchInfo;
 import com.dm.teamquery.execption.customexception.SearchFailedException;
 import com.dm.teamquery.search.SearchParameters;
+import com.dm.teamquery.search.FullTextSearch;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -36,7 +37,7 @@ public abstract class TeamQueryService<T extends EntityBase, ID> {
     private SearchInfoRepository infoRepository;
 
     @Inject
-    private SearchService<T> searchService;
+    private FullTextSearch<T> fullTextSearch;
 
     public TeamQueryService(EntityManager em, PagingAndSortingRepository repository) {
         this.em = em;
@@ -46,7 +47,7 @@ public abstract class TeamQueryService<T extends EntityBase, ID> {
 
     @PostConstruct
     void setClass() {
-        this.searchService.setEntityType(persistentClass);
+        this.fullTextSearch.setEntityType(persistentClass);
     }
 
     public T save(T t) {
@@ -105,7 +106,6 @@ public abstract class TeamQueryService<T extends EntityBase, ID> {
 
     private SearchResponse search(SearchRequest request) throws SearchFailedException {
         try {
-
             long startTime = System.nanoTime();
             SearchResponse response = new SearchResponse(request);
             SearchParameters sp = new SearchParameters.Builder()
@@ -114,8 +114,8 @@ public abstract class TeamQueryService<T extends EntityBase, ID> {
                     .withPageable(request.getPageable())
                     .build();
 
-            response.setRowCount(searchService.count(sp));
-            response.setResultsList(searchService.search(sp));
+            response.setRowCount(fullTextSearch.count(sp));
+            response.setResultsList(fullTextSearch.search(sp));
             response.setSearchTime((System.nanoTime() - startTime) * 1.0e-9);
             return response;
         } catch (Exception e) {

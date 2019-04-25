@@ -21,11 +21,8 @@ import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Getter @Setter
-@MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
-
-@AnalyzerDef(name = "customanalyzer",
+@AnalyzerDef(
+        name = "customanalyzer",
         tokenizer = @TokenizerDef(factory = ClassicTokenizerFactory.class),
         filters = {
                 @TokenFilterDef(factory = LowerCaseFilterFactory.class),
@@ -33,10 +30,14 @@ import java.time.LocalDateTime;
                 @TokenFilterDef(factory = EnglishPossessiveFilterFactory.class),
                 @TokenFilterDef(factory = SynonymFilterFactory.class, params = {
                         @Parameter(name = "synonyms", value = "synonyms.txt"),
-                        @Parameter(name = "ignoreCase", value = "true")
-                })
+                        @Parameter(name = "ignoreCase", value = "true")})
+        }
+)
 
-        })
+@Getter
+@Setter
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 @Analyzer(definition = "customanalyzer")
 public class EntityBase<U> {
 
@@ -45,14 +46,14 @@ public class EntityBase<U> {
     @FieldBridge(impl = LocalDateFieldBridge.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "created_date", updatable = false)
-    private LocalDateTime createdDate;
+    private LocalDateTime createdDate = LocalDateTime.now();
 
     @LastModifiedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "last_modified_date")
     @Field(analyze = Analyze.NO)
     @FieldBridge(impl = LocalDateFieldBridge.class)
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime lastModifiedDate = LocalDateTime.now();
 
     @Field
     @NotNull
