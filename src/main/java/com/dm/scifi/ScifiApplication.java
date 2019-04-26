@@ -5,10 +5,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TeamqueryApplication {
+public class ScifiApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TeamqueryApplication.class, args);
+		SpringApplication.run(ScifiApplication.class, args);
 	}
 
 }

@@ -7,6 +7,7 @@ import com.dm.scifi.entity.EntityBase;
 import com.dm.scifi.execption.SearchFailedException;
 import com.dm.scifi.search.FullTextSearch;
 import com.dm.scifi.search.SearchParameters;
+import com.dm.scifi.search.SimpleHibernateSearch;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -41,9 +42,7 @@ public abstract class ScifiService<T extends EntityBase, ID> {
     }
 
     @PostConstruct
-    void setClass() {
-        this.fullTextSearch.setEntityType(persistentClass);
-    }
+    void setClass() {this.fullTextSearch.setEntityType(persistentClass); }
 
     public T save(T t) {
         try {

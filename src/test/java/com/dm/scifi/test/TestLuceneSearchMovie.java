@@ -36,9 +36,9 @@ class TestLuceneSearchMovie {
     @Test
     void testNormalQueries() throws Exception {
 
-        List<Movie> ml = movieService.findAll();
+        //List<Movie> ml = movieService.findAll();
 
-        List<Movie> ml2 = fullTextSearch.search("");
+        List<Movie> ml2 = fullTextSearch.search("scie?nce + ficton {alien}");
 
         System.out.println();
 

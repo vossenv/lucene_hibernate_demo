@@ -6,13 +6,10 @@ import java.util.UUID;
 
 public class UUIDFieldBridge implements TwoWayStringBridge {
 
-
-
     @Override
     public String objectToString(Object object) {
         return object.toString();
     }
-
 
     @Override
     public Object stringToObject(String stringValue) {
