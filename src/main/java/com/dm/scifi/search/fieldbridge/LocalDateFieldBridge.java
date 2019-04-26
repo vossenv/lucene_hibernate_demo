@@ -1,4 +1,4 @@
-package com.dm.scifi.search.custom_bridge;
+package com.dm.scifi.search.fieldbridge;
 
 import org.hibernate.search.bridge.TwoWayStringBridge;
 

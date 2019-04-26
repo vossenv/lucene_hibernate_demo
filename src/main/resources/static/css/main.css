@@ -14,9 +14,18 @@
 
 
 body {
+
+    height: 100%;
+    margin: 0;
+    padding: 0;
+
     color:white;
     background: linear-gradient(  rgba(0,0,0,0.5), rgba(0, 0, 0, 0.5)), var(--background-url) no-repeat fixed;
     background-size: cover;
+}
+
+html {
+    height: 100%;
 }
 
 .title-text {
@@ -41,6 +50,29 @@ body {
 }
 
 
+.avatar {
+    margin-top: -20px;
+    height: 50px;
+}
+
+.title {
+
+    font-size: 30px;
+}
+
+a {
+    color: white;
+}
+
+
+.poster {
+    width: 200px;
+    border: solid 2px white;
+}
+
+.poster:hover {
+    border: solid 2px #dc3545;;
+}
 
 #help-text {
     margin-top: -10px;
@@ -70,6 +102,11 @@ pre {
 
 #paging-div, #page-size {
     display:inline-block;
+}
+
+.fieldname {
+    margin-top: 10px;
+    color: #dc3545;
 }
 
 .pagenum {

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 import static java.util.Arrays.stream;
 
-public class SLProcessor {
+public class LanguageProcessor {
 
     private static final String KEYWORD_SEARCH = "\\S+\\s*:\\s*\".*?\"|\\S+\\s*:\\s*\\S*";
     private static final String QUOTE_SEARCH = "(?<=\\(|^|\\s)((?<!\\\\)\").+?((?<!\\\\)\")(?=$|\\s|\\))";
@@ -24,11 +24,11 @@ public class SLProcessor {
     @Setter
     private int minFuzzyLen = 3;
 
-    public SLProcessor(int fuzziness) {
+    public LanguageProcessor(int fuzziness) {
         this.minFuzzyLen = fuzziness;
     }
 
-    public SLProcessor() {
+    public LanguageProcessor() {
     }
 
     public String format(String originalQuery) throws ParseException {

@@ -1,9 +1,6 @@
-package com.dm.scifi.execption.handling;
+package com.dm.scifi.execption;
 
 
-import com.dm.scifi.execption.customexception.InvalidParameterException;
-import com.dm.scifi.execption.customexception.SearchFailedException;
-import com.dm.scifi.execption.customexception.TeamQueryException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -31,7 +28,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleInvalidEntityIdException(Exception e) {
-        return new TeamQueryError(INVALID_ENTITY_ID, HttpStatus.BAD_REQUEST, e).toResponse();
+        return new ScifiError(INVALID_ENTITY_ID, HttpStatus.BAD_REQUEST, e).toResponse();
     }
 
     // Entity CRUD
@@ -46,34 +43,34 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 //    }
 
     @ExceptionHandler({ SearchFailedException.class})
-    protected ResponseEntity<Object> handleFailedException(TeamQueryException e) {
-        return new TeamQueryError(UNKNOWN_FAILURE, HttpStatus.INTERNAL_SERVER_ERROR, e).toResponse();
+    protected ResponseEntity<Object> handleFailedException(ScifiException e) {
+        return new ScifiError(UNKNOWN_FAILURE, HttpStatus.INTERNAL_SERVER_ERROR, e).toResponse();
     }
 
     // Paging
     @ExceptionHandler(InvalidParameterException.class)
     protected ResponseEntity<Object> handleInvalidParameterException(InvalidParameterException e) {
-        return new TeamQueryError(INVALID_PAGING_PARAMETER, HttpStatus.BAD_REQUEST, e).toResponse();
+        return new ScifiError(INVALID_PAGING_PARAMETER, HttpStatus.BAD_REQUEST, e).toResponse();
     }
 
     // Controller
     @ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class})
     protected ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e) {
-        return new TeamQueryError(INVALID_PARAMETER, HttpStatus.BAD_REQUEST, e).toResponse();
+        return new ScifiError(INVALID_PARAMETER, HttpStatus.BAD_REQUEST, e).toResponse();
     }
 
     // Request method
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
             HttpRequestMethodNotSupportedException e, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return new TeamQueryError(UNSUPPORTED_MESSAGE, HttpStatus.BAD_REQUEST, e).toResponse();
+        return new ScifiError(UNSUPPORTED_MESSAGE, HttpStatus.BAD_REQUEST, e).toResponse();
     }
 
     // Field error handling
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException e, HttpHeaders headers, HttpStatus status, WebRequest request) {
-            return new TeamQueryError(UNSUPPORTED_MESSAGE, HttpStatus.UNPROCESSABLE_ENTITY, e).toResponse();
+            return new ScifiError(UNSUPPORTED_MESSAGE, HttpStatus.UNPROCESSABLE_ENTITY, e).toResponse();
     }
 }
 

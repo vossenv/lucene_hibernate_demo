@@ -1,7 +1,7 @@
 package com.dm.scifi.test;
 
 
-import com.dm.scifi.data.service.MovieService;
+import com.dm.scifi.data.MovieService;
 import com.dm.scifi.entity.Movie;
 import com.dm.scifi.search.FullTextSearch;
 import com.dm.scifi.search.SearchParameters;

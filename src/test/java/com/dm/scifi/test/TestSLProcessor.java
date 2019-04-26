@@ -1,6 +1,6 @@
 package com.dm.scifi.test;
 
-import com.dm.scifi.search.SLProcessor;
+import com.dm.scifi.search.LanguageProcessor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestPropertySource("classpath:application-test.properties")
 class TestSLProcessor {
 
-    private SLProcessor slp;
+    private LanguageProcessor slp;
 
     TestSLProcessor (){
-        slp = new SLProcessor();
+        slp = new LanguageProcessor();
         slp.setMinFuzzyLen(0);
     }
 

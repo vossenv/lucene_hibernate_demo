@@ -2,7 +2,7 @@ package com.dm.scifi.entity;
 
 
 
-import com.dm.scifi.search.custom_bridge.UUIDFieldBridge;
+import com.dm.scifi.search.fieldbridge.UUIDFieldBridge;
 import lombok.Data;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.hibernate.annotations.GenericGenerator;

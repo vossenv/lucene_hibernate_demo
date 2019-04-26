@@ -1,7 +1,7 @@
 package com.dm.scifi.entity;
 
 
-import com.dm.scifi.search.custom_bridge.LocalDateFieldBridge;
+import com.dm.scifi.search.fieldbridge.LocalDateFieldBridge;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;

@@ -12,12 +12,12 @@ import javax.persistence.EntityManagerFactory;
 
 
 @Configuration
-public class BuildSearchIndex{
+public class LuceneIndexConfiguration {
 
     private final EntityManager entityManager;
 
     @Autowired
-    public BuildSearchIndex(final EntityManagerFactory entityManagerFactory) {
+    public LuceneIndexConfiguration(final EntityManagerFactory entityManagerFactory) {
         this.entityManager = entityManagerFactory.createEntityManager();
     }
 

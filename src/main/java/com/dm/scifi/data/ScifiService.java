@@ -1,14 +1,12 @@
-package com.dm.scifi.data.service;
+package com.dm.scifi.data;
 
 
-import com.dm.scifi.data.SearchRequest;
-import com.dm.scifi.data.SearchResponse;
-import com.dm.scifi.data.repository.SearchInfoRepository;
+import com.dm.scifi.controller.helper.SearchRequest;
+import com.dm.scifi.controller.helper.SearchResponse;
 import com.dm.scifi.entity.EntityBase;
-import com.dm.scifi.entity.SearchInfo;
-import com.dm.scifi.execption.customexception.SearchFailedException;
-import com.dm.scifi.search.SearchParameters;
+import com.dm.scifi.execption.SearchFailedException;
 import com.dm.scifi.search.FullTextSearch;
+import com.dm.scifi.search.SearchParameters;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -27,19 +25,16 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 
-public abstract class TeamQueryService<T extends EntityBase, ID> {
+public abstract class ScifiService<T extends EntityBase, ID> {
 
     private Class<T> persistentClass;
     private EntityManager em;
     private PagingAndSortingRepository<T, ID> repository;
 
     @Inject
-    private SearchInfoRepository infoRepository;
-
-    @Inject
     private FullTextSearch<T> fullTextSearch;
 
-    public TeamQueryService(EntityManager em, PagingAndSortingRepository repository) {
+    public ScifiService(EntityManager em, PagingAndSortingRepository repository) {
         this.em = em;
         this.repository = repository;
         this.persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -104,7 +99,7 @@ public abstract class TeamQueryService<T extends EntityBase, ID> {
         return (List<T>) search(s).getResultsList();
     }
 
-    private SearchResponse search(SearchRequest request) throws SearchFailedException {
+    public SearchResponse search(SearchRequest request) throws SearchFailedException {
         try {
             long startTime = System.nanoTime();
             SearchResponse response = new SearchResponse(request);
@@ -119,7 +114,6 @@ public abstract class TeamQueryService<T extends EntityBase, ID> {
             response.setSearchTime((System.nanoTime() - startTime) * 1.0e-9);
             return response;
         } catch (Exception e) {
-            infoRepository.save(new SearchInfo(request.getQuery(), e.getMessage()));
             throw (e instanceof SearchFailedException) ? (SearchFailedException) e
                     : new SearchFailedException(ExceptionUtils.getRootCauseMessage(e));
         }

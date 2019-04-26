@@ -1,7 +1,7 @@
-package com.dm.scifi.data;
+package com.dm.scifi.controller.helper;
 
 
-import com.dm.scifi.execption.customexception.InvalidParameterException;
+import com.dm.scifi.execption.InvalidParameterException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.PageRequest;

@@ -1,4 +1,4 @@
-package com.dm.scifi.execption.customexception;
+package com.dm.scifi.execption;
 
 
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.*;
 
 @Getter
 @Setter
-public class TeamQueryException extends Exception {
+public class ScifiException extends Exception {
     private List<String> errorList = new ArrayList<>();
     List<StackTraceElement[]> traceList = new ArrayList<>();
 
@@ -20,7 +20,7 @@ public class TeamQueryException extends Exception {
 //        addExceptions(args);
 //    }
 
-    public TeamQueryException(Object... args) {
+    public ScifiException(Object... args) {
         super();
         addExceptions(args);
     }

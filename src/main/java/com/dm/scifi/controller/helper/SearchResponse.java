@@ -1,4 +1,4 @@
-package com.dm.scifi.data;
+package com.dm.scifi.controller.helper;
 
 
 import io.vavr.API;
@@ -24,31 +24,31 @@ public class SearchResponse {
     private Double searchTime;
     private List<?> resultsList;
 
-    public SearchResponse(SearchRequest request){
+    public SearchResponse(SearchRequest request) {
         this.request = request;
     }
 
-    public ResponseEntity getResponse (Class type, Class dest) throws EntityNotFoundException {
+    public ResponseEntity getResponse(Class type, Class dest) throws EntityNotFoundException {
 
         Resources responseBody = new Resources(
                 resultsList.stream()
                         .map(API.unchecked(o ->
                                 dest.getConstructor(type)
                                         .newInstance(type.cast(o))))
-                                            .collect(Collectors.toList()));
+                        .collect(Collectors.toList()));
 
         return prepareResponse(responseBody);
 
     }
 
-    private ResponseEntity prepareResponse (Resources body) throws EntityNotFoundException{
+    private ResponseEntity prepareResponse(Resources body) throws EntityNotFoundException {
 
         HttpHeaders headers = new HttpHeaders();
         int pageCount = (int) Math.ceil((double) this.getRowCount() / (double) request.getSize());
-        int next = min((request.getPage() + 2),pageCount);
+        int next = min((request.getPage() + 2), pageCount);
         int prev = Integer.max(request.getPage(), 1);
 
-        if (request.getPage() + 1 > pageCount)
+        if (pageCount > 1 && request.getPage() + 1 > pageCount)
             throw new EntityNotFoundException(String.format("Requested page (%d) does not exist", request.getPage()));
 
         headers.add("Page-Size", request.getSize().toString());
@@ -57,17 +57,20 @@ public class SearchResponse {
         headers.add("Next-Page", String.valueOf(next));
         headers.add("Result-Count", String.valueOf(this.rowCount));
         headers.add("Search-Time-Seconds", String.valueOf(this.searchTime));
-        headers.add("Total-Time-Seconds", String.valueOf((System.nanoTime() - request.getRequestTime())*1.0e-9));
+        headers.add("Total-Time-Seconds", String.valueOf((System.nanoTime() - request.getRequestTime()) * 1.0e-9));
         headers.add("Original-Query", request.getQuery());
         headers.add("Page-Count", String.valueOf(pageCount));
 
         String lastCall = ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString();
 
         body.add(new Link(lastCall, "self"));
-        body.add(new Link(lastCall.replaceAll("(page=)\\d*","page="+String.valueOf(next)), "next"));
-        body.add(new Link(lastCall.replaceAll("(page=)\\d*","page="+String.valueOf(prev)), "previous"));
 
-        return new ResponseEntity<>(body,headers, HttpStatus.OK);
+        if (pageCount > 1) {
+            body.add(new Link(lastCall.replaceAll("(page=)\\d*", "page=" + next), "next"));
+            body.add(new Link(lastCall.replaceAll("(page=)\\d*", "page=" + prev), "previous"));
+        }
+
+        return new ResponseEntity<>(body, headers, HttpStatus.OK);
     }
 }
 

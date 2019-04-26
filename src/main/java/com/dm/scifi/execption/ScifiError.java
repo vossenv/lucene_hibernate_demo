@@ -1,6 +1,5 @@
-package com.dm.scifi.execption.handling;
+package com.dm.scifi.execption;
 
-import com.dm.scifi.execption.customexception.TeamQueryException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
-public class TeamQueryError {
+public class ScifiError {
 
     @JsonIgnore private HttpStatus status;
     @JsonIgnore private final static String FIELD_ERROR_DETAIL = "Error: field '%s' - value '%s' is invalid: %s";
@@ -28,12 +27,12 @@ public class TeamQueryError {
     private String errorMessage;
     private List<String> errorList = new ArrayList<>();
 
-    public TeamQueryError(String errorMessage, HttpStatus status, Exception e) {
+    public ScifiError(String errorMessage, HttpStatus status, Exception e) {
 
         this.errorMessage = errorMessage;
         setStatus(status);
-        if (e instanceof TeamQueryException) {
-            this.errorList = ((TeamQueryException) e).getErrorList();
+        if (e instanceof ScifiException) {
+            this.errorList = ((ScifiException) e).getErrorList();
         } else if (e instanceof MethodArgumentNotValidException) {
             this.errorList = getBindingErrors((MethodArgumentNotValidException) e);
         } else {

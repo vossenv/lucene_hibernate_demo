@@ -1,6 +1,6 @@
 package com.dm.scifi.search;
 
-import com.dm.scifi.execption.customexception.SearchFailedException;
+import com.dm.scifi.execption.SearchFailedException;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
@@ -58,7 +58,7 @@ public class FullTextSearch<T> {
         Assert.notNull(query, "Query must not be null");
 
         try {
-            query = new SLProcessor(parameters.getFuzziness()).format(query);
+            query = new LanguageProcessor(parameters.getFuzziness()).format(query);
             query = (!filter.trim().isEmpty()) ? "(" + query + ") AND " + filter : query;
 
             Query r = queryParser.parse(query);

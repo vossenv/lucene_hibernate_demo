@@ -9,7 +9,7 @@ jQuery(function () {
 
 
 function clickPageNum(pageNum) {
-    doSearch(parseInt(pageNum) - 1);
+    doSearch(parseInt(pageNum));
 }
 
 function clickNavPage(id, pageCount) {
@@ -20,7 +20,7 @@ function clickNavPage(id, pageCount) {
     cpage = (cpage < 1) ? 1 : cpage;
     cpage = (cpage > pageCount) ? pageCount : cpage;
 
-    doSearch(parseInt(cpage) - 1);
+    doSearch(parseInt(cpage));
 
 }
 
@@ -38,6 +38,7 @@ function buildPageString(pageCount){
 
 function doSearch(page_num) {
 
+    $("#results").empty();
     $("#first-visit").text("false");
     let query = $("#search-bar").val();
     let page_size = $('#page-size').find(":selected").text();
@@ -49,15 +50,43 @@ function doSearch(page_num) {
         'Content-Type': 'application/json'
     };
 
+
     $.ajax({
-        url: ctx + "/challenges/search",
+        url: ctx + "/movies/search",
         type: "GET",
         headers: headers,
         success: function (data, status, xhr) {
 
-            $("#results").html(JSON.stringify(data, undefined, 2));
+            let r = $("#results");
 
-            let cpage = parseInt(xhr.getResponseHeader('Current-Page')) + 1;
+            $.each(data['_embedded']['data'], function (i, m) {
+                let movie = m['movie'];
+                r.append("<span class='title'>" + movie['title'] + " <img class='avatar' src='" + movie['avatar'] + "/>'</div>");
+                r.append("<div class='fieldname'>Description</div>");
+                r.append("<div class='field'>" + movie['description'] + "</div><br/>");
+
+                let infodiv = "<div class='row'><div class='col-md-2'>";
+                infodiv += "<a href='" + movie['cover'] + "' target='_blank'><img class='poster' alt='" + movie['cover'] + "' src='" + "https://picsum.photos/300/400" + "'></a><br/>";
+                infodiv += "</div><div class='col-sm-10'>";
+                infodiv += "<div class='field'><span class='fieldname'>Rating:</span> " + movie['rating'] + " </div>";
+                infodiv += "<div class='field'><span class='fieldname'>Genre:</span> " + movie['genre'] + " </div>";
+                infodiv += "<div class='field'><span class='fieldname'>Catch phrase:</span> " + movie['catchPhrase'] + " </div>";
+                infodiv += "<div class='field'><span class='fieldname'>Country:</span> " + movie['country'] + " </div>";
+                infodiv += "<div class='field'><span class='fieldname'>Producer:</span> " + movie['producer'] + " </div>";
+                infodiv += "<div class='field'><span class='fieldname'>Movie ID:</span>&nbsp<a target='_blank' href='" + m['_links']['self']['href'] +"'>" + movie['movieId'] + "</a></div>";
+                infodiv += "<div class='field'><span class='fieldname'>Link:</span> <a target='_blank' href='" + movie['url'] + "'>" + movie['url'] + "</a> </div>";
+                infodiv += "<div class='field'><span class='fieldname'>Added:</span> " + movie['createdDate'] + " </div>";
+                infodiv += "<div class='field'><span class='fieldname'>Last modified:</span> " + movie['lastModifiedDate'] + " </div>";
+
+                infodiv += "</div></div>";
+                r.append(infodiv);
+                r.append("<br/><br/>")
+
+            });
+            
+           // $("#results").html(JSON.stringify(data['_embedded']['data'], undefined, 2));
+
+            let cpage = parseInt(xhr.getResponseHeader('Current-Page'));
             let pagestring = buildPageString(parseInt(xhr.getResponseHeader('Page-Count')));
             let searchTime = xhr.getResponseHeader('Total-Time-Seconds');
             let rowCount = xhr.getResponseHeader('Result-Count');
@@ -65,10 +94,16 @@ function doSearch(page_num) {
             $("#paging-div").html(pagestring);
             $("#pageNum-"+ cpage).css('color', '#dc3545');
             $("#current-page").text(cpage);
-            $("#stats-div").text(" " + rowCount + " total results.  Search completed in " + Number(searchTime).toFixed(5) + " seconds.")
+            $("#stats-div").text(" " + rowCount + " total results.  Search completed in " + Number(searchTime).toFixed(5) + " seconds.");
             $("#search-footer").show();
+        },
+
+        error: function (xhr) {
+            $("#results").css('color', '#dc3545');
+            $("#results").html(JSON.stringify(JSON.parse(xhr.responseText), undefined, 2));
 
         }
+
     });
 
 }
@@ -79,7 +114,7 @@ function setListeners(){
     document.getElementById("search-button")
         .addEventListener("click", function(event) {
             event.preventDefault();
-            doSearch(0);
+            doSearch(1);
         });
     document.getElementById("search-bar")
         .addEventListener("keydown", function(event) {
@@ -91,7 +126,7 @@ function setListeners(){
     document.getElementById("page-size")
         .addEventListener("change", function() {
             if ($("#first-visit").text() !== "true"){
-                doSearch(0);
+                doSearch(1);
             }
         });
 }

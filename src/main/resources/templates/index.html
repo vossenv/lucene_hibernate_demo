@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head lang="en">
-    <title>Team Query</title>
+    <title>Scibernate</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
@@ -10,10 +10,10 @@
 </head>
 
 <div class="container">
-    <div th:unless="${challenge}">
+    <div th:unless="${entity}">
     <div id="t-banner" class="row text-center">
         <div class="col-md-12">
-            <span class="title-text">Adobeverse Search</span>
+            <span class="title-text">Sci Fi Lucenify</span>
         </div>
     </div>
     <div id="search-bar-div" class="row">
@@ -43,10 +43,10 @@
             <span id="paging-div"></span>&nbsp;&nbsp;
             <label for="page-size">Results per page</label>
             <select id="page-size" class="selectpicker">
-                <option selected="selected">1</option>
+                <option>1</option>
                 <option>5</option>
                 <option>10</option>
-                <option>25</option>
+                <option selected="selected">25</option>
                 <option >50</option>
                 <option>100</option>
             </select>

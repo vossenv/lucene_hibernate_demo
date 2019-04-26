@@ -1,4 +1,4 @@
-package com.dm.scifi.data.repository;
+package com.dm.scifi.data;
 
 import com.dm.scifi.entity.Movie;
 import org.springframework.data.repository.PagingAndSortingRepository;

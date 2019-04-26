@@ -14,17 +14,17 @@ public class WebController {
     @RequestMapping(value = {"","/"}, method = RequestMethod.GET)
     public Object indexPage(Model model)  {
 
-        model.addAttribute("ctx", "teamquery");
+        model.addAttribute("ctx", "");
         return "index.html";
     }
 
-    @RequestMapping(value = {"/challenge"}, method = RequestMethod.GET)
-    public Object challengePage(Model model)  {
-
-        model.addAttribute("ctx", "teamquery");
-        model.addAttribute("challenge", "true");
-        return "index.html";
-    }
+//    @RequestMapping(value = {"/"}, method = RequestMethod.GET)
+//    public Object challengePage(Model model)  {
+//
+//        model.addAttribute("ctx", "teamquery");
+//        model.addAttribute("challenge", "true");
+//        return "index.html";
+//    }
 
     @ResponseBody
     @RequestMapping(value = {"/status"}, method = RequestMethod.GET)
