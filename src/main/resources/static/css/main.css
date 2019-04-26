@@ -5,7 +5,7 @@
 
     --btn-hover-color: #ff0017;
     --btn-hover-size: 2px;
-    --title-glow-color: #6b6b6b;
+    --title-glow-color: #118721;
     --title-glow-size: 10px;
 }
 
@@ -25,7 +25,7 @@ html {
 }
 
 .title-text {
-    font-size: 48pt;
+    font-size: 68pt;
 
     -webkit-text-fill-color: white;
     -webkit-text-stroke-width: 1px;
